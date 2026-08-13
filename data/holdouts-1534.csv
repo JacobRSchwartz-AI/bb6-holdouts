@@ -1,0 +1,1535 @@
+Holdouts (From the 1534 list),Status,Classification,Notes,Sources,Done By
+1RB1LB_1LC0RC_1RE0LD_0RE0LA_1RA1RF_---1RC,HALT,Unknown,"Halt with score of 4168466895404 steps (~4e12), further confirmed by -d (verified)",1; 2,"Alistaire, -d"
+1RB0RD_1LC1LD_1RD0LB_1LC0RE_0RF1RA_---1RC,HALT,Unknown,Halt with score of 1494091455617567657 steps (~1.5e18) (verified),1,Alistaire
+1RB1LE_0RC0RE_1LC0LD_1LA0RE_1RF0LA_---0RA,NONHALT,Unknown,Individual proof (January 2026),1,mxdys
+1RB1LB_0RC0LB_0LD0RA_1LE---_1LF1LC_0LA1LA,NONHALT,Unknown,FAR (with mxdys's DFA generator) round 4,1,mxdys
+1RB0RF_1RC---_1RD1LF_1RE0RD_0LC1RA_1LC0LF,NONHALT,Unknown,Simulated to 1.1005e14 steps. FAR cert.,1; 2,"Andrew Ducharme, Alistaire"
+1RB1LD_1RC0RB_0LA1RE_1LA0LD_1RF0RD_1RA---,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB0LD_1RC0RE_0LA0RC_1LA1LD_0RF1RA_---1RC,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB0RB_1LC0LE_0RF1LD_1RA0LB_1RA0RD_---0RC,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB0LD_0RC1RF_1RD0RA_1LE1RB_1LC0LE_1RC---,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB0LA_0RC---_1RD1RE_1LA1LD_1RD0RF_0RC1RC,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB1RF_1LC1LB_---0LD_1RE0LD_0RA1RA_0LE0RE,NONHALT,Unknown,FAR cert.,1,Andrew Ducharme
+1RB1RD_1LC1LE_1RA0LB_1RE---_1RF0LC_1RC0RF,NONHALT,Unknown,FAR cert.,1,mxdys
+1RB1RE_1LC0RF_1RE0LD_1LC0LB_1RA0RE_1RC---,NONHALT,Unknown,FAR cert. (March 2026),1,Andrew Ducharme
+1RB0RE_1LC1RA_0LA1LD_1RE1LC_0RF1RB_---0LC,NONHALT,Unknown,FAR cert. (March 2026),1,Andrew Ducharme
+1RB0LC_1RC0RA_1LD0RB_---0LE_1RA0LF_1LE0LF,EQUIVALENCE,Unknown,"""Might be easy"" + code, analysis. Merged into another equivalence class in April 2026.",1; 2; 3,"mxdys, -d"
+1RB0LD_1RC1RE_1LA0RB_0LF1LA_0LC---_0RA0LA,EQUIVALENCE,Unknown,Possible bouncer with high params. Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LC_0RC0LA_1RD0RF_1LE0LD_1RA0LD_1RE---,EQUIVALENCE,Unknown,Simulated to 1e19.65987 steps. Merged into another equivalence class in April 2026.,1; 2; 3,Alistaire
+1RB0RA_1LC0RA_1LF0RD_1LA0LE_1LB---_0LD0RC,EQUIVALENCE,Unknown,"Simulated to 1e19.84495, may halt. Merged into another equivalence class in April 2026.",1; 2; 3,Alistaire
+1RB0LF_1LC0LB_1RD0LB_0RA0RE_1RF---_0RD0RC,EQUIVALENCE,Unknown,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LF_1RC0LD_1RD0RB_1LE0RC_---0LA_1LA0LF,EQUIVALENCE,Unknown,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LD_0RC0RB_0LD1RB_1LD1LE_1LF---_0LA1RA,EQUIVALENCE,Unknown,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LD_0RC0RE_1RD0RC_1LA0LD_1RF---_0RB0RA,EQUIVALENCE,Unknown,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RC_0LC1RE_1RA0LD_1LB0RD_0RF---_0RA0RF,,Unknown,Code. Binary counting + bouncing,1,nerdyjoe
+1RB1LC_1LA0RE_0LD---_1LB1LD_1RB1RF_0LA0RB,,Unknown,Messy bouncer,,
+1RB0LC_1RC1RA_1RD0RF_0LE---_1LA1LE_0RA1RF,,Unknown,"Partial analysis, simulated up to 2.3e14.","1, 2","yourself, Atoms, hipparcos"
+1RB1RE_1LC1RC_0RF1LD_1LE0LB_1LB0RA_---1RA,,Unknown,"Analysis, Accelerated simulator. Simulated to 1.15e13 steps (via quick_sim cpp).",1; 2; 3,"nerdyjoe, aparker"
+1RB1LC_1LA1RF_0RD1RD_0RA0LE_1LA0LE_0RC---,,Unknown,Simulated to 1.03e73975 steps.,1; 2,Alistaire
+1RB1RD_1LC0LE_1LD0LB_0RB0RA_1RD1LF_0LC---,,Unknown,Simulated to 1.08e17  steps.,1,Alistaire
+1RB0LA_0LC0RA_1LA1LD_1LC0LE_1RF0LF_0RB---,,Unknown,Simulated to 1.63e14 steps.,1,Alistaire
+1RB1RA_1LC0RD_1LD1LB_1LE0LF_0RA---_0LB1LF,,Unknown,Simulated to 1.7883e14 steps.,1,Alistaire
+1RB0LD_0RC0LE_1RD1RA_0RE1RF_1LF0RC_0LA---,,Unknown,Simulated to 1e15.58555 steps.,1,Alistaire
+1RB0LB_1RC0LD_0LA1RD_1LC1LE_1LF0RE_1LD---,,Unknown,Simulated to 2.177e14 steps.,1,Alistaire
+1RB0LA_1RC---_1RD1RA_0RE1LC_1LF0RF_1LD0RC,,Unknown,Simulated to 2.264e14 steps.,1,Alistaire
+1RB0LC_1RC1RA_0RD1LE_1RE1RF_1LC0RB_---1RD,,Unknown,Simulated to 2.29658815946450e20 steps.,1; 2,Alistaire
+1RB0RD_1RC0RA_0LA0LE_1LC1RF_1LA1LC_0RB---,,Unknown,Simulated to 2.48e25 steps.,1,Alistaire
+1RB0RA_0LC0RF_0LB1RD_1LE---_1RA0LF_1LE0RC,,Unknown,Simulated to 3.35e20 steps.,1,Alistaire
+1RB1RB_0LC0LD_0LE1LD_1LB0RE_1RA0RF_1RD---,,Unknown,Simulated to 3.56e17 steps.,1,Alistaire
+1RB0LB_1RC1LC_1LD1RE_---0LA_1LE0RF_1RA0LF,,Unknown,Simulated to 4.927e19 steps.,1,Alistaire
+1RB0RE_1LC0LB_1RD0LB_1RF0LA_1RC---_0RA0LD,,Unknown,Simulated to 5.65565e14 steps. May halt.,1,Alistaire
+1RB0LA_0RC1LE_0RD1RE_1LA1RF_1RB0LD_1RC---,,Unknown,Simulated to 7.066e15 steps.,1,Alistaire
+1RB1LF_0LC0RE_1LA1RD_0LB1LB_1RC1RD_0LD---,,Unknown,Simulated to 9.41e160394 steps.,1,Alistaire
+1RB0RE_1LC0RA_---0LD_1RE0LF_1RA0LB_1LD0LF,,Unknown,"""Might be easy"" + code, analysis of equivalent TM",1,mxdys
+1RB---_1LC0RF_1RF0LD_0LE1LC_0RC0LC_1RB0RA,,Unknown,Possible bouncer with high params,,
+1RB1RF_1LC0LB_1RE1LD_1RE0LB_1RA0RE_---0RC,,Unknown,,,
+1RB1LD_1RC0RB_0LA1RE_1LA0LB_0RA0RF_---0LC,,Unknown,,,
+1RB1LD_0LC0RA_1RA1LC_1RE0LC_---1RF_0RD0RB,,Unknown,,,
+1RB---_0RC1LC_1LD0RF_0LE0LD_0RF1LD_1RF1RA,,Unknown,,,
+1RB0LA_1RC0RB_1LD1RB_0LA0LE_---1LF_1LA1LC,,Unknown,,,
+1RB0LE_1RC1RA_1RD0RF_1RE0RA_1LA1LD_1RA---,,Unknown,,,
+1RB0LF_1RC0RB_0RD1LE_0LE0RA_1LC1LA_0LD---,,Unknown,,,
+1RB0LF_1RC1RB_1LD0RA_1LA0LE_0LC1LC_1LE---,,Unknown,,,
+1RB0LB_1RC1LC_1LD1RE_---0LA_1RE0RF_1RA0LF,,Unknown,,,
+1RB0RA_0LC1LF_1LE1LD_0LB---_1RA0LC_1LA1LC,,Unknown,,,
+1RB0LD_1RC0RB_1RD1RF_1LE0LD_1RB1LA_---0RE,,Unknown,,,
+1RB1RF_1LC0LF_---0LD_0LE1LD_0RF0LB_1RA1RE,,Unknown,,,
+1RB0RD_1LC0LE_0RA0LB_1RC1RF_1LB1RD_0RC---,,Unknown,,,
+1RB0LD_1RC1RB_1RD0RA_0LE1LF_---1LA_1LA0LC,,Unknown,,,
+1RB---_0RC0RF_0RD0RA_1RE0LB_1LF0LE_1RC0LE,,Unknown,,,
+1RB1RA_1RC0RE_0RD1LE_0LE---_1LF0LC_0RA1LC,,Unknown,,,
+1RB0RA_0RC0LE_0LD1RA_1LB0RF_0LD1LC_1RD---,,Unknown,,,
+1RB0RA_1LC0RA_0LD0LC_1RD1RE_1LF0LE_---0LB,,Unknown,,,
+1RB---_1LC0RF_1LD0LC_0RE0LF_0RD1LA_1RB0LE,,Unknown,,,
+1RB0RC_0LC0LE_1RA0RD_1LB1RF_1LC1LB_0RA---,,Unknown,,,
+1RB0RC_1LA0LD_1RB0RD_1LE0RF_0LB0RB_1RC---,,Unknown,,,
+1RB0RA_1LC0RE_0LD0LB_1LA1LF_1RA0LF_1LC---,,Unknown,,,
+1RB0LA_0RC0LE_0RD1RC_1LD1RE_1LA1RF_---0RB,,Unknown,,,
+1RB1RE_1RC0RF_0LD---_1LE1LD_1RA0LB_0RE1RF,,Unknown,,,
+1RB1LB_1LC0LF_1LD0RC_1RE0LA_1RE1RC_---0LE,,Unknown,,,
+1RB1RF_1LC0LB_1RE0LD_1LB0RF_0RA0RC_1RE---,,Unknown,,,
+1RB1RF_1RC1RA_1LD0LA_---0LE_0LF1LE_0RA0LC,,Unknown,,,
+1RB1RF_0RC0LE_1RD0RF_1LB---_1LB1LE_1RA0LC,,Unknown,,,
+1RB---_1RC1LE_1RD0RC_0LB1RF_1LB0LE_1RA0RE,,Unknown,,,
+1RB0LD_0RC---_0RD0RF_1LE0LA_1LF1LE_1RA0RD,,Unknown,,,
+1RB0RD_0RC---_1LD0RC_1RE0LE_1RF1LE_0LD1RA,,Unknown,,,
+1RB1RA_0LC0RA_1LF0LD_1LE0RC_1LB1LD_1RB---,,Unknown,,,
+1RB1RA_1LC0RD_1LD1LB_1LE0LF_0RA---_0LB1RE,,Unknown,,,
+1RB1RE_0RC0RF_1LC1RD_1RA0LE_0RA0LD_0RA---,,Unknown,,,
+1RB0LE_1RC0LF_0LD0RC_1RA1LD_1LB0LE_---0RE,,Unknown,,,
+1RB0RC_0RC1RC_0LD0RA_1LE0LF_0LA1LC_---1LA,,Unknown,,,
+1RB0RA_1LC0RD_0LD0LB_1RA0LE_1LF---_0RA1LB,,Unknown,,,
+1RB0RE_1LC0RA_1LA1LD_0LC1LF_0LB1RB_1RA---,,Unknown,,,
+1RB1RE_1LC0RA_1LD1LB_1LE0LF_1LA0LB_1LB---,,Unknown,,,
+1RB0LE_1LC0RA_1RD0RC_1LA0LD_1LB0LF_1LC---,,Unknown,,,
+1RB1LD_0RC0RB_1LD1LA_0LE---_1LF0LD_1LA0LB,,Unknown,,,
+1RB0RC_1RC1LB_1LD1RA_1LE0LB_---1LF_0LF0LC,,Unknown,,,
+1RB0LE_0RC0RA_1RD1RB_0LA0RB_1LF---_1LD1LF,,Unknown,,,
+1RB1RE_1LC0RD_1LD0LD_1RA0LC_0LB0RF_0RA---,,Unknown,,,
+1RB1LC_1LA0RD_1LA0LA_---1RE_1RB0RF_1RC0RA,,Unknown,,,
+1RB1LE_1RC1RF_0RD0LB_1LD0RA_0LA0LE_0RC---,,Unknown,,,
+1RB0RF_0LC---_1LD1LC_1RE0LA_1RA1RD_0RD1RF,,Unknown,,,
+1RB1RF_1RC1LC_1LD0LE_---1LE_1RF0LB_0RA1RE,,Unknown,,,
+1RB0RF_1RC0RD_1LD1LB_1RE0LC_1RA1RD_1RD---,,Unknown,,,
+1RB0LC_1LA1RD_1LA0LC_0RE---_0RF1RF_0RA0LB,,Unknown,,,
+1RB0RE_1RC0LE_0RD---_0RE0RA_1LF0LB_1LA1LF,,Unknown,,,
+1RB0LD_1RC1RE_1LD0RA_1LA0LA_0LC0RF_0RB---,,Unknown,,,
+1RB1RE_1LC1LE_0RD0LB_1RF1RA_0RC0RE_0RA---,,Unknown,,,
+1RB0LE_0RC0RA_1RD1RF_1LA0LD_1LD0RF_1RB---,,Unknown,,,
+1RB0RD_1RC1RB_1LD0LA_1LE0RA_0LF---_0LA0LC,,Unknown,,,
+1RB0LC_0RC0RF_1RD0LE_1LA1RA_1LC1RB_0RB---,,Unknown,,,
+1RB0RA_0RC1LD_0LD0RE_1LB1LE_1RA0LF_0LC---,,Unknown,,,
+1RB0RF_1RC0LE_1LD0LC_1RE0RD_1LB0RA_1RC---,,Unknown,,,
+1RB0RA_1LC0RA_1RB1LD_0LE---_0LF1LF_0LB0RC,,Unknown,,,
+1RB0LB_1RC1LB_0LA1RD_1RE0RA_0RF---_1LA0RF,,Unknown,,,
+1RB0LC_1LA1RD_1LA1LF_0RE---_1RA1RE_0RB0LA,,Unknown,,,
+1RB0RA_1RC1RF_1LD0LC_1RA1LE_1RA0LC_---0RD,,Unknown,,,
+1RB0LC_1RC1RA_1RD0RF_0LE---_1LA1LE_0RA1LD,,Unknown,,,
+1RB1LB_1LC0LD_---1LD_1RE0LA_0RF1RD_1RA1RE,,Unknown,,,
+1RB1RE_1LC0RA_1LD0LC_0RA1RF_0RD---_1RC1RA,,Unknown,,,
+1RB0LF_0LC0RE_0RA1LD_1LB0LD_0RA1RC_1LA---,,Unknown,,,
+1RB0LF_1RC0RB_1LD0RA_0LE0LC_1LB1LF_1LD---,,Unknown,,,
+1RB0LD_0RC1RA_1RD1RB_1RE1LE_1LF0LA_---1LA,,Unknown,,,
+1RB1LA_1RC0LE_1RD0LF_0LA0RD_1LC0LE_---0RE,,Unknown,,,
+1RB0RE_1LC---_0RA0LD_1LC1LD_1RF0LA_1RC1RE,,Unknown,,,
+1RB0RB_1LC0RA_1LE1LD_0RE0LF_1RA0LB_0LC---,,Unknown,,,
+1RB0RA_1LC0RA_0LF0LD_1LE---_0LC0LB_1LA0RE,,Unknown,,,
+1RB0LF_0LC1LB_0RD1LA_1RE0RA_---1RD_1RC1LF,,Unknown,,,
+1RB1RF_1LC0RB_1RD0LC_1LE1RA_0RC1LB_---1RE,,Unknown,,,
+1RB0LF_0RC0RB_1LC1LD_1RE0RD_---0RA_1LA0LF,,Unknown,,,
+1RB1LB_1LC0RE_0LE0LD_0LC---_1LA0RF_1RE1LC,,Unknown,,,
+1RB1RA_1LC0RE_1LE0LD_0LB1LB_1RA0LF_1LD---,,Unknown,,,
+1RB0RC_1LC1LA_1RD0LB_1RE1RC_1RA0RF_1RC---,,Unknown,,,
+1RB1RE_1RC0RF_0LD---_1LE1LD_1RA0LB_0RE1LC,,Unknown,,,
+1RB---_0RC1RC_1RD0LE_1RE0RB_1LF0RA_1LC1LF,,Unknown,,,
+1RB0LC_1RC0RC_1LD0RB_1LA1LE_0RA0LF_0LD---,,Unknown,,,
+1RB0LE_1RC0LB_1RD0RC_1LA1RC_---1LF_1LB1LD,,Unknown,,,
+1RB0RD_1LC1LB_---1LD_1RA0RE_1RD0LF_1LE0LD,,Unknown,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD1RF_0RD---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_1LF1RB_0LD---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD1RF_0RB---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LA_1LC1RE_0LD0LC_1LE1RF_1RA0RB_0RD---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB---_0RC0RA_0LD0RE_1RE0LE_0RF0LC_1LC1RB,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LA_1LC1RD_1LA0LC_1RA0RE_1RF1RD_0RC---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0RA_0LB0RC_1RD0LF_1LE1RA_---0LF_1LC1LD,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0LB_0RC0LE_1RD0RC_1LB0RE_0LA1RF_0RA---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LD_1RC0RB_1LA1RE_1LC0LA_0RF1RA_---0LC,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0LD_1RC---_1LD1RE_0LA1LD_1RA0RF_1RC0RC,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LF_0RC---_1RD0RE_1RE0RA_1LF1RC_1LD0LF,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_0RF1LC_1RC---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB---_0RC0LD_1LD1RF_0LE0RB_1RB0LB_0RD1RA,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LD_1RC0RB_1RD0RD_1LA0LE_1LD1LF_1RA---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LE_1RC0RB_1LD0RE_0LF0LE_1LA0LC_0LE---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_1LF1RB_0RA---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0RA_1LC0RF_1LF0LD_1LE---_1RA1LB_1LD1RB,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0RD_1LC1RA_1LD0LC_1RE0LA_0RF0RA_0RA---,HALT,Shift-overflow counter,February 2026 (LongAccHaltv1.v),1,mxdys
+1RB0LA_1RC1RA_0LD1LA_1LF1RE_0RD0RE_0LC---,NONHALT,Shift-overflow counter,FAR cert.,1,Andrew Ducharme
+1RB1LD_1RC0RE_1LA1RC_0LC0LA_0RF1RA_---0RB,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LD_1RC0RE_1LA1RC_0LC0LA_0RF0RD_---0RB,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0LC_1LA0RE_1RD0LD_1RB1LC_1RA0RF_0RE---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0LA_1LC0RE_0LC1LD_1LA0LF_0RB0RD_1LE---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LF_0RC0RB_0LD0LA_1RE---_1LA0LC_1LE0LA,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0RE_1LC0RA_1RB1LD_0LB0LF_1RA1RA_0LD---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_0RD---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LE_1RC0LE_1RD0RC_0LA1LD_1LF0LB_1LC---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0RD_1LC1RF_0LD0LC_1RE0RB_1RF---_1RA0RB,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0RC_1LC0RC_1LF1LD_0LE0LC_1RE0RA_0LA---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LD_1RC0RE_1LA1RC_0LC0LA_0RF1RE_---0RB,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LC_1LA1RB_1LD0LA_1RE1LF_1LB0RE_0LB---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0RD_1LC1RF_0LD0LC_1RE0RB_0RB---_1RA1LF,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LB_1LC1LA_1RD0LB_1LF1RE_0RC0RE_---0LD,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB1LA_1RC0RE_1LD1RA_0LE0LD_1RF0RC_0RC---,NONHALT,Shift-overflow counter,February 2026 (LongAccv1.v),1,mxdys
+1RB0LC_1LC0RB_0LD1RB_0RA1LE_0LA1LF_0LA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LB_1LC0RE_1LA0LD_0RB1LF_1RB0RD_0LC---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB---_1LC0RD_1RD0LC_0RE1LC_0LB1RF_0RB1RA,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0RA_1LC0RA_0LE0LD_0LC1LB_0RF1RE_1RA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB1LD_1RC0RB_1LD0RD_1LA0LE_1LD0LF_0LD---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_1RB---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB1RD_0RC1RA_0LD1RF_1LE0RB_1RB0LE_0RD---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0RA_1LC0RC_1LE0LD_1LC0LF_1RA1LC_0LC---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0RE_1LC1RA_1LD0LC_1RA0LA_1RA0RF_0RA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB1LD_0RC---_1RD0RB_1RE0LF_1LF1LD_0LD0LA,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB---_1RC0LE_0LD0RA_0RB1LD_1LF0RE_1RC0LC,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LB_1RC0RE_1LD1RB_1LA0LD_1RB0RF_0RB---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LA_1RC1RA_0RD0RB_1LE0RF_0LE1LA_1RE---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LC_1RC0RA_0LD0RA_0RB1LE_0RE0LF_1LA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LA_1RC1RA_0RD0RB_1LE0RF_0LE1LA_0LA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB1LC_1LA1RD_1LA0LA_0LF0RE_0RD1RB_---1RA,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0RE_1LC0RC_1RA0LD_1LC0LE_0LC1RF_0RA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB---_1RC0RB_1LD0RB_0LF0LE_0LD1LC_0RA1RF,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LE_1RC0RA_1RD0RF_1LA0RC_1LB1LA_0LA---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LB_0RC0LD_1LD1RE_0LA0RF_0RD0RA_0RC---,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB0LE_0RC0RF_0LD1LC_1LE---_1LA0LE_0RB1RA,NONHALT,Shift-overflow counter,February 2026 (LongLoopv2.v),1,mxdys
+1RB---_1RC1LB_1LD1RF_1LE0LD_0LF0RF_1RA0RC,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LE_1RC0RB_1LD0LE_1LA1RD_1LF0LA_1LC---,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RD_1RC0RF_1RD1LC_1LE1RA_1LB0LE_---0RD,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RF_1LC0LE_1LD1RC_1RA1LE_1LB0LD_---0RA,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB---_1RC0RF_1RD1LC_1LE1RF_1LB0LE_1RA0RD,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RA_1LC0LE_1LD1RC_1RA1LE_1LF0LD_1LB---,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RE_1RC---_1RD0RA_1RE1LD_1LF1RA_1LC0LF,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RD_1RC---_1RD1LC_1LE1RA_1LF0LE_0LA0RA,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RA_1LC0LF_1LD1RC_1RA1LE_1LB0LD_---0LD,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LA_1LC1RE_1LD0LC_1RA0RF_1RD0RB_---0RB,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LE_1RC0RB_1LD0LE_1LA1RD_1LF0LA_1LD---,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LE_1RC0RF_1LD0LE_1LA1RD_1LC0LA_---0RB,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LE_1RC0RB_1LD0LF_1LA1RD_1LC0LA_---0LA,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RD_1RC---_1RD1LC_1LE1RA_1LF0LE_1RC0RA,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RA_1LC0LE_1LD1RC_1RA1LE_1LF0LD_1LC---,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0LD_1LC1RB_1RF1LD_1LE0LC_1LB---_1RA0RF,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB1LA_1LC1RE_1LD0LC_1RA0RE_1RF0RB_1RA---,NONHALT,Shift-overflow counter,February 2026 (SOCSSv2.v),1,mxdys
+1RB0RD_1LC1RA_0LF1LD_0RE1LC_---0RD_1RA1LF,NONHALT,Shift-overflow counter,February 2026 (SOMDCv4.v),1,mxdys
+1RB1LD_0RC1RE_1LD1RC_1LA0LF_---1RB_0LD1RB,NONHALT,Shift-overflow counter,February 2026 (SOMDCv4.v),1,mxdys
+1RB1LD_0RC1RB_1LD1RC_1LA0LE_0LF1RB_---0LE,NONHALT,Shift-overflow counter,February 2026 (SOMDCv4.v),1,mxdys
+1RB1LD_1RC0RF_1LA0RA_1RC1LE_1LD0LA_---1RE,NONHALT,Shift-overflow counter,"Incomplete analysis by nerdyjoe; solution (SOCSSv3.v) March 2026, by mxdys","1, 2","nerdyjoe, mxdys"
+1RB1RA_0RC0RF_1RD1LE_0LC---_1LF0LC_0RA0LC,NONHALT,Shift-overflow counter,Individual proof (January 2026 Round 2),1,mxdys
+1RB1RE_0RC0RA_1LD0RF_0LD1LE_1RA0LE_1RD---,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RE_1LC0RA_0LD1LB_1LA1LF_0RB1LE_0LC---,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RE_1LC1RC_1LD0LC_1RA0LA_0RF---_0RE1RB,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RF_1LC1LE_1RD0LB_0RA1RC_0LC1RC_0RD---,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RF_0RC0RA_1LD0RD_0LE---_1RA1LF_1RA0LF,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB---_0LB1LC_1RD0LC_1RE1RC_0RF0RD_1LB0RA,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1LD_1RC0RB_1LA1RE_0LA0LC_0RF0RA_---1RA,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RE_1LC0RA_0LD1LB_1LA1LF_0RB1LB_0LC---,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB1RF_1LC1LE_1RD0LB_0RA1RC_0LC1RE_0RD---,NONHALT,Shift-overflow counter,Individual proof (January 2026),1,mxdys
+1RB0LD_0RC0RD_0RD---_1RE0RA_1LF1RD_1LA0LF,NONHALT,Shift-overflow counter,LongLoopv2.v (March 2026),1,mxdys
+1RB0RA_1LC0RD_0LF0LD_1LE0LB_1RA1LD_0LD---,NONHALT,Shift-overflow counter,LongLoopv2.v (March 2026),1,mxdys
+1RB0RE_1RC0LD_1LD1RA_1LB1LD_0RF1RC_---1RE,NONHALT,Shift-overflow counter,LongLoopv2.v (March 2026),1,mxdys
+1RB0LD_0RC---_1LD0RF_0LE0LE_0RA1LF_0LA1LB,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC0LE_1RD0RC_1LB0RE_0LA1RF_0LD---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LD_0RC---_1LD0RF_0LE0RF_1RC1LF_0LA1LB,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LC_1LC0RB_0LD1RB_0RA1LE_0LA1LF_1LC---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB---_1LC0RC_0RE0LD_0RE1LB_0LB1RF_1RB0RA,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC0LE_1RD0RF_1LB0RE_0LA1RB_0LB---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LC_1LA1RD_0LB0RF_1RE0RC_0LD0RA_1RE---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC0LE_1RD0RF_1LB0RE_0LA0RE_0LB---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC1RF_1LD1RE_0LA0RB_0RD0LA_1LA---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB---_0LC0RF_1RB0RD_0LE0RA_1LF1RC_1RE0LD,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LC_1LC0RB_0LD1RB_0RA1LE_0LA1LF_0LC---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC0RF_1LD1RE_0LA0RB_0RD0LA_1LC---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB0LB_0RC0LE_1RD0RF_1LB0RE_0LA1RB_1RE---,NONHALT,Shift-overflow counter,LongLoopv3.v (March 2026),1,mxdys
+1RB1LE_0RC0RB_1LD1RF_0LE---_1LA0LD_0RA0LB,NONHALT,Shift-overflow counter,SOCSSv2.v (March 2026),1,mxdys
+1RB1RE_1LC0RA_0RF0LD_1LE1LC_1RA0RC_---0RB,NONHALT,Shift-overflow counter,SOCSSv4.v (March 2026),1,mxdys
+1RB1LC_0RC0RB_1LD0LA_1LE---_1LF1RA_1LA1LC,NONHALT,Shift-overflow counter,SOCSSv5.v (March 2026),1,mxdys
+1RB0RF_1LC0RC_1RA1LD_1RB1LE_1LD0LC_---1RE,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB0RC_1LA0RF_---1RD_1LE0LF_1RB1LD_1RA1LE,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB1LE_0RC---_1RD0RA_0LA0LC_1RF0LE_1RD1RE,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB0LA_1RC1RA_0LD0LE_1RF1LA_1RC0RD_0RE---,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB1RD_0LC0LE_1RF1LD_1RA0LD_1RB0RC_0RE---,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB0RD_1LC1RA_1RE0LD_1LE1RB_1LC0LF_---1LA,NONHALT,Shift-overflow counter,SOMDCv3.v (March 2026),1,mxdys
+1RB0RF_1LC0LA_1LD0LB_0RE1RF_---1RF_1LB1RD,NONHALT,Shift-overflow counter,SOMDCv5.v (March 2026),1,mxdys
+1RB1LD_1RC1RF_1RD0RB_0LE1LA_---1LA_1LF1RC,NONHALT,Shift-overflow counter,SOMDCv5.v (March 2026),1,mxdys
+1RB1LD_1RC0LD_1LD1RE_0LA1LD_0RB0RF_---0RC,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1LE_0RC1RB_1LD1RB_1LA0RB_0LD0LF_---0LA,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1LD_1RC0LD_1RD1RE_0LA1LD_0RB0RF_---0RC,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1RE_0LC1LB_1RD1LB_1RA0LB_0RD0RF_---0RA,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1LE_0RC0LC_1LD0RE_0LA0RB_1LF0RD_0LB---,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1LE_0RC0LF_1LD0RE_0LA0RB_1LF0RD_0LB---,NONHALT,Shift-overflow counter,SOMDCv6.v (March 2026),1,mxdys
+1RB1RC_0LA0RE_1LD---_1RF0LE_0RF0LC_0LC0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_0RB---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LD_1RC0RB_0RD0RB_0LE0LF_1LA0LC_1LE---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LB_0LC0RE_0RE0LD_1LA1LB_1RF---_1LC0RB,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LB_0LC0RE_0RE0LD_1LA1RF_1RF---_1LC0RB,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1LC0RD_1RF0LD_0RE0LD_0LB1RF_0LF0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_0RE---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LC_0RC0RE_0LD0LF_1LA0LB_1RB0RA_1LD---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE1LF_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1RC0RD_1LD1RF_0LF0LE_1LD0LC_0RB0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_1LE---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_1RB---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_1RD---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1LC0RC_0RF0LD_1LE0LB_1RF0LD_0LD0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_1RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_0RB---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1RC0RD_1LD1RF_0LF0LE_1LD0LE_0RB0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RA_0RC0RA_0LD0LF_1LE0LB_1RA1LC_1LD---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1RC0LF_1LD0RF_0RB0LE_1LB1LA_0LD0RB,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LC_1LA1RE_0RD1LB_0LB---_1RF0RE_1RC0RA,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_0RD---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE1LF_0LB0RA_0RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_1LA---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LD_0LB0RA_1RC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RF_1LC0RD_1RE0LD_0RE0LB_0LB0RA_0LC---,EQUIVALENCE,Shift-overflow counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RC_1RC1LD_0RD0RA_1LE0LF_1LB---_1RC1LB,,Shift-overflow counter,Code and notes,1,12AbBa
+1RB---_1RC---_1RD1LC_1LE1RF_1LC0LE_1RA0RD,,Shift-overflow counter,One of 3 holdouts with 2 undefined transitions,,
+1RB1LD_1RC0RB_1LA1RC_1LE0LA_1LF---_1LC---,,Shift-overflow counter,One of 3 holdouts with 2 undefined transitions,,
+1RB0LA_1RC---_1RD1LC_1LC1RE_1LA1RF_0RB0RD,,Shift-overflow counter,One of the machines with the least common transitions,,
+1RB0LE_1RC1LA_1LD1RE_1LB0LD_1RF0RC_1RB---,,Shift-overflow counter,Similar to Skelet 34,,
+1RB---_1LC0RF_0RA0LD_1LE1LF_1RF0LF_0LC0RA,,Shift-overflow counter,,,
+1RB1RF_1RC---_1RD1LC_1LE1RF_1LC0LE_1RA0RA,,Shift-overflow counter,,,
+1RB1LD_1RC0RE_1LA1RC_0LC0LA_0RF0RC_---0RB,,Shift-overflow counter,,,
+1RB0RA_1LC0RC_1LE0LD_1LC1LF_1RA1LC_1LC---,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_1RB0LB_0RB---,,Shift-overflow counter,,,
+1RB1RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_1LB---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_0LA---,,Shift-overflow counter,,,
+1RB0LD_0RC---_1LD0RF_0LE0RA_0RA1LF_0LA1LB,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1RC_1LE0LA_0LF1LC_1RD---,,Shift-overflow counter,,,
+1RB0LA_0RC---_1RD0LE_0LC0RE_1RF0RB_1LA1RD,,Shift-overflow counter,,,
+1RB0RC_1LC1RE_0LE0LD_1LC0LB_0RA0RF_1RA---,,Shift-overflow counter,,,
+1RB0RE_0RC0RF_1LD1RA_1RE0LD_0LB1RC_1LE---,,Shift-overflow counter,,,
+1RB1LE_1LC0LF_1LA1RD_1LB0RD_0LC0LA_---1RA,,Shift-overflow counter,,,
+1RB0RF_1LC1RA_1LD0LC_0LE0LA_1RF---_1RA1RE,,Shift-overflow counter,,,
+1RB---_1LC1LB_1LD1RC_1RF1LE_1LA0LD_1RC0RF,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC1RF_0LB---,,Shift-overflow counter,,,
+1RB0RA_1LC1RF_0LD0LC_1RE0RB_1RF---_1RA1RD,,Shift-overflow counter,,,
+1RB1LF_0RC0RB_0LD0LA_1RE---_1LA1LC_1LE1RE,,Shift-overflow counter,,,
+1RB1LC_1LA0RE_1LD0LC_1LE0LB_0LF1RA_0RA---,,Shift-overflow counter,,,
+1RB0RA_1RC0RD_1LD1LE_1LF0LC_0LD---_1RA1LD,,Shift-overflow counter,,,
+1RB1RA_1LC1LE_1RA1LD_0LB0LC_1LF0RE_1LB---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_0LC---,,Shift-overflow counter,,,
+1RB0LE_1LC1RD_1LA0LC_1RA1RE_0RF0RB_1LC---,,Shift-overflow counter,,,
+1RB1LD_1LC0RD_0LA0RB_0LE1LF_1RF0LC_0RB---,,Shift-overflow counter,,,
+1RB0RC_0LA0LC_1LD0RB_1LE---_1RF0LB_1RA0RF,,Shift-overflow counter,,,
+1RB1LA_1LC1RE_0RD0LC_1LE1RF_1RA0RB_0RD---,,Shift-overflow counter,,,
+1RB0RC_1RC1LB_1LD1RE_1LB0LD_0RF1RA_1RD---,,Shift-overflow counter,,,
+1RB0RE_1RC---_1RD1RD_1RE1LD_1LF1RA_1LC0LF,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1RC_1RE0LA_1LF1LE_1LC---,,Shift-overflow counter,,,
+1RB1LE_1RC0RB_1RD1LF_1LA0LC_1LD0LA_---0RE,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_0RF1LC_0RB---,,Shift-overflow counter,,,
+1RB0LD_1RC0RB_1LA0RD_1LA0RE_1RF---_0LC0LF,,Shift-overflow counter,,,
+1RB0RA_1RC0RD_0LB0LD_1LE0RC_1LF---_1RA0LC,,Shift-overflow counter,,,
+1RB1LB_1LC1RB_1RF1LD_0LE0LC_0RC---_1LA0RF,,Shift-overflow counter,,,
+1RB0RD_1RC---_1LD1LE_1LE0LC_1RF1LD_1RA0RF,,Shift-overflow counter,,,
+1RB1RE_1LC1RD_1LA1LC_0RA0RB_1RF0LE_1RA---,,Shift-overflow counter,,,
+1RB0LA_0RC1RF_0LD1RE_1LA0RB_0RD---_1RA1RD,,Shift-overflow counter,,,
+1RB0LD_0LC0RE_1LA0RD_0RB1LF_1RC0RF_0RA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_0LF1RB_0RB---,,Shift-overflow counter,,,
+1RB---_1LC0RF_0RA0LD_1LE1LA_1RF0LF_0LC0RA,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_0RA0LB_0RB---,,Shift-overflow counter,,,
+1RB1RE_1LC1RD_1LA0LC_1RA0RB_1RF0LD_0RD---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RF_0RD1RB_0RC---,,Shift-overflow counter,,,
+1RB0RD_1LC1RE_0LD1LC_1RA0LA_1RF0RC_---1RA,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_0RC---,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1LA0LA_1RA1RF_0RA---,,Shift-overflow counter,,,
+1RB1RF_1LC0RD_1RE0LD_0RE0LF_0LB0RA_0LC---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LD0RD_1LA0LE_1LD1LF_1LA---,,Shift-overflow counter,,,
+1RB1RF_1LC0RE_1LE1LD_1RE0LC_1RA1RA_1RD---,,Shift-overflow counter,,,
+1RB0RF_1RC0RB_1LD1RA_1LE0LD_1RB0LA_0LD---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RF_1RB0RD_0RB---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LD0RD_1LA0LE_1LD0LF_1RD---,,Shift-overflow counter,,,
+1RB---_1RC0LC_0RD0LE_1LE1RF_0LB0RC_0RE0RA,,Shift-overflow counter,,,
+1RB0RC_1RC1LB_1LD1RA_0LE0LD_1LA1RF_0RE---,,Shift-overflow counter,,,
+1RB0RF_1RC0RA_1LD1RB_1LE0LD_1LB0LB_0RB---,,Shift-overflow counter,,,
+1RB1LF_1LC0LD_1LD1RC_1RE1LB_0RA0RE_0LA---,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_1LA---,,Shift-overflow counter,,,
+1RB1LA_1LC1RE_1RA0LD_0LE0LD_1RF0RB_1RC---,,Shift-overflow counter,,,
+1RB---_1RC0RB_1LD1RC_0LF1LE_1LC0LD_0RA1LA,,Shift-overflow counter,,,
+1RB0LB_0RC0LE_1RD0RF_1LB1RB_0LA0RE_1RE---,,Shift-overflow counter,,,
+1RB1RF_1RC0RF_0RD0LC_1LE1RA_1LC---_1RB0RE,,Shift-overflow counter,,,
+1RB0LF_0LC---_0LA0RD_1RE0LC_1LA0RC_1LD0LB,,Shift-overflow counter,,,
+1RB---_1LC1RE_1LD0LC_1RB0RF_1RD0RB_1RA1LC,,Shift-overflow counter,,,
+1RB0RE_1LC0LE_1LD0LC_1RA0LA_1RA1RF_1RA---,,Shift-overflow counter,,,
+1RB---_1LC0LB_1RE0RD_0RA1LB_1LB1RF_1RC0RE,,Shift-overflow counter,,,
+1RB0LE_0LC0RA_1LE0RD_0RB---_0LF0LD_1LA0LF,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1LA0LA_1RA0RF_0RA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LD0RD_1LA0LE_1LD1LF_0LD---,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_0LC---,,Shift-overflow counter,,,
+1RB0LE_0LC0RB_1RD1LD_1RA1LF_0LB1LE_---1LB,,Shift-overflow counter,,,
+1RB0RB_1LC0LE_1RD1LB_1RA0RD_1LB1LF_0LA---,,Shift-overflow counter,,,
+1RB0RF_1LC1LF_1RD1LC_---1RE_0RC1RF_1RA0LB,,Shift-overflow counter,,,
+1RB0RE_0LC0RB_1RA1LD_1LE1RE_1LB0LF_---1LC,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_0LA---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD1RF_1RA---,,Shift-overflow counter,,,
+1RB---_1RC0LF_1RD1RD_1RE1RA_1LF0RC_1LC1LB,,Shift-overflow counter,,,
+1RB0RB_1LC0LE_1RD1LB_1RA0RD_1LB1LF_1LE---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA0LF_0LC0RA_0RE---,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_1RB0LB_1RA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_0LF1RB_0LA---,,Shift-overflow counter,,,
+1RB0LA_1RC---_1RD1RA_1LE1RF_1LC1LE_0RC0RD,,Shift-overflow counter,,,
+1RB0RF_1LC1RE_1LD0LC_0LE0RE_1RA1LD_1RB---,,Shift-overflow counter,,,
+1RB0RC_1RC0RA_1LD1RA_0LE0LD_1RF0RC_1RE---,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1LC_1RA---,,Shift-overflow counter,,,
+1RB0RE_1RC0RB_0RD0RF_0LE---_1LF1LE_1LA0LE,,Shift-overflow counter,,,
+1RB1LC_0RC0RB_1LD0LA_1LE---_1LF0LA_1LA0LB,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_0RD0RD_1LE0LF_1LA0LE_0RB---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_0LF1RB_1LD---,,Shift-overflow counter,,,
+1RB0RB_1LC0LE_1RD1LB_1RA0RD_1LB1LF_0LB---,,Shift-overflow counter,,,
+1RB1LE_1RC1LD_1RD0LF_0LA0RD_---1LB_0LD1LF,,Shift-overflow counter,,,
+1RB0LB_0RC0LE_1RD---_1LB0RE_0RF0LA_1LA0RC,,Shift-overflow counter,,,
+1RB1LE_1RC0RB_1LD0RE_1LA0LD_1LD0LF_0RB---,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RB0RF_0RB---,,Shift-overflow counter,,,
+1RB---_1RC0LC_0RD0LE_1LE1RF_0LB0RC_0RE1RA,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_1LF1RB_1LB---,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_1RB0LB_1RE---,,Shift-overflow counter,,,
+1RB0LD_0LC0RE_1LA0RD_0RB0LF_1RC1LA_0RB---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA0LF_0LC0RE_0LB---,,Shift-overflow counter,,,
+1RB---_0RC1LF_0RD1RB_1LE1RC_0LB0LE_0LE0LA,,Shift-overflow counter,,,
+1RB1LC_1LA1RE_0RD0LA_---1LB_1LD0RF_0RE1RB,,Shift-overflow counter,,,
+1RB1LF_0RC0RB_0LD1RB_1LE0LB_0LA1LC_0LB---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_1RD---,,Shift-overflow counter,,,
+1RB1LC_0RC0RB_1LD0LA_1LE---_1LF1RA_1LA1LA,,Shift-overflow counter,,,
+1RB1RE_0LC1RD_1LD0LD_1RA1LC_1RF0RA_---0RA,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF0RB_1RA---,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1LA_1RA---,,Shift-overflow counter,,,
+1RB0LB_0RC0LE_1RD0RF_1LB1RB_0LA1RB_1RE---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_1LA---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RA_0LE---,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1LA0LA_1RA1RF_0RD---,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_1LE---,,Shift-overflow counter,,,
+1RB1RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_1RA---,,Shift-overflow counter,,,
+1RB1LE_0RC0RB_1RD1RF_1LA0LE_0LD0LB_---0RD,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1RC_1LF1LE_0RC0LA_1LC---,,Shift-overflow counter,,,
+1RB0RA_0RC0LE_1LC0LD_1RA1LF_---1LD_1LD1LB,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RA_0LB---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_0RA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_0LF1RB_1LC---,,Shift-overflow counter,,,
+1RB0RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_0LC---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_1RA---,,Shift-overflow counter,,,
+1RB0LC_1LC0LD_1LE1LA_---1RA_1RF1LB_1RD0RF,,Shift-overflow counter,,,
+1RB0RA_1LC0RE_1LD0LC_1RA1LE_1LC0LF_0RA---,,Shift-overflow counter,,,
+1RB0RA_1LC1RE_1RD0LC_0LE0RF_1RA1LD_---1RD,,Shift-overflow counter,,,
+1RB0RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_1RC---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_1LF0RD_0LB---,,Shift-overflow counter,,,
+1RB1RE_1RC1LB_1RD1RA_1LB---_1LF0RC_1RD0LF,,Shift-overflow counter,,,
+1RB1LA_1LB1RC_0RD0RB_1LE0RF_0LE1LA_0RC---,,Shift-overflow counter,,,
+1RB1LC_1RC0LF_0LD0RC_1RA1LE_---1LA_0LC1LF,,Shift-overflow counter,,,
+1RB0RF_1LC0LF_1LD0LC_0LE0LA_1LF---_1RA1RF,,Shift-overflow counter,,,
+1RB1RE_1LC1RD_1LA0LC_1RA0RB_1RF0LD_1LD---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LF0LA_0LD1RB_1LC---,,Shift-overflow counter,,,
+1RB0LC_1LC0RB_0LE1LD_1LB1LA_0RA1LF_0LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_0RA---,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_1RC---,,Shift-overflow counter,,,
+1RB---_1RC1LF_1LD1RE_1LB0LD_1RA0RC_1RC0LE,,Shift-overflow counter,,,
+1RB1LA_1LC1RE_0RD0LC_1LE1RF_1RA0RB_1RD---,,Shift-overflow counter,,,
+1RB1RA_1RC0RA_1LD0LA_1LE0LD_1LF0LB_1RE---,,Shift-overflow counter,,,
+1RB1LF_1RC0RB_1RD0RF_1RE---_1LF1LE_1LA0LE,,Shift-overflow counter,,,
+1RB---_1LC0LB_1RF1RD_1RA0LE_1RC0RF_1LB1RE,,Shift-overflow counter,,,
+1RB---_1RC0RF_1LD1RB_1LE0LD_1RB0LB_1RB1RA,,Shift-overflow counter,,,
+1RB---_1LC1RF_0LE0RD_0RB0LC_1RD0LD_0RC0RA,,Shift-overflow counter,,,
+1RB0LF_1LC1RC_0RA0LD_0LE1RE_0RF0LC_1RC---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RF_0RD1RF_0RC---,,Shift-overflow counter,,,
+1RB0RC_1LC1LF_1LD0LB_1RE1LC_1RA0RE_0LC---,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1RA0LA_1RA1RF_0LB---,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1RA0LA_1RA1RF_1RE---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LD1RC_1LF1LE_0LB0LD_1LA---,,Shift-overflow counter,,,
+1RB1LF_1LC0LD_1LD1RC_1RE1LB_0LA0RE_1LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1RC_1LE0LE_1LF1LD_1LC---,,Shift-overflow counter,,,
+1RB1RB_1RC1LB_1LD1RE_1LA0LD_1RF0RC_1RA---,,Shift-overflow counter,,,
+1RB1RA_1RC---_1RD1LC_1LE1RF_1LC0LE_1LA0RD,,Shift-overflow counter,,,
+1RB0RA_0RC0RE_0LD---_1LE1LD_1LF0LD_1RA0RD,,Shift-overflow counter,,,
+1RB0LB_0RC---_1RD0RC_1LE1RD_0LA1LF_1LD0LE,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_1LB0LB_0RB---,,Shift-overflow counter,,,
+1RB0LC_0LC---_1LA0RD_1LE1RD_1LF1RC_1RD0LA,,Shift-overflow counter,,,
+1RB0RA_1LC0RC_1LE0LD_1LC1LF_1RA1LC_1LB---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_0LA---,,Shift-overflow counter,,,
+1RB0RF_1RC1LB_1LD1RE_1LB0LD_1RF0RC_1RA---,,Shift-overflow counter,,,
+1RB1LC_1LA0LF_1LD0LA_1RE0LB_1LB0RE_---1RA,,Shift-overflow counter,,,
+1RB1LE_0RC0RB_1LD0LA_1LC---_1LF0LA_1LA0LE,,Shift-overflow counter,,,
+1RB1LD_1LC0RE_1LA1RC_0LC0LA_0RF0RC_---0RB,,Shift-overflow counter,,,
+1RB1RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_1RE---,,Shift-overflow counter,,,
+1RB0RE_1LC0RA_0RA0LD_1LE---_1RF0LF_0LC0RA,,Shift-overflow counter,,,
+1RB---_1RC1RF_1LD1RE_1LB1LD_0RB0RC_1RA0LF,,Shift-overflow counter,,,
+1RB1RF_1RC0RA_1LD1RB_1LE0LD_1LA0LB_0RB---,,Shift-overflow counter,,,
+1RB---_1LC1LB_1LD0LB_1RE1LC_1RF0RE_1RA0RC,,Shift-overflow counter,,,
+1RB1RE_1RC0LA_0RD0RC_1LE0LB_1LF---_1RC1LD,,Shift-overflow counter,,,
+1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RA_1LB---,,Shift-overflow counter,,,
+1RB1LA_1LA1RC_1RD0RB_1LE1LD_---1LF_1RA0LF,,Shift-overflow counter,,,
+1RB0RA_1LC0RC_1LE0LD_1LC1LF_1RA1LC_1LD---,,Shift-overflow counter,,,
+1RB0RF_1LC1RA_1LD0LC_1LE0LA_1LF---_1RA1RB,,Shift-overflow counter,,,
+1RB1LD_0RC0RB_0LD1RE_0LA1LC_0RB0RF_1LC---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_1RC---,,Shift-overflow counter,,,
+1RB0RA_1RC0RE_1RD---_1LE1LD_1LF0LD_1RA1LE,,Shift-overflow counter,,,
+1RB0RA_1LC1RB_1LF1LD_1RE0LC_---1RD_1RA1LC,,Shift-overflow counter,,,
+1RB1LB_1RC1LE_1RD0LF_0LA0RD_---1LD_0LD1LF,,Shift-overflow counter,,,
+1RB0LB_0RC0LF_1LD1RE_0LA0RB_0RD0RF_0LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0RE_1LC1LE_1LF0LA_0RE---,,Shift-overflow counter,,,
+1RB---_1LC0LF_1RD1LB_1RE0RD_1LB0RB_1LB0LA,,Shift-overflow counter,,,
+1RB1RF_0LC1LF_---1LD_1LE0LD_1RA0RC_1RE0RA,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_0RE0LA_1RA1RF_0RA---,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RB0RF_1RC---,,Shift-overflow counter,,,
+1RB0RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_0RB---,,Shift-overflow counter,,,
+1RB---_1LC1LD_1LD0LB_1RE1LC_1RF0RE_1RA0RC,,Shift-overflow counter,,,
+1RB1LE_0RC1RA_0LD0RB_1LA1LF_0LC1RF_---0LA,,Shift-overflow counter,,,
+1RB1LF_1LC1RB_1RE1LD_1LB0LC_1LA0RE_1LD---,,Shift-overflow counter,,,
+1RB---_1LC1LB_1LD0LB_1RE1LC_1RF0RE_0RA0RC,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1RA0LA_1RA1RF_1RD---,,Shift-overflow counter,,,
+1RB1RA_1RC0RA_1LD1RB_1LE0LD_1LF0LB_1LA---,,Shift-overflow counter,,,
+1RB0RD_1RC---_1LD1LC_1LE0LC_1RF0RC_1RA0RF,,Shift-overflow counter,,,
+1RB0LA_1RC0RD_1LB1RE_---1LC_1RF0RC_1LA0RB,,Shift-overflow counter,,,
+1RB0LD_0LC0RE_1LA0RD_0RB0LD_1RC1RF_1RA---,,Shift-overflow counter,,,
+1RB0LC_1LC1RD_1LA1LC_1LF0RE_0RF1RB_---1RE,,Shift-overflow counter,,,
+1RB0RE_1LC0RA_1RE1LD_0LB0LF_1RA1RA_0LD---,,Shift-overflow counter,,,
+1RB0LB_0RC1RF_1LD1RE_0LA0RB_0RD0LD_0LE---,,Shift-overflow counter,,,
+1RB---_1RC1RA_1RD0RB_1LE1RC_1LF0LE_1RC0LC,,Shift-overflow counter,,,
+1RB1LC_1LA1RB_1LD0LA_1RE1RD_---1RF_1LB0RF,,Shift-overflow counter,,,
+1RB0RD_1LC1RE_1LD0LC_0LE0LC_0RA0RF_1RA---,,Shift-overflow counter,,,
+1RB0LD_1LC1RE_1LF0RA_1LA1LD_1RC0RE_---1LC,,Shift-overflow counter,,,
+1RB1RC_1RC0RA_1LD1RB_1LE0LD_1LF0LB_1LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_1LF0RD_0LA---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RF_0RD0LC_0RC---,,Shift-overflow counter,,,
+1RB---_0LC0RB_1RA1LD_1LE1LF_1LB0LF_0RC0LA,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_1LF1RB_1LD---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_0RC---,,Shift-overflow counter,,,
+1RB0RF_1LC1RA_1LD0LC_0LE0LA_0RF---_1RA1RF,,Shift-overflow counter,,,
+1RB0RA_1RC0RC_1LD0LE_1RA1LC_1LC0LF_0LC---,,Shift-overflow counter,,,
+1RB---_0LC0RB_1RA1LD_0RD1LE_1LF0LA_1LB0LE,,Shift-overflow counter,,,
+1RB0RA_1RC0RC_1LD0LE_1RA1LC_1LC1LF_0LC---,,Shift-overflow counter,,,
+1RB0RE_1LC1RA_1LD0LC_1RA0LA_1RA1RF_0RA---,,Shift-overflow counter,,,
+1RB0RA_0LC0RE_1LE1LD_0LE---_1LF0LC_1RA1LE,,Shift-overflow counter,,,
+1RB---_1LC0LE_0LA1LD_1LE1RD_1RF1LB_1RD0RF,,Shift-overflow counter,,,
+1RB---_1LC1RE_0LD0LC_1RD0RB_1RF0RB_0LF1RA,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD1RF_1LA---,,Shift-overflow counter,,,
+1RB0LC_1RC0RA_1LD1LA_1RE1LD_---1RF_0RD1RA,,Shift-overflow counter,,,
+1RB0RC_1LC1LD_1RD0LB_0LF1RE_1RA0RE_---1RB,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LD1RC_1LF1LE_0LA0LD_1LA---,,Shift-overflow counter,,,
+1RB---_1RC0LE_1RD1LC_1LB1RF_1LC0LE_1RA0RD,,Shift-overflow counter,,,
+1RB0LC_0RC---_1RD0RE_1RE1RA_1LF1RC_1LD0LF,,Shift-overflow counter,,,
+1RB1RE_1LC1RD_1LA0LC_1RA0RB_1RF0LD_1RC---,,Shift-overflow counter,,,
+1RB0RA_1LC0RC_1LE0LD_1LC1LF_1RA1LC_0LC---,,Shift-overflow counter,,,
+1RB0RA_0RC0RE_1LD---_1LE1LD_1RF0LD_1LB1RA,,Shift-overflow counter,,,
+1RB1LC_1LA1RB_1RD1LF_1LE0RD_1LB---_0LE0LA,,Shift-overflow counter,,,
+1RB0RA_1LC1RB_1LF1LD_0LE0LC_1RA1LC_1LE---,,Shift-overflow counter,,,
+1RB---_1RC0LE_0LD0RF_1LB0RE_0RC0LE_1RD1RA,,Shift-overflow counter,,,
+1RB---_1RC0RD_1RD1RA_1LE1RB_0LF0LE_1RF0RD,,Shift-overflow counter,,,
+1RB0LD_0LC0RE_1LA0RD_0RB0LC_1RC1RF_0LD---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_1LF0RD_0LD---,,Shift-overflow counter,,,
+1RB0RF_1LC1RA_1LD0LC_1LE0LA_1LF---_1RA1RF,,Shift-overflow counter,,,
+1RB---_1RC0LC_1RD0RF_1LE1RC_1LB0LE_1RC1RA,,Shift-overflow counter,,,
+1RB1LE_0LC0RB_1RE1LD_1LC---_1LF0LA_1LA1RF,,Shift-overflow counter,,,
+1RB---_1RC1LB_1LB1RD_1LF1RE_0RA0RC_1RA0LF,,Shift-overflow counter,,,
+1RB0LD_0LC0RE_1LA0RD_0RB0LC_1RC0RF_0LE---,,Shift-overflow counter,,,
+1RB---_1LC1RE_0LE0LD_1LB0LC_1RA0RF_1LC1RB,,Shift-overflow counter,,,
+1RB0RC_1LC0RE_0LD0LB_1RA1LE_1LB1RF_---0RD,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_1LF0RD_1RE---,,Shift-overflow counter,,,
+1RB1LC_1LA1RD_1LA0LA_1LD0RE_0RF1RB_---0RC,,Shift-overflow counter,,,
+1RB0RA_1LC1RE_1LD0LC_1RA0LE_1RA0RF_0LC---,,Shift-overflow counter,,,
+1RB1RD_1LC0RD_1RE0LD_0RE0LF_0LB0RA_0LC---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_1RA---,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF0LE_1RA---,,Shift-overflow counter,,,
+1RB1RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_1RC---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_1LF1RB_0LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1RE_1LF0LA_1LA0RD_1LC---,,Shift-overflow counter,,,
+1RB1RE_1LC0LF_1LD0LC_1RA0RB_1RD---_0RA1RE,,Shift-overflow counter,,,
+1RB0RB_1LC0LE_1RD1LB_1RA0RD_1LB0LF_0LB---,,Shift-overflow counter,,,
+1RB0LB_0RC0LD_1LD1RE_0LA0RB_0RD0RF_0LB---,,Shift-overflow counter,,,
+1RB1RE_1LC1RD_1LA0LC_1RA0RB_0RF0LD_0RB---,,Shift-overflow counter,,,
+1RB1LE_1RC0RD_1LD0RE_0LA0LC_1LC1RF_---0RA,,Shift-overflow counter,,,
+1RB1RC_1LC1RE_---1LD_0LE0LD_1RA0RF_1LD1RB,,Shift-overflow counter,,,
+1RB1LF_1LC0LD_1LD1RC_1RE1LB_0LA0RE_0LA---,,Shift-overflow counter,,,
+1RB1LE_1RC0RB_1LD1RC_1LA1LE_1LF0LA_1LC---,,Shift-overflow counter,,,
+1RB0RF_1LC0RD_1RD0LC_1LE---_1RF1LE_1LB1RA,,Shift-overflow counter,,,
+1RB1RF_1RC0RF_0RD0LC_1LE1RA_1LC---_0LD0RE,,Shift-overflow counter,,,
+1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1RC_1RA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_0LF0RD_0LD---,,Shift-overflow counter,,,
+1RB1LA_1LC1RE_1LD0LC_1RA1RA_1RF0RB_1RD---,,Shift-overflow counter,,,
+1RB1LD_1LC0RF_1LA1RC_1LE0LA_1LB---_1RC0RF,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_1LE---,,Shift-overflow counter,,,
+1RB---_1LC1RA_1RE0RD_1LF1RC_1RD1LE_0RB0LF,,Shift-overflow counter,,,
+1RB1LF_1RC0RB_1RD0RF_1RE---_1LF1LA_1LA0LE,,Shift-overflow counter,,,
+1RB---_1LC1RF_0LF0LD_0RE0LC_1LC1RB_1RA0RE,,Shift-overflow counter,,,
+1RB---_1RC0LE_0LD0RF_1LB0RE_0RC0LD_1RD1RA,,Shift-overflow counter,,,
+1RB1LA_1LA1RC_1LF1RD_0RE0RB_1RA---_1RE0LF,,Shift-overflow counter,,,
+1RB1RE_1LC1RF_1LD0LC_1RA1LD_1RD0RA_0LA---,,Shift-overflow counter,,,
+1RB1LC_1LA1RB_1LD0LA_1RE0LF_1LF0RE_1LA---,,Shift-overflow counter,,,
+1RB1LD_0RC0LF_1LD1RE_0LA0RB_0RD1RB_0LD---,,Shift-overflow counter,,,
+1RB1LF_1RC0RB_1LD1RC_1LA1LE_0RA0LD_1LC---,,Shift-overflow counter,,,
+1RB1LC_1RC0RB_1LD0LF_1LA1LE_1RF0LD_---1RB,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_1RF1LC_0RB---,,Shift-overflow counter,,,
+1RB0LA_1RC---_1LD1RE_1RC1LD_1RF0RC_1LA0RB,,Shift-overflow counter,,,
+1RB0RE_1LC1RD_1LA0LC_1RA0RB_0RF1LF_1LA---,,Shift-overflow counter,,,
+1RB1LD_1RC0RB_1LA0LE_1LC0LA_0LF1RB_0RD---,,Shift-overflow counter,,,
+1RB0RA_1RC0LC_0LD1RF_1RA1LE_1LD0LB_0RE---,,Shift-overflow counter,,,
+1RB0LF_0RC1RB_1LD0RB_1LE---_1RF1LA_0LC0LE,NONHALT,Shift-overflow bouncer counter,Individual proof (January 2026) Earlier: Possibly tetrational machine,1; 2,"Racheline, mxdys"
+1RB1RD_1RC0RA_1LD0LE_1RF0RC_1LC0RE_---1RB,NONHALT,Shift-overflow bouncer counter,FAR cert.,1,Andrew Ducharme
+1RB1RB_1RC1RE_1LD0RA_1LB1LE_1RA0RF_---0LC,NONHALT,Shift-overflow bouncer counter,SOBCv9.v (March 2026),1,mxdys
+1RB1RD_1LC0RE_1LA1LD_1RE0RF_1RA1RA_---0LB,NONHALT,Shift-overflow bouncer counter,SOBCv9.v (March 2026),1,mxdys
+1RB0RB_0RC0RA_0LD0RE_1LE1RD_0LF0LD_1RA---,EQUIVALENCE,Shift-overflow bouncer counter,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LD_1RC0LE_1LA1RE_0LF1LA_1RB0RB_---0LB,CRYPTID,Shift-overflow bouncer counter,Probviously halting cryptid,"1, 2",Racheline
+1RB1LC_1LA1RB_1LD0LA_1RE0RF_---1RD_0RE1RB,,Shift-overflow bouncer counter,Analysis started,1,"mxdys, Pomme"
+1RB1LA_1LA1RC_1RD0RB_1LE0LF_---1LD_0LE1LA,,Shift-overflow bouncer counter,Analysis started ,1,"mxdys, Pomme"
+1RB1RD_1LC1RA_---1LD_1LE0RA_1LF0LE_0RB0LB,,Shift-overflow bouncer counter,Possibly tetrational machine,1,Racheline
+1RB0LE_0RC0RA_1LD0LC_1LA0LB_1RA1LF_---0LC,,Shift-overflow bouncer counter,Possibly tetrational machine,1,Racheline
+1RB1RF_1LC0RA_---0LD_0LE0LB_1RF1RB_1RE1LF,,Shift-overflow bouncer counter,"Probviously halts after 10^10^O(1) steps, possibly tetrational machine",1,Racheline
+1RB0LE_1RC---_0RD0RB_1RE0LA_1RF0LF_1LD1RF,,Shift-overflow bouncer counter,,,
+1RB1LE_1LC0RF_1LA0RD_1LC1RC_1LB0LB_---1RD,,Shift-overflow bouncer counter,,,
+1RB0LD_1LC1RB_0LA0LD_1LE0RB_1RF0RE_---0RD,,Shift-overflow bouncer counter,,,
+1RB1LF_1LC1RE_1LD1RD_1LA0LB_0RC---_1RC0LD,,Shift-overflow bouncer counter,,,
+1RB---_0RC0LA_1LD0RB_1LE0RF_1LF1LC_1LB0LD,,Shift-overflow bouncer counter,,,
+1RB0LE_1RC0LD_1RD1RA_1RE0RB_0LA0RF_1LE---,,Shift-overflow bouncer counter,,,
+1RB0RB_1RC1RA_0LD1LC_0RA1LE_1LF0LC_---1LA,,Shift-overflow bouncer counter,,,
+1RB---_1LC1RE_1LA0LD_0RE1LC_1LC1RF_1RB0RD,,Shift-overflow bouncer counter,,,
+1RB1LE_0RC1RF_1LD1RD_1LA0LB_1RC0LD_0RC---,,Shift-overflow bouncer counter,,,
+1RB0RE_1LC0RA_1LD0LC_0LE0LB_1RA1RF_0LC---,,Shift-overflow bouncer counter,,,
+1RB0RB_1LC1RA_1LF0LD_0LE1LD_1LA1LC_---1LA,,Shift-overflow bouncer counter,,,
+1RB1RC_1LC0RE_1LD0LB_1RA1LC_1RA0RF_---1RE,,Shift-overflow bouncer counter,,,
+1RB0RB_1LC1RA_1LF0LD_0LE1LD_1RA1LC_---1LA,,Shift-overflow bouncer counter,,,
+1RB0RD_1LC0RA_1LF1LD_0RE0LC_---1LB_1RB1RC,,Shift-overflow bouncer counter,,,
+1RB0RB_0LC1RA_1RD1LC_1LA1LE_1LF0LD_---0LA,,Shift-overflow bouncer counter,,,
+1RB1LB_1RC0LA_1LD1RF_1RB0LE_---1LA_1RD0RD,,Shift-overflow bouncer counter,,,
+1RB0RA_1RC0RC_1LD1RF_---1LE_1RF0LF_1RA0LE,,Shift-overflow bouncer counter,,,
+1RB0RA_0RC0RE_1LD1LF_1LE0LC_1RA0LD_0RA---,,Shift-overflow bouncer counter,,,
+1RB0LD_1RC0LC_1LA1RC_1RE0LB_1RF---_0RA0RE,,Shift-overflow bouncer counter,,,
+1RB0LD_0RC1RB_1RD1RF_0LE1LD_1LA1LE_---0RB,,Shift-overflow bouncer counter,,,
+1RB0LC_1RC1RE_1RD0RA_0LE0RF_1RA0LD_1LD---,,Shift-overflow bouncer counter,,,
+1RB1LD_1RC0RC_1LD1RB_1LF0LE_0LA1LE_---1LB,,Shift-overflow bouncer counter,,,
+1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA,,Shift-overflow bouncer counter,,,
+1RB1RC_1LC0RA_1RA0LD_0RE0LF_0LB---_0RF0RE,,Shift-overflow bouncer counter,,,
+1RB1RE_1LC1LA_1RA0LD_1LC0LE_0LF0RA_---1RC,,Shift-overflow bouncer counter,,,
+1RB1RC_1LC0RE_1LD0LB_1RA1LC_1RA1RF_---1RD,,Shift-overflow bouncer counter,,,
+1RB1RD_1LC0LC_1RD1LB_1RF0RE_0RA1RE_---1RB,,Shift-overflow bouncer counter,,,
+1RB0LF_1RC---_1LD0RF_1RA0LE_0LD1LD_0RD0RB,,Shift-overflow bouncer counter,,,
+1RB0RF_0RC1RD_0LD---_1LE1RA_1LA0LF_0RD0RC,,Shift-overflow bouncer counter,,,
+1RB1LC_0LA0RD_1LA0LA_0RF1RE_1LA1RB_---0RB,,Shift-overflow bouncer counter,,,
+1RB0RB_1LC1RA_0LE1LD_0RE1LF_---1LA_1LD0LC,,Shift-overflow bouncer counter,,,
+1RB0RB_1LC1RA_0LF0LD_1LE1RB_1RA1LC_---1LA,,Shift-overflow bouncer counter,,,
+1RB1LB_1RC0RD_0LA1RE_0RF1LC_1LA0RB_---1LC,,Shift-overflow bouncer counter,,,
+1RB0RD_1LC1RE_1LA0LD_0RE0RF_1LC1RA_0LE---,,Shift-overflow bouncer counter,,,
+1RB1RC_1LC0RE_1LD0LB_1RA1LC_1RA0RF_---0RC,,Shift-overflow bouncer counter,,,
+1RB1LE_0RC0LB_1LD0RA_0LA0LD_0LF0LA_1LD---,NONHALT,Shift-overflow structural counter,SBCv6a.v (March 2026),1,mxdys
+1RB0RD_1RC0RC_0LA1RA_1LE0RC_0LF---_0LD1LC,NONHALT,Shift-overflow structural counter,SBCv6a.v (March 2026),1,mxdys
+1RB---_1RC0RE_0RD0RD_1LE0RB_0LF1RF_1RA0LD,NONHALT,Shift-overflow structural counter,SBCv6a.v (March 2026),1,mxdys
+1RB---_1LC0LC_1RD1LB_1LE1RD_0LA1LF_1LD0RF,,Shift-overflow structural counter,Notes,1,dyuan
+1RB1LE_0LC1RE_---1LD_0RD1LA_0RF1RF_1RA0LB,,Shift-overflow structural counter,Possibly tetrational machine,1,Racheline
+1RB0RC_1LC0RD_1RA1LD_0LB1LE_1LB0LF_---0LB,,Shift-overflow structural counter,,1,"dyuan, Andrew Ducharme"
+1RB0RC_1RC0LD_1LD1RA_1LF0LE_---0RD_1LB0LA,,Shift-overflow structural counter,,,
+1RB0LE_0RC0RE_1LD1RA_0LA0RF_0RC0RD_1RB---,,Shift-overflow structural counter,,,
+1RB1LF_1LC1RB_1LF1LD_1LE0RD_1LB---_1LA0LA,,Shift-overflow structural counter,,,
+1RB1RA_1RC1RC_1LD1RE_1RA0LC_0RB0RF_---0RC,,Shift-overflow structural counter,,,
+1RB1LF_1LC1RB_1LE1LD_1LB0RD_1LF---_1LA0LA,,Shift-overflow structural counter,,,
+1RB0LC_1LA0LF_1LD---_1RE0RA_1RF0RE_1LB0RD,,Shift-overflow structural counter,,,
+1RB1LA_1RC1RE_1RD0RD_1LA1RC_1RF0LE_1RA---,,Shift-overflow structural counter,,,
+1RB0RE_1LC0RA_0LD1LB_1LA1LF_0LB0RD_0LB---,,Shift-overflow structural counter,,,
+1RB0LF_1LC0RE_0LA1RD_---1RE_1RC1RA_0RB1RF,,Shift-overflow structural counter,,,
+1RB---_0RC1RA_1RD1RF_1LE0LF_1RB0LD_0RE0LC,,Shift-overflow structural counter,,,
+1RB1RF_1LC0LF_1RD0LB_0RA1RE_1RD---_0RC0LA,,Shift-overflow structural counter,,,
+1RB0RE_1RC1LC_1LD1RE_1LB0LC_0RF0RA_---1RC,,Shift-overflow structural counter,,,
+1RB1LC_0RC0LF_1LD0RE_0LA0LE_0LA0LB_1LD---,,Shift-overflow structural counter,,,
+1RB1RF_1RC---_1RD0RD_1LE1RC_1RA1LE_1RE0LF,,Shift-overflow structural counter,,,
+1RB0LD_0RC1RA_1RD1RF_1LA0LE_0RA0LC_0RA---,,Shift-overflow structural counter,,,
+1RB0RD_1RC1RF_0LA1RA_0RE0RC_1LE1LB_---0LE,,Shift-overflow structural counter,,,
+1RB1LE_0RC1RC_0RD0RB_1RE0RF_1LA0LE_---1RB,,Chaotic Fractal Type 1,Appears to be solvable,,
+1RB0LF_1LC0RB_0LD1LA_0RA1LE_0LA0RA_1LA---,,Chaotic Fractal Type 1,,,
+1RB0LA_0RC1RD_0LD1RE_1LA0RF_0RD0LD_1RD---,,Chaotic Fractal Type 1,,,
+1RB0RE_0RC0RA_1LD1RF_1LA0LD_1RA0LC_1RE---,,Chaotic Fractal Type 1,,,
+1RB0LD_1RC0RA_0RD0RB_1LE1RF_1LB0LE_1RA---,,Chaotic Fractal Type 1,,,
+1RB---_1LC0RA_1LD0LC_1RE0RF_0RB0RD_1RD0LB,,Chaotic Fractal Type 1,,,
+1RB0LF_1RC0RB_1LD0LE_0LA0LC_1LC0RA_1LA---,,Chaotic Fractal Type 1,,,
+1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_1LD---,,Chaotic Fractal Type 1,,,
+1RB0RA_1LC0LE_0LD0LB_1RA1LE_1LB0RF_1RA---,,Chaotic Fractal Type 1,,,
+1RB1LF_1RC0RB_1LD0LE_0LA0LC_1LC0RA_1LE---,,Chaotic Fractal Type 1,,,
+1RB0RE_0RC0RA_1LD0RF_1LA0LD_1RA0LC_1RC---,,Chaotic Fractal Type 1,,,
+1RB1LE_1RC0RB_1LD0LE_0LA0LC_1LC0RF_1RB---,,Chaotic Fractal Type 1,,,
+1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_0RC---,,Chaotic Fractal Type 1,,,
+1RB0RE_0RC0RA_1LD0RF_1LA0LD_1RA0LC_0RD---,,Chaotic Fractal Type 1,,,
+1RB---_1RC0LE_1RD0RB_0RE0RC_1LF1RA_1LC0LF,,Chaotic Fractal Type 1,,,
+1RB0LF_1RC0RA_0RD0RB_1LE1RA_1LB0LE_1LE---,,Chaotic Fractal Type 1,,,
+1RB0RE_0RC0RA_1LD1RE_1LA0LD_1RA0LF_1LD---,,Chaotic Fractal Type 1,,,
+1RB0RA_1LC1RA_0LD1LD_0LE0LC_1LA0LF_---1LC,,Chaotic Fractal Type 1,,,
+1RB0LF_1RC0RB_1LD0LE_0LA0LC_1LC0RA_0RD---,,Chaotic Fractal Type 1,,,
+1RB0LF_1RC0RA_0RD0RB_1LE0RF_1LB0LE_1LE---,,Chaotic Fractal Type 1,,,
+1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC,,Chaotic Fractal Type 1,,,
+1RB0RA_1LC0LE_0LD0LB_1RA1LF_1LB0RD_1LE---,,Chaotic Fractal Type 1,,,
+1RB0LA_1RC0RE_0RD---_1LA0LD_1LD1RF_1RA1LB,NONHALT,Chaotic Fractal Others,FAR RWL_mod maxT 30000000 H 6 mod 6 n 8 run,1,mxdys
+1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE,,Chaotic Fractal Others,,,
+1RB0RE_0RC---_1LD0LE_1RA0LD_1LC1RF_1RD1LA,,Chaotic Fractal Others,,,
+1RB0RF_0LC---_1LE1LD_1RE0LA_1RA0RD_1LB1RD,,Chaotic Fractal Others,,,
+1RB1LF_1RC1RB_1RD0RB_0LE0LF_---1LD_0LE1LA,,Chaotic Fractal Others,,,
+1RB0LC_1RC0RA_1RD0RF_0LE---_1LB1LA_1LD1RA,,Chaotic Fractal Others,,,
+1RB1LF_0RC---_1RD1RF_1LE0LF_1LB0LA_1LD0RE,,Chaotic Fractal Others,,,
+1RB1LC_1RC0LB_1RD0RF_0RE---_1LB0LF_1LE1RA,,Chaotic Fractal Others,,,
+1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD,,Chaotic Fractal Others,,,
+1RB0LA_1RC0RE_0RD---_1LA1LF_1LD1RF_1RA1LB,,Chaotic Fractal Others,,,
+1RB1RC_1LC0RF_1LD0RA_1RE0LB_---1RA_1RE1LB,NONHALT,Spaghetti,FAR cert.,1,Andrew Ducharme
+1RB0LF_1LC0RB_0LD1LA_0RA1LE_0LA1LC_1LA---,NONHALT,Spaghetti,FAR cert.,1,mxdys
+1RB1RA_1LC0LC_0LE0RD_1LF1LB_1LD0LC_0RA---,EQUIVALENCE,Spaghetti,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RD_0LC---_1LD1LC_1RE0RE_0RF0LA_1RA0RE,EQUIVALENCE,Spaghetti,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RB_0RC0LD_1RD0RB_1RE1RA_0LF---_1LA1LF,EQUIVALENCE,Spaghetti,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RE_1RC0RE_1LD1RB_1LA0LA_1RF0LC_---0RC,,Spaghetti,,,
+1RB0RD_0LC1LD_1RA1LA_1RE1LB_---0RF_1RA1RF,,Spaghetti,,,
+1RB1RA_1LC0LF_1RA1LD_1LB1LE_1LC0LC_---0RA,,Spaghetti,,,
+1RB0LC_0LA1RD_1LA0RE_1RE0RF_1LF---_1LB1RF,,Spaghetti,,,
+1RB0LA_0RC1LF_0RD0LA_1LD0LE_1RB1LF_---1LA,,Spaghetti,,,
+1RB0LE_0LC0RF_1LD1LC_1RA0RD_0LA1LA_1RD---,,Spaghetti,,,
+1RB0RF_1LC1RD_1LA1LC_1RA1RE_0RB0LD_---0LC,,Spaghetti,,,
+1RB0RA_1LC0RD_---0LD_1LE1LF_1RA1LB_1RC0LD,,Spaghetti,,,
+1RB0RC_1LC0RB_1RE1LD_0LB0LF_---0RA_1LB0RC,,Spaghetti,,,
+1RB1LA_1RC1RD_0LA0LD_1RE1LC_0RF0LF_---0RA,,Spaghetti,,,
+1RB1LE_0RC0RA_0RD1RF_1LD1LA_0LA0LE_0LB---,,Spaghetti,,,
+1RB0RF_1LC1RD_1LA1LC_1RA1RE_1RB0RB_---0LC,,Spaghetti,,,
+1RB0RC_1LC0RB_1RE1LD_0LB0LF_---0RA_1LB1LD,,Spaghetti,,,
+1RB1RA_1LC0LF_1RA1LD_1LB1LE_0LC0RD_---0RA,,Spaghetti,,,
+1RB0RF_1RC1RE_0LD---_1LE1LD_1RF0RF_0RA0LB,,Spaghetti,,,
+1RB0LD_1LC0RE_---1LD_1LE1LA_1RA0LF_1LC1RE,,Spaghetti,,,
+1RB0LB_1RC1LE_1LD0RF_---1LB_0LA0LC_1LB1RA,,Spaghetti,,,
+1RB1RE_1RC0RF_1LD1RA_1LB1LD_1RC0RC_---0LD,,Spaghetti,,,
+1RB0LA_0RC0RF_0RD0RA_1LD0LE_0LA1LE_---1RC,NONHALT,Cubic Mess,Translated Cycler (TCv3.v) (March 2026),"1, 2",prurq
+1RB1LA_0RC0LF_0RD---_1RE1RD_1LB1RA_0LD0LA,NONHALT,Cubic Mess,FAR cert.,1,Andrew Ducharme
+1RB0LB_1LC1RD_0LE1LA_0RB1RD_---0LF_1RA1LF,EQUIVALENCE,Cubic Mess,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LA_1LC0RE_1LF1LD_1RE0LC_1RA1RE_---0LD,EQUIVALENCE,Cubic Mess,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1RA_1RC1LB_1LD0RA_1RA0LE_---0LF_0RD0LB,EQUIVALENCE,Cubic Mess,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RB_1RC0LE_1LD1LA_---0LC_1RF1LE_1RA0RA,,Cubic Mess,Analysis. Conjecture: Nonhalt. Simulated to 1e16.34815.,1,"nerdyjoe, Alistaire"
+1RB1RA_1LC0RC_---0LD_0LE0RF_1RE0RA_0LF1LB,,Cubic Mess,Collatz-like,"1, 2",Racheline
+1RB0LE_0RC0RD_1LC0RB_0RE1RD_1LF1LE_0LA---,,Cubic Mess,Doesn't halt in 1e20 steps,1,Alistaire
+1RB1LA_1RC0RF_1RD---_0LE1RB_---0LA_1LD1RF,,Cubic Mess,"Potential cryptid. One of 3 holdouts with 2 undefined transitions, may be cryptid. 10^14 doesn't halt. Analysed thoroughly using formal proofs from Claude Opus 4.6.","1, 2","dyuan, mxdys, hipparcos, DrDisentangle"
+1RB0LE_1LC1RA_1RA1LD_0LC0LA_0RE1RF_0RC---,,Cubic Mess,Part of Category 1,1,mxdys
+1RB---_0RC0RD_1LD1RB_0LE0LC_1RA0LF_1LD1LE,,Cubic Mess,Part of Category 1,,
+1RB1RF_1LC1LF_0RE1LD_0LB1LD_---1RC_1RA0RD,,Cubic Mess,"Potential cryptid (if so, probviously nonhalting cryptid)","1, 2",Racheline
+1RB1LC_1LC1RD_1LA0LB_0RB1RE_1RF0RA_---0RC,,Cubic Mess,"Potentially probviously halting with exponential expected halting time, Part of Category 1",1; 2; 3,"Racheline, mxdys"
+1RB1RD_0LC1RA_0RA1LC_1RA1LE_1RF0LD_---0RE,,Cubic Mess,Similar to BMO 1?,1,dyuan
+1RB1RF_0LC0RF_1RD1LC_---0LE_0RC1LF_1RA0LE,,Cubic Mess,"Simualted to 2.8e13 rule steps, hasn't halted yet, Part of Category 1",1,mxdys
+1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD,,Cubic Mess,Space Needle. BMO 6. Possible cryptid,1,Katelyn Douchette
+1RB0LD_0RC1RB_0RD0RA_1LE0RD_1LF---_0LA1LA,,Cubic Mess,BMO 8,1,"mxdys, dyuan"
+1RB0RC_1LC1RE_1RA1LD_0LC0LA_1RF1RD_---0RD,,Cubic Mess,,,
+1RB1LA_0RC1RD_1LC0LA_1LE1RE_0RB0LF_---0LD,,Cubic Mess,,,
+1RB---_0RC0LD_1LB1RC_0LE0LF_1RD1LE_1RF1RA,,Cubic Mess,,,
+1RB0LE_0RC1RB_1LC1RD_1RF0LA_0RD1LE_1RB---,,Cubic Mess,,,
+1RB0RF_1LC0RD_0LD0LC_1RE0RF_0RB---_1LB1RA,,Cubic Mess,,,
+1RB1LF_1RC1RF_0LD1RE_---1LC_0RB1RE_1LA0LE,,Cubic Mess,,,
+1RB0LD_1LC1RA_1RA1LC_1LE1LA_0RF1LD_---1RE,,Cubic Mess,,,
+1RB0LA_0RC---_0RD0RF_1LD0LE_0LA1LE_1RA0RE,,Cubic Mess,,,
+1RB1LB_1RC---_1LD1LF_1LE0LD_0LA1RF_1LC0RE,,Cubic Mess,,,
+1RB0RE_1RC0LD_1LD0RF_0LB0LA_1LC1RE_---0RE,,Cubic Mess,,,
+1RB1RD_0LC1RA_1LA1LC_1RA1LE_1RF0LD_---0RE,,Cubic Mess,,,
+1RB0RE_0RC---_1LD0RA_0LA0LD_1LC1RF_1RC0RE,,Cubic Mess,,,
+1RB1LA_1LC0RA_0LF0LD_1RE1LD_1RE0RB_---0LC,,Cubic Mess,,,
+1RB1RC_1LC0LE_1RD1RC_1LB0RA_---0LF_1RD1LF,,Cubic Mess,,,
+1RB1RA_1RC---_1RD0LD_1LE1RF_0RA1LD_0RC0LC,,Cubic Mess,,,
+1RB1RA_0LC0RE_1LF1LD_1LA0LA_1LC1RB_---1LC,,Cubic Mess,,,
+1RB1LA_1LC0RE_---0LD_1LA0LF_1RA1RE_1LA0LB,,Cubic Mess,,,
+1RB0LD_1RC1RF_0RD1RA_1LE1RC_0LA0LD_0RC---,,Cubic Mess,,,
+1RB1LD_0RC0RF_1LC0LA_0LE1LD_1LA---_0RB0LF,,Cubic Mess,,,
+1RB---_1RC0LD_0LB0RE_1LB1LC_1RD1RF_1RD1RA,,Cubic Mess,,,
+1RB1RD_0LC1RA_1RA1LC_0RB1LE_1RF0LD_---0RE,,Cubic Mess,,,
+1RB1RA_1LC1LD_1LD0LB_1RE0RF_---1RD_1RA1RB,,Cubic Mess,,,
+1RB0LA_0RC0RF_0RD0RA_1LD0LE_0LA1LE_---1LB,,Cubic Mess,,,
+1RB1LA_1LA0RC_1RD1RC_1LE0RC_---0LF_1LE0LA,,Cubic Mess,,,
+1RB0LF_1RC1RA_0RD0RB_1LE---_0LA1LE_1RD1LA,,Cubic Mess,,,
+1RB0LA_0RC---_0RD0RF_1LD0LE_0LA1LE_0RA0LA,,Cubic Mess,,,
+1RB0RB_1RC0RD_1LD1RC_1RF0LE_1LC1LE_---0RA,,Cubic Mess,,,
+1RB0LC_1LC0RE_1LD1LC_1LA1RD_---0RF_0LB0RD,,Cubic Mess,,,
+1RB0LC_1RC0RF_1LA0LD_0LE0RA_0RB1LD_0LA---,,Cubic Mess,,,
+1RB1RD_1LC0LE_1RA0LB_1RB---_0LF0RC_0RA1LE,,Cubic Mess,,,
+1RB0LC_1LC0RE_1LD1LC_1LA1RD_1RF1RB_---0RB,,Cubic Mess,,,
+1RB0LE_0RC0RB_1LD0LD_1RA1LC_---1LF_1LA0LC,,Cubic Mess,,,
+1RB0RE_1LC0RA_1LA1LD_1LA---_0RF0LB_0LD1RE,,Cubic Mess,,,
+1RB1RF_0RC1RE_1LD1RB_0LE0LC_1RA0LC_0RB---,,Cubic Mess,,,
+1RB1RF_1RC0RB_0RD1LF_1LE1RE_1LA---_1RA0LC,,Cubic Mess,,,
+1RB1LE_1RC1RA_0LD1RB_1LE1LD_1RF0LA_---0RE,,Cubic Mess,,,
+1RB1RA_1LC1LB_1RE0LD_1RA0LB_---0RF_1RC0RA,,Cubic Mess,,,
+1RB1LA_1LC0RE_---0LD_1RE0LF_1RA1RE_1LA0LB,,Cubic Mess,,,
+1RB1RA_1LC0RC_1RE0LD_0RE0LF_1RA---_1RB1LF,,Cubic Mess,,,
+1RB0LD_1LC1RD_0LE1LA_0RB1RD_---0LF_1RA1LF,,Cubic Mess,,,
+1RB1RA_1RC1LB_1LD0RA_---0LE_1LC0LF_1RE0LB,,Cubic Mess,,,
+1RB1RD_0RC0RD_0LD1LE_1LC0RB_1LF---_1LA0LE,,Cubic Mess,,,
+1RB1LA_0RC0RD_1LC1LA_1RE1RD_1LF0LA_---0LE,,Cubic Mess,,,
+1RB1RA_1RC1LB_1LD0RA_1LB0LE_1LF1LD_---0LD,,Cubic Mess,,,
+1RB1RA_1RC1LB_1LD0RA_1LA0LE_---0LF_0RC0LB,,Cubic Mess,,,
+1RB0LC_1LA1RB_0LD1LC_1RE1LF_0RE0RB_---0LE,,Cubic Mess,,,
+1RB1LA_1RC1RE_1LD0RB_1LA0LC_0RF0RD_0RB---,NONHALT (?),Quadratic Mess,"Part of Category 1. Formally solved, depends on a restricted part of Baker's theorem, formalised, but depends on Baker.",1; 2; 3; 4; 5; 6; 7,"mxdys, Pomme, Autumn Pan, vyx, DrDisentangle, mammillaria"
+1RB---_1RC0LD_1RD0RF_1LB1LE_0LB0RE_1RB0RA,NONHALT,Quadratic Mess,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB1RE_1LC0RA_1LA0LD_1LB1LF_0RB0LE_0RC---,NONHALT,Quadratic Mess,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB1RD_0RC1RE_1LD0RE_1LB---_0RA1LF_0LE0LF,NONHALT,Quadratic Mess,FAR cert. (March 2026),1,Andrew Ducharme
+1RB---_0RC0RB_0LD1RB_1LE1LA_0LF1LC_1RA0LC,NONHALT,Quadratic Mess,FAR cert. (March 2026),1,Peacemaker II
+1RB0LD_1RC---_0RD0RC_0LE1RC_1LF1LB_0LA1LD,NONHALT,Quadratic Mess,FAR cert. (March 2026),1,Peacemaker II
+1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC,CRYPTID,Quadratic Mess,"Cryptid, Part of Category 1",1,"Andrew Ducharme, DrDisentangle"
+1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE,CRYPTID,Quadratic Mess,Part of Category 1,1,"sheep, dyuan, hipparcos"
+1RB1RE_1LC0RA_0RD1LB_---1RC_1LF1RE_0LB0LE,,Quadratic Mess,BMO 1. Potential cryptid,1,
+1RB0LD_1LC0RA_1RA1LB_1LA1LE_1RF0LC_---0RE,,Quadratic Mess,"Potential cryptid, Part of Category 1. BMO 5.",1,"dyuan, mxdys"
+1RB---_1RC1LE_0RD0RF_0RE0LA_1LF0LB_1LA1LD,,Quadratic Mess,Simulated to 1e2848,1,Alistaire
+1RB1LE_1LC0RA_0RF0LD_1LE1LA_1RC0LB_---1RC,,Quadratic Mess,Very strange machine,1,-d
+1RB1LE_1LB1LC_1RD0LE_---0RB_1RF1LA_0RA0RD,,Quadratic Mess,"Simulated to 10^190,000",1; 2; 3,"Polygon, hipparcos"
+1RB0RF_1RC1RF_1LD0LE_---1LC_1RA1LE_1LC1RB,,Quadratic Mess,Part of Category 1,1,sheep
+1RB1LD_1RC0RA_1LA1RE_0LA0LB_0RB1RF_---1RD,,Quadratic Mess,Part of Category 1,,
+1RB0RB_1LB0LC_1RD1LC_1RE0RA_0RF1RA_---1LB,,Quadratic Mess,Part of Category 1,,
+1RB1RE_1LC0RA_1RD0LB_1LB1RC_1LF0RD_---0LE,,Quadratic Mess,"Potential cryptid, Part of Category 1. BMO 5 (Starting from state D)",1,"dyuan, mxdys"
+1RB1LC_1RC0LD_1LA0RB_1LB1LE_1RF0LA_---0RE,,Quadratic Mess,"Potential cryptid, Part of Category 1. BMO 5 (Starting from state C)",1,"dyuan, mxdys"
+1RB1LD_1LC1RE_1RA0LB_1LF1LA_0RB0RC_---0RE,,Quadratic Mess,Strange bell,,
+1RB1RE_0RC---_1RD0RD_1LE0LF_1RA0LD_1LC1RB,,Quadratic Mess,,,
+1RB0RF_1LC0RA_1LD1LB_0LE---_1LA0LA_1RE1LD,,Quadratic Mess,,,
+1RB1RF_1LC0LA_---0LD_1LE1RB_0RA0LB_1RE0RE,,Quadratic Mess,,,
+1RB0LC_0LC1RF_1LE1RD_0RC1RC_0LA1LA_---1RA,,Quadratic Mess,,,
+1RB0LF_1LC0LD_1RD1LB_---1RE_0RA1RE_1LA0LE,,Quadratic Mess,,,
+1RB0LC_1RC1RF_1LD0RA_1LE0LD_1RC0LA_0LA---,,Quadratic Mess,,,
+1RB0RC_1RC---_1LD1RE_1LE0LD_1RA0LF_0RC0RB,,Quadratic Mess,,,
+1RB1RF_1LC1LF_---1LD_1LE0RA_1RE1LB_1RD0LD,,Quadratic Mess,,,
+1RB0LD_1LC0RD_1LA0LC_1RE0LB_1RB1RF_0LD---,,Quadratic Mess,,,
+1RB1RF_0RC1LE_0RD---_1LE0RE_1LF0RA_1RE0LB,,Quadratic Mess,,,
+1RB1LF_0RC1RD_1LA1LD_1LE0RA_---1LC_0LA1LA,,Quadratic Mess,,,
+1RB0RE_1LC0LE_---1LD_1LE1LB_1RA0LF_0RD1LA,,Quadratic Mess,,,
+1RB1RE_0LC0LF_0LA0LD_1LE1LC_1RA0LB_---0RE,,Quadratic Mess,,,
+1RB0LD_1RC1RE_1LA0RA_1LE1LC_1RF1RC_---1RA,,Quadratic Mess,,,
+1RB1RE_0LC1RF_---1LD_1LE0LD_1LA1LB_1RE0RA,,Quadratic Mess,,,
+1RB1RE_1LC0RA_1LA0LD_1LB0LF_0RB0LE_0LA---,,Quadratic Mess,,,
+1RB0RA_1RC1RD_1LD1LB_0RF1LE_1LE0LC_---1RA,,Quadratic Mess,,,
+1RB0LF_1LC1RA_0RD1LB_0LA0RE_1RC1RB_---0LD,,Quadratic Mess,,,
+1RB1LC_1LC0RD_0LE1LA_0RF1RA_1RD0LA_---0RB,,Quadratic Mess,,,
+1RB0RE_1LC1LF_1RA0LD_1LB1LA_1RB1RC_---0LA,,Quadratic Mess,,,
+1RB0LC_1RC1RA_0LD0LF_0LB0LE_1LA1LD_---0RA,,Quadratic Mess,,,
+1RB1RD_1LC0RF_1LD0LB_1RE0RB_---1RA_0LA1RC,,Quadratic Mess,,,
+1RB0RB_1LC0LF_1RD0LB_1RE1RC_0RA---_1LA1RE,,Quadratic Mess,,,
+1RB1LC_1LC0RD_0LE1LA_---1RA_1RF0LA_0RF0RB,,Quadratic Mess,,,
+1RB0LE_1RC---_0RD0RE_1LE0RB_0LA0LF_0RC0LD,,Quadratic Mess,,,
+1RB0LE_0RC1RC_0RD1LA_1LD0LA_1LF1LC_---1LC,,Quadratic Mess,,,
+1RB0RE_1LC0RA_1RF0RD_---1LE_0LB1LE_1LE1RC,,Quadratic Mess,,,
+1RB1RF_1LC---_1LE1RD_1RA0RC_0LF0LA_0LD0RB,,Quadratic Mess,,,
+1RB0LE_0RC1RC_0RD1LA_1LD0LA_1LF1LC_---0LA,,Quadratic Mess,,,
+1RB1LC_1LC0RD_0LE1LA_0RF1RA_1LA0LA_---0RB,,Quadratic Mess,,,
+1RB1RF_1LC0RA_---0LD_1RE1LD_0LF0LB_1RA1LE,,Quadratic Mess,,,
+1RB0LE_1LB1RC_0RF0RD_1RE0LA_1LA1RE_---0RB,,Quadratic Mess,,,
+1RB1RC_1LC1LC_1RE0LD_1LB1RF_---1RA_0RD1RD,,Quadratic Mess,,,
+1RB1RE_0LC1RF_---1LD_1LE0LD_1LA1LB_1RF0RA,,Quadratic Mess,,,
+1RB1RB_1LC0RE_---1LD_0RA1LB_1RA1LF_0LE1LE,,Quadratic Mess,,,
+1RB0LD_0RC0RF_1LD0RB_1LE---_0LA0LB_0LE0RA,,Quadratic Mess,,,
+1RB1LD_0RC1LE_1RD0LA_1RE0RC_1LF0LC_---1LB,,Quadratic Mess,,,
+1RB0LF_1LC1RA_0RE0RD_---1LE_1LF1RC_1LC1LA,,Quadratic Mess,,,
+1RB0LC_1RC0LE_1LA1RD_0RC0RA_1LF1RE_---1LB,,Quadratic Mess,,,
+1RB1LD_1LC0RC_0RF1RA_0LE1LA_1RC0LA_---0RB,,Quadratic Mess,,,
+1RB0RF_1RC0LD_1RD0RA_1LB1LE_0LB0RE_0RD---,,Quadratic Mess,,,
+1RB1LD_0RC1LE_1RD0LA_1RE0RF_1LF0LC_---1LB,,Quadratic Mess,,,
+1RB0LE_1LC1LB_0RD0LC_1RA0RE_1RF1RD_0RA---,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,1,mxdys
+1RB---_0LC0RB_1LE0LD_1LA1LC_1LF0RD_1RB1RF,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,1,mxdys
+1RB0RE_1RC0LE_1LD1LC_0RA0LD_1RF1RA_1LB---,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,1,mxdys
+1RB1RA_0LC0RB_1LF0LD_1LE1LC_0LF---_1LA1LF,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,1,mxdys
+1RB1RA_0LC0RB_1LF0LD_1LE1LC_1LB---_1LA1LF,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,1,mxdys
+1RB0LE_1LC1LB_0RD0LC_1RA0RE_1RF1RD_0LA---,,Counter Class 1,Should be solvable. Visits 71 cells in 1 billion steps.,"1, 2",mxdys
+1RB1RA_0LC0RB_1LF0LD_1LE1LC_0RB---_1LA1LF,,Counter Class 1,Should be solvable. Visits 66 cells in 1 billion steps.,1,mxdys
+1RB0RE_1RC1RB_1LD1LC_0RA0LD_1RF1RA_0LC---,,Counter Class 1,Should be solvable. Visits 66 cells in 1 billion steps.,1,mxdys
+1RB0RE_1RC1RB_1LD1LC_0RA0LD_1RF1RA_0RA---,,Counter Class 1,Should be solvable. Visits 66 cells in 1 billion steps.,1,mxdys
+1RB0RE_1RC1RB_1LD1LC_0RA0LD_1RF1RA_1RA---,,Counter Class 1,Should be solvable. Visits 66 cells in 1 billion steps.,1,mxdys
+1RB1RA_0LC0RB_1LF0LD_1LE1LC_1LC---_1LA0RD,,Counter Class 1,Should be solvable. Visits 67 cells in 1 billion steps.,1,mxdys
+1RB1RA_1LC1LB_0RD0LC_1RA0RE_1RF1RD_0LB---,,Counter Class 1,Should be solvable. Visits 67 cells in 1 billion steps.,1,mxdys
+1RB1RC_0RC---_1RD0RA_1RE1RD_1LF1LE_0RC0LF,,Counter Class 1,Should be solvable. Visits 67 cells in 1 billion steps.,1,mxdys
+1RB1RA_1LC1LB_0LD0LC_0RE0RF_0RF---_1RA1RD,,Counter Class 1,Should be solvable. Visits 67 cells in 1 billion steps. Doesn't halt in 10^200,"1, 2",mxdys
+1RB0LE_1LC1LB_0RD0LC_1RA0RE_0RF1RD_0LD---,,Counter Class 1,Should be solvable. Visits 67 cells in 1 billion steps.,1,mxdys
+1RB1RA_0RC0RB_0LD0LE_0LE---_1LF1LC_1LA1LF,,Counter Class 1,Should be solvable. Visits 68 cells in 1 billion steps.,1,mxdys
+1RB1RC_1LA---_0RE1LD_0LF0LC_1RA1RF_1RE0LF,,Counter Class 2,,,
+1RB1RD_1LC---_1LE0LD_0RE1LC_1RA1RF_1RE0LF,,Counter Class 2,,,
+1RB0LF_1RC0LB_1RD1RB_1RE1RF_1LA---_0RC1LA,,Counter Class 2,,,
+1RB0LA_1RC1RA_1RD1RE_1LC---_0RB1LF_1RA0LE,,Counter Class 2,,,
+1RB---_0RC0RF_1LD0RC_1LE1LC_1LA1LF_0LD1RB,,Counter Class 2,,,
+1RB1RF_1RC1RE_1LD---_0LF0LE_0RA1LD_1RA0LF,,Counter Class 2,,,
+1RB1RD_1LC---_1RF0LD_0RE1LC_1RA1RF_1RE0LF,,Counter Class 2,,,
+1RB1RA_1RC1LB_0LD0RA_1RF1LE_---1LF_1LC0LF,,Counter Class 3,One of the machines with the least common transitions,,
+1RB0RA_0RC0LD_1LA1RF_1LE1LD_1LB1RE_---1RA,,Counter Class 3,,1,nickdrozd
+1RB0RA_0RC0LE_1LD1RF_1LB1RD_1LD1LE_---1RA,,Counter Class 3,,,
+1RB0LC_0LC1RE_1LD1LC_1LA1RD_---1RF_0RA0RF,,Counter Class 3,,,
+1RB1RA_1RC1LE_1RD1LC_0LB0RA_---1LF_1LD0LF,,Counter Class 3,,,
+1RB0RA_0RC0LE_1LD1RF_1LB1RD_1LC1LE_---1RA,,Counter Class 3,,,
+1RB1RA_1RC1LB_0LD0RA_1RA1LE_---1LF_1LC0LF,,Counter Class 3,,,
+1RB1LC_1RC1LB_1LD0RB_0LE1RD_---0LF_0LA1LF,,Counter Class 4,,,
+1RB1LA_1LC0RA_0LD1RC_---0LE_0LF1LE_1RF1LB,,Counter Class 4,,,
+1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA,,Translated Counter,Has to halt in the counting phase. Machine with the least common transitions.,,
+1RB0LA_1RC---_0LD1RD_1RA0RE_0RF1RC_1LF0LA,,Translated Counter,,,
+1RB0RD_1RC---_0LA1RA_0RE1RC_1LE0LF_0RC0LF,,Translated Counter,,,
+1RB---_0RC1LF_1LC1LD_1RE0RA_0RD1RF_0LD0LF,,Translated Counter,,,
+1RB0LA_1RC---_0LD1RD_0RB0RE_0RF0LD_1LF0LA,,Translated Counter,,,
+1RB1RF_0RC1RD_1LC1LA_0LE1RE_1RA0RB_---0LC,,Translated Counter,,,
+1RB0RA_0LC0LA_1RF1LD_1LE0LD_1LC1LF_---1RA,,Structural counter + counter,,,
+1RB0LC_1LA0RE_0RD0LA_1RE1RA_0LD1RF_0RB---,,Structural counter + counter,,,
+1RB---_1LC1RE_1LD0LC_1LE1LC_1RF0RE_1RA0RB,,Structural counter + counter,,,
+1RB1RC_0LA1RF_1RD0LE_1LC0RB_0RA0LC_0RD---,,Structural counter + counter,,,
+1RB0LC_1LA0RE_0RD1LF_1LC1LB_0LD0RB_0LA---,,Structural counter + counter,,,
+1RB0LA_0LC0RC_1RD1LA_1LA1RE_0RD0RF_1RC---,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RA_0RC0RF_1RD1LD_1LE---_1LF1LE_1RA0LE,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_1LC1LB_1RD0LB_1RE0RD_0RF0RC_1RA1LA,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LF_1RC0RB_1RD0RA_1RE1LF_1LA---_1LA1LF,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LB_1RC---_1LD1LC_1RE0LC_1RF0RE_0RA0RD,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RA_0RC0RF_1RD1LD_1RE---_1LF1LE_1RA0LE,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0RA_1RC0RE_1RD1LF_1LE---_1RA0LF_1LE1LF,EQUIVALENCE,Structural counter + chaotic edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LA_1RC1RD_1LB1RA_1RE0RE_1LF0RC_1LA---,,Structural counter + chaotic edge,The most amount of steps to reach all defined transitions: 17397627083 steps (among holdouts),1,Peacemaker
+1RB1LD_1LC---_1RE0LD_1LC1LD_1RF0RE_1RA0RC,,Structural counter + chaotic edge,,,
+1RB---_1RC1LD_1LD1RF_1RE0LD_0LB0RB_0RC0RA,,Structural counter + chaotic edge,,,
+1RB1LC_1LC1RE_1RD0LC_0LA0RA_0RB0RF_1RA---,,Structural counter + chaotic edge,,,
+1RB1RA_1LC0RA_1LD0LC_0LE0LB_1LF1RF_1LA---,,Structural counter + chaotic edge,,,
+1RB0RA_1LC0RC_1LF0RD_1RA1LE_0LC---_1LD0LA,,Structural counter + chaotic edge,,,
+1RB0RA_1RC0RF_0RD1LE_0LE---_1LF1LE_1RA0LC,,Structural counter + chaotic edge,,,
+1RB0RE_0RC1RF_1LD1LE_0LC1RE_1RA0LE_1RD---,,Structural counter + chaotic edge,,,
+1RB0LF_1RC0RB_0RD0RA_1RE0LD_1LF---_1LA1LF,,Structural counter + chaotic edge,,,
+1RB1LE_1RC0RB_1LD0RA_0LA0LC_0LD1LF_0LB---,,Structural counter + chaotic edge,,,
+1RB1LC_1RC---_1LD1LC_1RE0LC_1RF0RE_1RA0RD,,Structural counter + chaotic edge,,,
+1RB0RA_1RC0RF_1RD1LE_1RE---_1LF1LE_1RA0LE,,Structural counter + chaotic edge,,,
+1RB0LF_1RC0RB_0RD0RA_1RE1LE_1RF---_1LA1LF,,Structural counter + chaotic edge,,,
+1RB0RA_1LC0RD_0LD0LB_1RA0LE_1LF---_0RD1LB,,Structural counter + chaotic edge,,,
+1RB---_1RC1RB_1LD0RB_1LE0LD_0LF0LC_1LA1RA,,Structural counter + chaotic edge,,,
+1RB0RA_1LC0RD_0LD0LB_1RA1LE_0LC1LF_0LA---,,Structural counter + chaotic edge,,,
+1RB0RD_1RC1LE_1LD---_1RF0LE_1LD1LE_1RA0RF,,Structural counter + chaotic edge,,,
+1RB1LE_1LC0RD_1LA1LC_1RA0RE_1RF0LC_---1RA,NONHALT,Bouncer + Translated Counter,Should be solvable. Proof by dyuan (verified January 2026 Round 2).,1,dyuan
+1RB1RC_1LC0RF_1RE0LD_1LB0LD_---1RF_0LF0RA,,Bouncer + Translated Counter,Should be solvable,,
+1RB0RA_1RC0LE_1LD0RA_---1LE_0RE0LF_1LB1LC,,Bouncer + Translated Counter,Should be solvable,,
+1RB0LD_1RC1LE_0RD1RA_1LE0RB_0LA0RF_---1RE,,Bouncer + Complex Counter,,,
+1RB1LF_1RC0RE_1LD0RB_1LE0LD_0LA1RB_---1LB,,Bouncer + Complex Counter,,,
+1RB0LD_0RC0LC_1LD0RA_1LE0LF_0LA1LC_0RA---,,Bouncer + Complex Counter,,,
+1RB1LD_0RC1RE_1LD0RA_0LE0RF_1RA0LC_---1RD,,Bouncer + Complex Counter,,,
+1RB0LD_1RC1RF_0RD1RA_1LE0RB_0LA0RA_1LE---,,Bouncer + Complex Counter,,,
+1RB0LD_0RC0LF_1LD0RA_1LE1RB_0LA1LC_---1LB,,Bouncer + Complex Counter,,,
+1RB1RF_0RC1RE_1LD0RA_0LE0RE_1RA0LC_1LD---,,Bouncer + Complex Counter,,,
+1RB0LE_1RC0RB_0RD1LE_1LE1RF_1LA0LC_---1RE,,Bouncer + Complex Counter,,,
+1RB0LE_1LC0RA_1RD0RC_1LA0LD_1LB0LF_0RA---,HALT,Bouncer + Chaotic Edge,30505241149212 steps.,1,"prurq, mxdys"
+1RB0RA_1LC0RE_1RD0LB_1LA0LD_1RC0RF_0LB---,HALT,Bouncer + Chaotic Edge,1.87649e+13 steps.,1,mxdys
+1RB0RF_1RC0LE_1LD0LC_1RE0RD_1LB0RA_0LE---,HALT,Bouncer + Chaotic Edge,1.02313e+14 steps.,1,mxdys
+1RB1LD_1RC0RB_0LA1RE_1LA0LD_1RF0RD_0RC---,NONHALT,Bouncer + Chaotic Edge,FAR cert.,1,Andrew Ducharme
+1RB---_1LC1RD_1LD1LC_1LE0RD_1RF0LE_1RA0LE,NONHALT,Bouncer + Chaotic Edge,FAR RWL_mod maxT 30000000 H 12 mod 5 n 21 run,1,mxdys
+1RB0LA_0RC0RF_0LD1RE_1LA0RB_1RD1RE_1RB---,EQUIVALENCE,Bouncer + Chaotic Edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LF_0LC0RA_1RA0RD_1RE---_1LA1RC_0LE0LF,EQUIVALENCE,Bouncer + Chaotic Edge,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LD_1LC0RF_0RD0LB_1LB0LE_1LA---_0RA0RF,,Bouncer + Chaotic Edge,,,
+1RB0RC_1RC1RA_1LD0RA_0LE1RA_---1LF_1RB0LF,,Bouncer + Chaotic Edge,,,
+1RB0LC_1LC0RB_0LE0LD_1LC---_0RA1LF_1LA1LF,,Bouncer + Chaotic Edge,,,
+1RB1LD_0RC1RC_1LA1RE_---1LE_1RF0RC_0RB0LF,,Bouncer + Chaotic Edge,,,
+1RB0LA_0RC0RB_1LD0RF_1LD0LE_1RA1LE_---1RE,,Bouncer + Chaotic Edge,,,
+1RB0LA_1RC0LA_1RD---_1LE1RF_1LF1LE_1LA0RF,,Bouncer + Chaotic Edge,,,
+1RB1RA_1LC0RA_1LF0LD_0LE0RB_1LB---_0RB0LB,,Bouncer + Chaotic Edge,,,
+1RB0LD_1RC0RD_1LA0RC_1RE1LB_1LF0LA_---0LE,,Bouncer + Chaotic Edge,,,
+1RB0RF_0RC---_0LD1RA_1RE1LF_1RC0RE_1LD0LF,,Bouncer + Chaotic Edge,,,
+1RB1RD_1LC0RD_0LE1RD_1RA0RB_---1LF_1RA0LF,,Bouncer + Chaotic Edge,,,
+1RB0RD_1RC0LF_0LA0RB_1RE---_1LB1RA_0LE0LF,,Bouncer + Chaotic Edge,,,
+1RB1LA_0LA0LC_---1LD_1LE1LB_1RF0RE_0LD0RE,,Bouncer + Chaotic Edge,,,
+1RB1RA_0LC0RF_1LD1LC_1RE1LB_---0RA_1RF0RD,,Bouncer + Chaotic Edge,,,
+1RB0RF_1RC0RD_0LD0LC_1RF1RE_1LC---_0RA1RD,,Bouncer + Chaotic Edge,,,
+1RB1RA_1LC1RE_---0LD_1LE1LD_0RA0LF_1LF0LB,,Bouncer + Chaotic Edge,,,
+1RB1LE_1LC1RD_0LA1LA_---1RE_1LF0LA_0LC0RF,,Bouncer + Chaotic Edge,,,
+1RB0LE_1LC1RD_1LA0RB_1RC1RB_1LF0LC_---0RC,,Bouncer + Chaotic Edge,,,
+1RB1LD_1RC0LA_1LA0RE_1LB1LA_1RF0RB_---0LB,,Bouncer + Chaotic Edge,,,
+1RB1LD_1RC0RC_1LD0RE_0LB0LA_0RF1LA_---1RC,,Bouncer + Chaotic Edge,,,
+1RB0LF_1LC0LA_---1RD_1RF1RE_1LF1RD_1LB0RE,,Bouncer + Chaotic Edge,,,
+1RB0LD_0RC1RA_1LD1RC_1LE0RF_---1LA_1LF0LA,,Bouncer + Chaotic Edge,,,
+1RB1RF_1LC0RF_1LE0LD_1RC0LB_---1RA_1LB1RA,,Bouncer + Chaotic Edge,,,
+1RB0RD_0RC0LB_0RD1RD_1LE1RA_1RC1LF_---1LA,,Bouncer + Chaotic Edge,,,
+1RB0LC_1LC0RE_1RA1LD_1LA1LC_1RF0RA_---0LA,,Bouncer + Chaotic Edge,,,
+1RB1RE_1RC0LD_1LB---_1RA1LD_1RA0RF_1RE0LC,,Bouncer + Chaotic Edge,,,
+1RB0RC_1LC0RB_1LD0LD_1RA1LE_---0LF_1LB1LF,,Bouncer + Chaotic Edge,,,
+1RB1RA_0RC0RB_1LC1LD_0LA1LE_1LF0LD_0RA---,HALT,Sync bouncer counter,Approx. 10^43.57,1,Peacemaker 
+1RB0RF_0LC---_1LD1LC_0LE0LD_1RE1RF_0RC1RA,HALT,Sync bouncer counter,Approx. 10^113.71,1,Peacemaker 
+1RB---_0LC1RF_1LE0RD_0RB1RC_1RD0LE_0RC1RA,,Sync bouncer counter,,,
+1RB0LA_0RC1RD_0LD1RE_1LA0RB_0RD0RF_0RA---,,Sync bouncer counter,,,
+1RB0LA_0RC1RD_0LD1RE_1LA0RB_0RD1RF_1RB---,,Sync bouncer counter,,,
+1RB0LF_0RC---_1RD0RA_1LE0RC_0LA0LE_1LE1LB,,Sync bouncer counter,,,
+1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA,,Sync bouncer counter,,,
+1RB0LA_0RC1RD_0LD1RE_1LA0RB_0RD0RF_0LA---,,Sync bouncer counter,,,
+1RB0LA_0RC1RD_0LD1RE_1LA0RB_0RD1RF_1RC---,,Sync bouncer counter,,,
+1RB0LF_1LC0RB_0LD1LA_0RA1LE_0LA1LF_0LD---,,Sync bouncer counter,,,
+1RB0LC_1LC0RB_0LD1LA_0RA1LE_0LA1LF_1LC---,,Sync bouncer counter,,,
+1RB0LF_1LC0RB_0LD1LA_0RA1LE_0LA1LC_0LD---,,Sync bouncer counter,,,
+1RB0LC_1LC0RB_0LD1LA_0RA1LE_0LA0LF_0LB---,,Sync bouncer counter,,,
+1RB0LC_1LC0RB_0LD1LA_0RA1LE_0LA1LF_0LD---,,Sync bouncer counter,,,
+1RB0RF_0LC1RA_0LD1LD_1RE1LC_0RB0RC_---0RC,NONHALT,Fractal in Bouncer,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB0RF_1LC0RD_---1RD_0LE1LD_1LA1LB_1RA1RF,NONHALT,Fractal in Bouncer,Easy fractal. Individual proof (January 2026 Round 2),1,mxdys
+1RB1RA_1RC0RA_1LD0RE_---1LE_0LF1LE_1LB1LC,NONHALT,Fractal in Bouncer,Easy fractal. Individual proof (January 2026 Round 2),1,mxdys
+1RB1RC_1LC0LE_1RF0LD_0RA1RD_1LB1LE_---1RD,NONHALT,Fractal in Bouncer,Easy fractal. Individual proof (January 2026 Round 2),1,mxdys
+1RB1RA_1LC1RE_0LD0LD_0LE1LF_1LA0RA_---1LC,,Fractal in Bouncer,,,
+1RB0LE_1RC1RE_0RD1RC_1LA0LB_1LF0RB_---1LD,,Fractal in Bouncer,,,
+1RB0LB_1LC1LB_1RD1LA_0RE0RE_0RA1RF_---1RD,,Fractal in Bouncer,,,
+1RB1LE_0LB1RC_0RD1RA_1RE1RF_1LC0LE_0RC---,,Fractal in Bouncer,,,
+1RB1LD_0RC0LE_1RD1RF_1LE0LD_0RC1RA_0RE---,,Fractal in Bouncer,,,
+1RB1RA_0RC0RA_1LD0RF_0LE---_0RA0LF_1LE0LC,NONHALT,Structural counter + bouncer,Individual proof (January 2026 Round 2),1,mxdys
+1RB1RA_0RC0RD_1LD0RF_0LE---_0RA0LF_1LE0LC,NONHALT,Structural counter + bouncer,Individual proof (January 2026 Round 2),1,mxdys
+1RB1LC_0RC1LF_1LD0RE_0LA0LE_0LA0LB_0LC---,NONHALT,Structural counter + bouncer,,1,Dyuan
+1RB1LC_0RC1LF_1LD0RE_0LA0LE_0LA0LB_0RC---,NONHALT,Structural counter + bouncer,,1,Dyuan
+1RB0RA_1RC0RE_0RD1RE_0LE---_1LF0LC_1RA0LC,,Structural counter + bouncer,,,
+1RB0RF_0LC---_1LD1LC_1RE0LA_1RA1RD_0RD0RB,,Chaotic Bell Class 1,,,
+1RB0RF_0LC1LB_1RD1LA_1RE0LC_0RA1RD_---0RC,,Chaotic Bell Class 1,,,
+1RB1RE_1RC0RF_0LD---_1LE1LD_1RA0LB_0RE0RF,,Chaotic Bell Class 1,,,
+1RB1RA_1LC0RD_1LD1LB_1RA0LE_0LB0LF_0RA---,,Chaotic Bell Class 1,,,
+1RB0LE_1RC1RA_1LD0RE_1LA1LD_1LD0RF_0RA---,,Chaotic Bell Class 1,,,
+1RB0LE_1RC1RB_1LD0RA_1LA1LC_0LC0LF_0RB---,,Chaotic Bell Class 1,,,
+1RB0LC_1RC1RA_1LD0RE_1LA1LD_0RA1RF_0LC---,,Chaotic Bell Class 1,,,
+1RB1RA_1LC0RD_1LD1LB_1RA0LE_0LB1LF_1RC---,,Chaotic Bell Class 1,,,
+1RB1RA_1LC0RE_1LD1LB_1RA0LE_1RA0LF_0LB---,,Chaotic Bell Class 1,,,
+1RB0LE_1RC1RB_1LD0RE_1LA1LC_1RB0LF_0LC---,,Chaotic Bell Class 1,,,
+1RB1RE_1RC0RF_0LD---_1LE1LD_1RA0LB_0RE0RC,,Chaotic Bell Class 1,,,
+1RB0RF_0LC---_1LD1LC_1RE0LA_1RA1RD_0RD0RF,,Chaotic Bell Class 1,,,
+1RB1RA_1LC0RD_1LD1LB_1LE0LF_0RA---_0LB0LF,,Chaotic Bell Class 1,,,
+1RB0LC_1RC1RA_1RD0RF_0LE---_1LA1LE_0RA0RF,,Chaotic Bell Class 1,,,
+1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0LC---,,Chaotic Bell Class 1,,,
+1RB0LE_1RC1RB_1LD0RA_1LA1LC_0LC1LF_0RA---,,Chaotic Bell Class 1,,,
+1RB1RD_1LC0RE_1LD1LC_1RA0LE_1LC0RF_0RD---,,Chaotic Bell Class 1,,,
+1RB0LC_1RC1RA_1RD0RF_0LE---_1LA1LE_0RA0RD,,Chaotic Bell Class 1,,,
+1RB0LC_1RC1RA_1LD0RE_1LA1LD_0RA0RF_0LD---,,Chaotic Bell Class 1,,,
+1RB0LE_0RC1RA_1RD0RF_0LE1LD_1RA1LC_---0RE,,Chaotic Bell Class 1,,,
+1RB1LD_1RC0LA_0RD1RB_1RE0RF_0LA1LE_---0RA,,Chaotic Bell Class 1,,,
+1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0RD---,,Chaotic Bell Class 1,,,
+1RB1RA_1LC0RD_1LD1LB_1LE0LF_0RA---_0LB0LE,,Chaotic Bell Class 1,,,
+1RB1LD_1RC1RB_1LA0RF_---0LE_0LC1LE_1RB1RE,NONHALT,Chaotic Bell Class 2,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB0LF_1LC1RD_1LA1LC_---0RE_0RA1RE_1LC1LE,NONHALT,Chaotic Bell Class 2,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB0RA_0LC1RA_1RC1LD_0LC1LE_1LF0LB_---0LA,NONHALT,Chaotic Bell Class 2,FAR (with mxdys's DFA generator) round 3,1,mxdys
+1RB0LC_1RC1RD_1LD1RF_0RB0LE_1LA0RE_0RD---,NONHALT,Chaotic Bell Class 2,FAR cert. (March 2026),1,mxdys
+1RB1RF_1LC1LB_1RD1LD_1RE0RA_---0LB_0LF0RC,,Chaotic Bell Class 2,,,
+1RB1RF_1RC1RB_1LD0RA_1LA1LE_---0LF_0LC1LF,,Chaotic Bell Class 2,,,
+1RB---_0RC0RD_1LD0RF_0LE0LC_1RA0LC_1RC0RA,,Chaotic Bell Class 2,,,
+1RB0LF_0RC1RD_0LD0RA_1RC0RE_1RF---_1LA0LB,,Chaotic Bell Class 2,,,
+1RB0LA_1LC1LA_0RD0LB_0RE1RC_1LB0RF_1RD---,,Chaotic Bell Class 2,,,
+1RB0RE_1LC0RA_0LD0LB_1RE0LB_1RF---_0RB0RC,,Chaotic Bell Class 2,,,
+1RB---_1LC0LD_1RD0LB_0RF1RE_1RF0RA_0LE0RC,,Chaotic Bell Class 2,,,
+1RB0LD_1RC---_0RD0RE_1LE0RF_0LA0LD_1RD0RB,,Chaotic Bell Class 2,,,
+1RB1RE_1LC1LF_1LD1LC_1RA0LB_---0RF_0RD1RF,,Chaotic Bell Class 2,,,
+1RB---_1RC0LE_1RD1RF_1LB0LB_0RD0LD_0RC0RA,,Chaotic Bell Class 2,,,
+1RB0LF_1LC1LA_1LD0LC_1RE1LB_0RB1RA_---0RD,,Chaotic Bell Class 2,,,
+1RB0LE_1RC0LB_1RD1RF_1RE0RB_1LA0RD_0RE---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LE_1RC1RF_1RD0RA_1LE0RC_1LC0LD_0RD---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LC_1RC0RA_1LA0LD_1LE0RB_1RD1LF_0LA---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LC_1RC0RA_1LA0LD_1LE0RB_1RB1LF_0LA---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LC_1RC0RA_1LA0LD_1LE0RB_1LC1LF_0LA---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RC_1LC0LD_1RA0LB_1LE0RA_1RD1LF_0LC---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LC_1LA1RF_1LD0LE_1RE0RA_1LC0RD_0RE---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB1RF_1RC0RE_1LD0RB_1RE0LC_1RA0LE_0RC---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RD_1LC0RA_1LA0LB_1RE0LC_1LC1RF_0RB---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RC_1LC0LD_1RA0LB_1LE0RA_1RA1LF_0LC---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RD_1LC0RA_1LA0LB_1RE0LC_1RA1RF_0RB---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RC_1LC0LD_1RA0LB_1LE0RA_1LB1LF_0LC---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0LE_1LC0RA_1LD0RC_1LE1LF_1LA0LC_0LA---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB0RD_1LC0RA_1LA0LB_1RE0LC_1LD1RF_0RB---,,Chaotic Bell Class 3,Part of Category 3,,
+1RB1LC_1LA0RE_0LD---_1RE0LF_1RF0RD_1LD0LB,,Chaotic Bell Class 3,"Part of Category 3, one of the machines with the least common transitions",,
+1RB0RE_1RC0RA_0LD0LB_0LA1LE_1LC1LF_0LA---,,Chaotic Bell Class 3,,,
+1RB1RA_0LC1RF_0LD1LD_1LE1LC_0RB0RA_---1RE,,Chaotic Bell Class 3,,,
+1RB0LC_1LA0RE_0LD0LB_1RA1LD_0RC1RF_0RA---,,Chaotic Bell Class 3,,,
+1RB1RF_0RC0RE_0RD1RA_1LE0LA_1LB0LD_0RD---,,Chaotic Bell Class 3,,,
+1RB0LC_1LA0RD_0LD1LF_0RE0RA_1LB1RE_0LB---,,Chaotic Bell Class 3,,,
+1RB0LF_1LC1RF_---1LD_0LE0LB_0RA0LA_0RA1RB,,Chaotic Bell Class 3,,,
+1RB1LA_1RC0LD_1LB0RE_0LA0LC_0RD1RF_0RB---,,Chaotic Bell Class 3,,,
+1RB0LB_0LC0RE_1LA1LD_0LB1LD_1RA0RF_1RA---,,Chaotic Bell Class 4,Possible bouncer,,
+1RB0LB_0LC0RE_1LA1LD_0LB1LF_1RA1RD_0LB---,,Chaotic Bell Class 4,Ran until sigma of 10^97,,Andrew Ducharme
+1RB0LB_0LC0RE_1LA1LD_0LB1LF_1RA0RE_0RC---,,Chaotic Bell Class 4,,,
+1RB1RE_1LC0RC_0RA0LD_1LB1LE_0RC1LF_---1RA,,Chaotic Bell Class 4,,,
+1RB1LA_0LB1LC_1RD0LD_0LA0RE_1RC1RF_0LD---,,Chaotic Bell Class 4,,,
+1RB0LB_0LC0RE_1LA1LD_0LB1RF_1RA1RD_---1LC,,Chaotic Bell Class 4,,,
+1RB0RE_1RC0RA_0LD0RB_1LA0LE_1LC1LF_0LC---,,Bell eats counter,Chaotic,,
+1RB0LD_0RC---_0LD0RF_1LE1LD_0LA0RD_0RB1RA,,Bell eats counter,Chaotic,1,mxdys
+1RB0LE_0RC---_1LC0RD_0RB1RA_1LF1LE_0LA1LF,,Bell eats counter,,,
+1RB0LC_1LC0RE_1LA1LD_1LA1LB_0RF1RA_---0RE,,Bell eats counter,,,
+1RB1LE_1RC0RB_0LC1LD_0LE0RD_1LA0LF_1LE---,,Bell eats counter,,,
+1RB1LC_1RC0RB_1LD0RF_1LA1LE_1LE0LD_---0RE,,Bell eats counter,,,
+1RB1RA_1LC1LE_1RF1LD_1RE0LD_0LB0RA_---0RC,,Bell eats counter,,,
+1RB0RA_1LC0LF_1LE0LD_1LB---_1RA1LB_0LB0RC,,Bell eats counter,,,
+1RB1LF_0RC0RB_0LD1LA_1LC0LE_0LA---_1LA1LF,,Bell eats counter,,,
+1RB0RF_1RC0LD_1RD0RA_1LE0LC_1LB0LE_0RC---,,Bell eats counter,,,
+1RB0LC_1LC0RE_1LA1LD_1LA1LF_0RB1RA_1LC---,,Bell eats counter,,,
+1RB0LF_1LC0RE_0LD1LC_1LA---_0RB1RA_0LE1LF,,Bell eats counter,,,
+1RB1RF_0RC0LB_1LD1RE_1LB1RF_---0RF_1RD0RA,,Bell eats counter,,,
+1RB0RF_1LC1RA_0RD0LC_1LB1RE_---0RA_1RC1RA,,Bell eats counter,,,
+1RB0LA_0LC0RB_1RA0RD_1LE0LD_1LF---_1LA1LC,,Bell eats counter,,,
+1RB0RA_1LC0LD_1LE1LD_0LB0RE_1RF0LA_---0RA,,Bell eats counter,,,
+1RB0LF_1LC0RE_0LD1LC_1LA---_0RB1RA_1LC1LF,,Bell eats counter,,,
+1RB0LF_1LC0RD_1LA1LC_---0RE_0RB1RA_1LC1LF,,Bell eats counter,,,
+1RB0RA_1LC0LD_1LE1LD_0LB0RF_1RA1LB_1RA---,,Bell eats counter,,,
+1RB0RA_1LC0LD_1LE1LD_0LB0RE_1RF1LB_---0RA,,Bell eats counter,,,
+1RB0RA_1LC0LF_1LE0LD_1LB---_1RA1LB_0LD0RC,,Bell eats counter,,,
+1RB0LF_1LC0RD_1LA1LC_---0RE_0RB1RA_0LE1LF,,Bell eats counter,,,
+1RB0RB_0LC0RA_1LE1LD_0LE---_1LF0LC_1RA1LB,,Bell eats counter,,,
+1RB0LC_1LC0RE_0LC0LD_1RD1LB_0RF1RA_0RB---,,Bell eats counter,,,
+1RB---_1RC1RE_1LD0RC_0RE0LD_1LC0LF_1RA0RF,,Bell eats counter,,,
+1RB0RE_1RC1RE_1LD1RA_1LA0LD_0RA0LF_1LD---,,Bell eats counter,,,
+1RB0RF_1RC0RE_1LD1RA_1LA0LD_1RA---_0RA0LB,,Bell eats counter,,,
+1RB0RC_1LC0RE_0LC0LD_1RD1LB_0RF1RA_0RB---,,Bell eats counter,,,
+1RB0RF_1LC0RE_0LC0LD_1RD1LB_0RF1RA_0RB---,,Bell eats counter,,,
+1RB0RA_1RC0RD_1RD0LC_1LE1RA_---1LF_1RB0LC,,Bell eats counter,,,
+1RB1RF_1RC0RA_1LD1RE_1LE0LE_0RA0LD_0RB---,,Bell eats counter,,,
+1RB1LD_1LC1RA_0LD0LC_0RE1RB_1RD0RF_0RB---,,Bell eats counter,,,
+1RB0RF_1RC0RE_1LD1RA_1LA0LD_1RA---_0RE0LB,,Bell eats counter,,,
+1RB1RE_1LC1RD_1LD0LC_1RA0LF_1RE0RA_---0LE,,Bell eats counter,,,
+1RB0RE_1LC1RD_1LD0LD_0RE0LC_1RA1RF_0RA---,,Bell eats counter,,,
+1RB0RE_1LC1RD_1LD0LC_1RA0RF_1RD---_0RD0LA,,Bell eats counter,,,
+1RB1RF_1LC1RE_---0LD_1LE0LD_1RA0RF_0RE0LB,,Bell eats counter,,,
+1RB0RC_1LC1RB_0RE1LD_0LC1LA_1RF1RA_---0RB,,Bell eats counter,,,
+1RB---_1RC0RF_1RD0RA_1LE1RB_1LB0LE_0RB0LC,,Bell eats counter,,,
+1RB1RF_1LC0RD_---0LD_1LE0LD_1RA0RF_0RE0LB,,Bell eats counter,,,
+1RB0RF_1RC1RF_1LD1RA_---0LE_1LA0LE_0RA0LC,,Bell eats counter,,,
+1RB0RA_1LC0RE_0LC0LD_1RD1LB_0RF1RA_0RB---,,Bell eats counter,,,
+1RB---_1RC0RF_1RD0RA_1LE1RB_1LB0LE_0RA0LC,,Bell eats counter,,,
+1RB1RE_1LC1RD_1LD0LC_1RA0RF_0RD---_0RD0LB,,Bell eats counter,,,
+1RB1RD_1LC0RB_0RD0LC_1LB0LE_1RF0RE_1RA---,,Bell eats counter,,,
+1RB0LA_1LC1RF_---1LD_1RE0LA_1RA0RB_1RE0RF,,Bell eats counter,,,
+1RB0RF_1RC1RF_1LD0RE_---0LE_1LA0LE_0RA0LC,,Bell eats counter,,,
+1RB0RC_0LC0LB_0LD1LC_0LE1LA_0LF---_1RF1RA,HALT,Bell-like,"Previously: 2/3 TC, 1/3 halt, halting cryptid candidate. Part of Category 1. H: 10^33,561,633",1; 2; 3,"racheline, mxdys"
+1RB---_1RC1RE_0RD0RF_0RE0RB_0LF0LA_1LE0LB,NONHALT,Bell-like,Simulated to 1e24469 steps. FAR cert.,"1, 2","Alistaire, Andrew Ducharme"
+1RB1LA_1RC0RA_1RD0RF_0LE1RB_1LC1LE_---0LE,NONHALT,Bell-like,"FAR cert. (Flipped machine, March 2026)",1,mxdys
+1RB1RC_1LC1LE_1RA1RD_0RF0RE_1LA0LB_---1RA,CRYPTID,Bell-like,A variant of Hydra and Antihydra,1,"mxdys, dyuan"
+1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---,CRYPTID,Bell-like,"Antihydra-like cryptid, probviously nonhalting",1; 2; 3,"dyuan, mxdys"
+1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA,CRYPTID,Bell-like,Antihydra. Part of Category 1,1,
+1RB0RD_0RC1RE_1RD0LA_1LE1LC_1RF0LD_---0RA,CRYPTID,Bell-like,Lucy's Moonlight. Part of Category 1,1,"Racheline, Shawn Ligocki"
+1RB1RA_0RC1RC_1LD0LF_0LE1LE_1RA0LB_---0LC,CRYPTID,Bell-like,One of (canonical) collection of 16 probviously halting tetrational cryptids,1,mxdys
+1RB---_0RC0RE_1RD1RF_1LE0LB_1RC0LD_1RC1RA,CRYPTID,Bell-like,Probviously halting cryptid,1,Racheline
+1RB0RE_1LC0RA_1LA1LD_1LC1LF_0LC0LB_1LE---,CRYPTID,Bell-like,Probviously halting cryptid,1,-d
+1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE,CRYPTID,Bell-like,Probviously halting cryptid,1,mxdys
+1RB0LC_1LC0RD_1LF1LA_1LB1RE_1RB1LE_---0LE,CRYPTID,Bell-like,Probviously halting tetrational cryptid,1,Racheline
+1RB0RE_1LC1LD_0RA0LD_1LB0LA_1RF1RA_---1LB,CRYPTID,Bell-like,Probviously halting tetrational cryptid,1,"Racheline, N1vi"
+1RB1RE_1LC1LD_---1LA_1LB1LE_0RF0RA_1LD1RF,CRYPTID,Bell-like,Probviously halting tetrational cryptid,1,Racheline
+1RB0LC_0LC0RF_1RD1LC_0RA1LE_---0LD_1LF1LA,CRYPTID,Bell-like,"Probviously halting tetrational cryptid, Part of Category 1",1,Racheline
+1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC,CRYPTID,Bell-like,"Probviously nonhalting cryptid, similar to Antihydra","1, 2",mxdys
+1RB0LB_1LC0RE_1LA1LD_0LC---_0RB0RF_1RE1RB,CRYPTID,Bell-like,"Probviously nonhalting cryptid, similar to Antihydra",1,Racheline
+1RB1LE_0LC0LB_1RD1LC_1RD1RA_1RF0LA_---1RE,CRYPTID,Bell-like,"Tetrational cryptid (3/5 of becoming TC, 2/5 of halting), see source 2 for more exact chances and refinements, Part of Category 1","1, 2",Racheline
+1RB0LC_1LA1RF_1LD1RF_1LE0LA_0RB---_0RA1RE,,Bell-like,Analysis of an almost identical machine (1RB0LC_1LA1RE_1LD1RE_1RE0LA_0RA1RF_0RB---),1,nerdyjoe
+1RB0LA_0RC0RB_1LD1LA_1LC1RE_1RF0RD_1LC---,,Bell-like,Probviously halting machine,1,"Peacemaker, Legion, hipparcos, dyuan"
+1RB1RF_1LC1RD_1LA1LC_1RA0RE_1RD1LA_---0LE,,Bell-like,"Simulated to 10^4600 steps, code with log reduction",1,nerdyjoe
+1RB1RD_1LC0LE_1RA0LB_1RA1RF_0RA0RC_1RE---,,Bell-like,Could be solvable,,
+1RB1LE_1LC1RC_1LA1RD_1LD0RB_0LC0LF_0LB---,,Bell-like,,1,-d
+1RB0LC_1LA1RE_1LD1RE_1RE0LA_0RA1RF_0RB---,,Bell-like,,1,nerdyjoe
+1RB0RB_1LC1RF_0RD0LB_0RA1LE_1LD---_0RB0RC,,Bell-like,,1,Racheline
+1RB1LF_1LC1RD_1RA1LA_0RA0RE_0RC---_1RF0LC,,Bell-like,,,
+1RB1RE_1LC1RE_---1LD_1LE0LB_0RF0LD_1RD1RA,,Bell-like,,,
+1RB0RD_1RC0LF_1LA0LB_---1RE_1LB1RA_0LC0RA,,Bell-like,,,
+1RB1RD_1RC1LD_0LA1RA_1LE0RC_---1LF_0LA0LB,,Bell-like,,,
+1RB---_1LC0RB_0LD0LC_1RE1RB_1RD1LF_1LA0LE,,Bell-like,,,
+1RB0RE_1LC1RF_---0LD_0LE1LB_1LF1LD_1RD0RA,,Bell-like,,,
+1RB0LE_1LC0RD_0RA1LD_0LC1RA_1LF1LA_---1LA,,Bell-like,,,
+1RB1LF_1LC0RD_---1LD_1RB1RE_1LA0LB_0LA0LE,,Bell-like,,,
+1RB0LF_1LC0LA_1RA0RD_---1RE_1LA1RC_0LB0RC,,Bell-like,,,
+1RB1LF_1RC1LD_1LB1LE_1LE0LD_0LA0RE_1RD---,,Bell-like,,,
+1RB1LC_1LA1LD_1LD0LC_0LE0RD_1RA1LF_1RC---,,Bell-like,,,
+1RB1RA_1LC0RB_1LE0LD_0LB1LD_0RA0LF_---0RE,,Bell-like,,,
+1RB0LD_0RC1RA_1RD1RE_1LA0LE_0RA0RF_1RC---,,Bell-like,,,
+1RB0RE_0LC1LE_0RD1LD_1RA1LF_1LC0RA_0LB---,,Bell-like,,,
+1RB1RA_1LC0RB_1LD0LB_1RA0LE_---1LF_1LB0LA,,Bell-like,,,
+1RB0LC_1LC0RE_1RF1LD_1LA0LB_1RD1RA_1LB---,,Bell-like,,,
+1RB0RF_0LC1RE_---1LD_1LE0LB_0RF0LD_1RD1RA,,Bell-like,,,
+1RB1RC_1LC0LE_0RA1RD_1RF1LB_1LD0LA_---0RC,,Bell-like,,,
+1RB1RF_1RC0LD_1LB1RA_1RE1LE_0RC0LB_0RB---,,Bell-like,,,
+1RB1LC_1LA0RD_0LB1LF_1RE1LC_1LC0RB_0LA---,,Bell-like,,,
+1RB0RE_1RC0RF_1LD1RA_1LB1LD_1RA1LB_---0LD,,Bell-like,,,
+1RB1LC_1RC0RF_1RD0LB_1RE0LD_1LF---_0RA1LA,,Bell-like,,,
+1RB---_1LC0LD_0RF0LD_0LE0RA_0LC1RA_1RC1RD,,Bell-like,,,
+1RB0LE_1RC0RF_0RD0RB_1RE0RC_1LA0LA_1RA---,,Bell-like,,,
+1RB1LC_1LA0RD_1LB1LF_1LE1RE_0LA0RB_0LB---,,Bell-like,,,
+1RB---_1RC1RE_1LD0LE_1RF0LC_0RD0RA_0RB1RD,,Bell-like,,,
+1RB0RE_0LC---_1RE1LD_0LE1LB_1LC0RF_1RA1LD,,Bell-like,,,
+1RB0RC_1LC1RA_0RF0LD_1LE0RB_1LB0LD_---1RD,,Bell-like,,,
+1RB---_0RC0RB_1LD1LE_1LC1RF_1RB0LE_1RA0RD,,Bell-like,,,
+1RB1LB_1LC1LA_1RD0LB_1RA1RE_1RF0RD_---1RD,,Bell-like,,,
+1RB1LE_1RC0RF_0LD---_1RF1LE_0LF1LC_1LD0RA,,Bell-like,,,
+1RB0LA_1RC0RE_0LD0RF_1LA1LD_0RA1RE_---0LC,,Bell-like,,,
+1RB0RE_1RC---_0RD0RC_1LE1LF_1LD1RA_1RC0LF,,Bell-like,,,
+1RB1RE_1LC0LB_1LD1LC_0RA1RF_1RD1RE_---1LB,,Bell-like,,,
+1RB0RA_0RC0LB_1LD1RF_1LE1RA_1RD1RB_1LA---,,Bell-like,,,
+1RB0LC_1RC1RE_1LA0LD_0RB0RA_1RB1RF_1RD---,,Bell-like,,,
+1RB0LD_0RC1RD_1LA1RA_1LE0LE_1RF0LA_0RA---,,Bell-like,,,
+1RB0RA_1LC0LE_1RA1LD_0LB1LF_1LD0RC_1LB---,,Bell-like,,,
+1RB0LE_1RC---_1RD1RE_1LA0RF_0RC0LA_0LC0RB,,Bell-like,,,
+1RB1RE_1LC0LE_1RD0LB_0RA1RC_0RC0RF_1RA---,,Bell-like,,,
+1RB1LB_0RC0LD_1LD1RE_1RC0LA_1RD1RF_0RD---,,Bell-like,,,
+1RB0RF_1LC---_1RD0LC_0RE0RD_1LF1LC_1LE1RA,,Bell-like,,,
+1RB1LB_1RC1LD_1LA1RE_1RD0LA_0RB0RF_0RA---,,Bell-like,,,
+1RB1LC_1LC0RF_0LF1LD_0LE---_1RF1LC_1LE0RA,,Bell-like,,,
+1RB1LA_1LC0RE_1LF1LD_1RE0LC_1LB1RA_---0LA,,Bell-like,,,
+1RB0RC_1LC1RF_1RE0LD_1LC1LA_---1RD_0RB0RA,,Bell-like,,,
+1RB0RF_1LC---_1LF1LD_1RE0LD_0RC0RE_1LC1RA,,Bell-like,,,
+1RB1RD_1LC0RD_1RF1RB_1LE0RA_0LB0LE_---0RC,,Bell-like,,,
+1RB0RE_1LC0RA_0LD1LB_1LA1LE_0LB0LF_1LD---,,Bell-like,,,
+1RB1RC_1LC0LF_1RF0LD_0RE1LB_1RC---_1LD0RA,,Bell-like,,,
+1RB1RA_0LC0RA_1RC1LD_0LB1LE_1LF0RC_---0LD,,Bell-like,,,
+1RB0RE_1LC1RD_1LA0LC_0RA1RF_1RD0LB_1RA---,,Bell-like,,,
+1RB0LA_0RC0RB_1LD1LA_1LC1RE_1RF0RD_1LA---,,Bell-like,,,
+1RB0RE_1RC1LF_0LD0RE_---1LE_1RA0LB_1LB0LC,,Bell-like,,,
+1RB1RE_1LC1LB_1LE0LD_1LE1LC_0RF1RA_---1RA,,Bell-like,,,
+1RB1LF_1LC0RD_---1LA_0LA0RE_1LA1RA_1LB0LD,,Bell-like,,,
+1RB1LD_0LC1RC_1RA1RD_1LE0RB_---1LF_0LC0LA,,Bell-like,,,
+1RB1LD_0RC1RC_1RD0RE_0LA0LF_0RF---_1RA1LA,,Bell-like,,,
+1RB0RE_0LC0RF_1LD1LC_1RA0LD_0RD1RE_---0LB,,Bell-like,,,
+1RB0LD_0RC0RE_1LC0LA_---1LE_0LF0RE_0RA0LE,NONHALT,Chaotic Ack-like Bell,Used to be a possible cryptid,1; 2; 3; 4,"Racheline, Alistaire"
+1RB1RA_1LC1LE_0LD0LB_0RA0RF_0LC0RA_1RD---,,Chaotic Ack-like Bell,No clear path to halting yet,1,Racheline
+1RB---_0RC0RA_1RD1RC_1LE1LF_0LB0LD_0LE0RC,,Chaotic Ack-like Bell,,,
+1RB0LA_1LC0RD_0LD1LA_1LF0RE_1LB1RE_1RD---,,Chaotic Ack-like Bell,,,
+1RB1RC_1LC0RC_0RA0LD_0LE---_0LF1LD_1LC1LE,,Chaotic Ack-like Bell,,,
+1RB0LB_0LC0RD_1LA1LB_0RE---_0RF1RD_1RB1RE,,Chaotic Ack-like Bell,,,
+1RB1RE_0RC0RA_0LD0LF_1LA1LD_0RB0LD_1LC---,,Chaotic Ack-like Bell,,,
+1RB0RF_1LC0RC_0LD1LC_1RE1LB_1RF---_1LE1RA,,Chaotic Ack-like Bell,,,
+1RB0LE_0RC0RA_1LC1RD_0LB0LE_1LA0LF_1LE---,,Chaotic Ack-like Bell,,,
+1RB0LF_1RC0RA_1LD0RB_0LE0LC_0LA0LC_0LB---,,Chaotic Ack-like Bell,,,
+1RB---_1RC0RA_1LD0RB_0LE0LC_1RE1LF_0RD0RB,,Chaotic Ack-like Bell,,,
+1RB1LC_1LA---_1LD0LA_1RE0LE_0RF1RE_1LB1RD,,Chaotic Ack-like Bell,,,
+1RB---_0LC1RF_0LD1LC_1RE1LB_0RE1LA_0RB0RA,,Skelet 17-like,,,
+1RB1LC_1RC---_0LD1RF_0LE1LE_0LA1LE_0RC0RB,,Skelet 17-like,,,
+1RB1LD_1RC---_0LD1RE_0LF1RE_0RC0RB_0LA1LF,,Skelet 17-like,,,
+1RB---_0LC1RF_0LD1LC_1RE1LB_1RD0LD_0RB0RA,,Skelet 17-like,,,
+1RB---_0LC1RF_1RA1LD_0LE1RF_0LC1LE_0RD0RA,,Skelet 17-like,,,
+1RB---_0RC1RF_0LD1RF_0LE1LD_1RA1LC_0RC0RA,,Skelet 17-like,,,
+1RB1LC_1RC---_0LD1RE_0LA1LD_0RC1RF_0LF0RB,,Skelet 17-like,,,
+1RB1LC_1RC0RF_0LD1RE_0LA1LD_0RC0RB_0RE---,,Skelet 17-like,,,
+1RB0RF_1LC1RA_0LE0LD_0LB0RD_1RD0RA_0RE---,,Quadratic Skelet 17-like,,,
+1RB0RF_1LC1RA_0LE0LD_0LB0RD_1RA0RA_0RE---,,Quadratic Skelet 17-like,,,
+1RB1RA_0LC1RE_1RD1LB_0RA---_0RB0RF_1LF0RC,,Quadratic Skelet 17-like,,,
+1RB1RA_0LC1RE_1RD1LB_0RA---_0RE0RF_1LF0RC,,Quadratic Skelet 17-like,,,
+1RB0RF_1LC1RA_0LE0LD_0LB1LC_1RD0RA_0RE---,,Quadratic Skelet 17-like,,,
+1RB0LA_0RC1RF_1LC0RD_1RC0LE_1LA1RA_1RD---,,Quadratic Skelet 17-like,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA1RF_1RB---,NONHALT,Skelet 1-like Class 1,Translated Cycler (Sk1like_TC_v1.v) (March 2026),1,mxdys
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_1LA---,NONHALT,Skelet 1-like Class 1,Translated Cycler (Sk1like_TC_v1.v) (March 2026),1,mxdys
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_1RD---,NONHALT,Skelet 1-like Class 1,Translated Cycler (Sk1like_TC_v1.v) (March 2026),1,mxdys
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0RE---,NONHALT,Skelet 1-like Class 1,Translated Cycler (Sk1like_TC_v2.v) (March 2026),1,mxdys
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0RB---,NONHALT,Skelet 1-like Class 1,Translated Cycler (TCv3.v) (March 2026),1; 2,"prurq, mxdys"
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0LD---,NONHALT,Skelet 1-like Class 1,Translated Cycler (preperiod about 10^12) (TCv3.v) (March 2026),1; 2,"prurq, Shawn Ligocki"
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_1RE---,,Skelet 1-like Class 1,~10^64 tape size and doesn't halt or become a TC yet - mxdys,1,hipparcos
+1RB0LC_1LA0RD_1RA0LA_1RE1RD_1RA1RF_1LC---,,Skelet 1-like Class 1,Strange ternary counter,1,hipparcos
+1RB0LC_1LC0RE_1LD1LB_1LA1LD_1RF0RA_---1RE,,Skelet 1-like Class 1,,1,hipparcos
+1RB0LB_1RC0LA_1RD---_0RE1LD_1LF0RF_1LA1RB,,Skelet 1-like Class 1,,,
+1RB0LD_1RC0RF_1LA1RF_0LA0RE_1LD---_0RA0RD,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0RC---,,Skelet 1-like Class 1,,,
+1RB1LD_1RC1RE_1LA0RA_1RC0LB_0LA1RF_---1RB,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_1RA---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_1RC---,,Skelet 1-like Class 1,,,
+1RB1RC_1LC1LE_1RD0RA_1LB0RA_0LD1LF_1LD---,,Skelet 1-like Class 1,,,
+1RB0RE_0RC1RE_1RD1LE_0LE---_1RA1LF_1RF0LC,,Skelet 1-like Class 1,,,
+1RB0LD_1RC0RF_0LD0LE_1RF1LC_0LB1LE_0RA---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0RD---,,Skelet 1-like Class 1,,,
+1RB1LD_1RC1RE_1LA0RA_1RC0LB_0LA1RF_---1RD,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0LC---,,Skelet 1-like Class 1,,,
+1RB1RB_0LC0RE_1LD1LB_1RE1LF_1RC0RA_1LC---,,Skelet 1-like Class 1,,,
+1RB---_0LC0LB_1RF0LD_1RE0RB_1LB0RC_0RD1RA,,Skelet 1-like Class 1,,,
+1RB0RB_1RC1LC_0LD1RA_1LF1LE_0LA1LC_1LB---,,Skelet 1-like Class 1,,,
+1RB0LB_1LC1RE_1LA1LD_0RB1LF_1LA0RC_---1LC,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0LC---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_1LD---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0RB---,,Skelet 1-like Class 1,,,
+1RB1LD_1LC0RE_1LA0LD_0LB0LE_0RB0LF_1RE---,,Skelet 1-like Class 1,,,
+1RB1RE_1RC1LE_1LD0RA_1LF0LA_1LB0LC_---1RA,,Skelet 1-like Class 1,,,
+1RB0LD_1RC1RE_1LD0LA_1RB1LA_0RF---_1RA1LB,,Skelet 1-like Class 1,,,
+1RB0LE_0RC---_1RD0LA_1RE0RA_0LF1LD_1LC1RF,,Skelet 1-like Class 1,,,
+1RB1LB_1RC0LA_1RD0RE_1LA0LB_1RF---_1RB1LD,,Skelet 1-like Class 1,,,
+1RB0LD_1RC1RE_1LA0LD_1LB1LC_0RA1RF_1RA---,,Skelet 1-like Class 1,,,
+1RB1RE_0LC0RE_1LD1LB_1RE0LF_1RC0RA_1LC---,,Skelet 1-like Class 1,,,
+1RB1RF_1LC0RE_1RD0LC_0LB0RA_1LD1RD_1RB---,,Skelet 1-like Class 1,,,
+1RB1RE_1LC1RB_1RA0LD_1RC0LB_0RF---_0LD1RA,,Skelet 1-like Class 1,,,
+1RB1RE_1LC0RC_1RA1LD_1RB0LA_0LC1RF_---1RD,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0RA---,,Skelet 1-like Class 1,,,
+1RB0RE_1LC1LF_1RA1LD_1LB---_1RF1RF_0LB0RA,,Skelet 1-like Class 1,,,
+1RB---_0RC0LA_1LD0RB_1LE0LF_1RC1LF_0LC0LB,,Skelet 1-like Class 1,,,
+1RB1LD_0RC---_1RD1LE_1RE0LA_1RF1RB_1LA0LD,,Skelet 1-like Class 1,,,
+1RB0LD_0LB1RC_0RD---_1RE0RF_1LF0RA_0LA0LF,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_1LA---,,Skelet 1-like Class 1,,,
+1RB0RF_1LC1RF_1RA0LD_0LC0RE_1LD---_0RC0RD,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0LA---,,Skelet 1-like Class 1,,,
+1RB0RE_1LC0RE_1LA1LD_0LB1LF_1RC1RA_1LB---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0RE---,,Skelet 1-like Class 1,,,
+1RB0RD_0LC0RA_1LA1LC_1RE0LF_0RA1RF_1LB---,,Skelet 1-like Class 1,,,
+1RB1RD_0LC0LB_0RE0LD_1LB0RB_1RF---_0RA0RC,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_1LC---,,Skelet 1-like Class 1,,,
+1RB0LF_0RC0LC_1LA1LD_1RE1LC_---1RA_0LC0RD,,Skelet 1-like Class 1,,,
+1RB0LB_1RC1LD_1LD0RD_1LE0RC_1LF---_0LA1RF,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_1LB---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_1LD---,,Skelet 1-like Class 1,,,
+1RB1LF_1LC0RD_0LD0LC_1RE0LA_0RA0RC_0RE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_1RE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LB_1LA1RF_0LD---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_0RE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_1RB---,,Skelet 1-like Class 1,,,
+1RB---_1RC1RF_1LD1RA_1LB0LE_1LF1LF_0RB0LD,,Skelet 1-like Class 1,,,
+1RB0RC_1LC1RF_1RA1LD_1RD0LE_1LD1LC_0RE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0LE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0RA---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_0RB---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0LE---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA1RF_1RE---,,Skelet 1-like Class 1,,,
+1RB0RE_1LC1LF_1RA0LD_1LB---_1RF1RA_0LB0RA,,Skelet 1-like Class 1,,,
+1RB0LD_1LC0RD_1RE0RA_1LE0RF_1LA1RC_0LB---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA1RF_0RC---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_1RA---,,Skelet 1-like Class 1,,,
+1RB1LF_0RC1RC_1LD0RD_0LE0LA_1RA0LB_---1LD,,Skelet 1-like Class 1,,,
+1RB1LE_1RC1LF_0RD1RD_1LE0RE_0LA0LB_---1LE,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_0LB---,,Skelet 1-like Class 1,,,
+1RB1LC_0LC---_1RE1LD_1RD0LA_1RF0RC_0RA1RC,,Skelet 1-like Class 1,,,
+1RB0LB_1RC0LA_1LB0RD_1RE1RD_1RB1RF_1LA---,,Skelet 1-like Class 1,,,
+1RB---_1RC1LE_1RD0LF_1RE0RA_1LF0LC_1RC1LC,,Skelet 1-like Class 1,,,
+1RB0RD_0LC0LF_1RD1LB_0RE---_1RA0LC_0LA1LF,,Skelet 1-like Class 1,,,
+1RB1RF_1LC1RD_1RA1LD_1RE0LA_---0RC_0LC1RB,,Skelet 1-like Class 1,,,
+1RB0RC_1LC1RC_1LD0RB_1LA0LE_1LF---_1LC1RA,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_1LB---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_0LA---,,Skelet 1-like Class 1,,,
+1RB0RF_1LC0RA_0LD0LB_1RD1LE_0RC0RA_1RA---,,Skelet 1-like Class 1,,,
+1RB---_0RC0LD_1RD1RC_1LB0LE_1LF0RA_0LD1LA,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RE_1RD1LF_1LE0RA_0LA0LE_0RB---,,Skelet 1-like Class 1,,,
+1RB1RE_1LC1RF_1LA0LD_1LE1RD_0RA0LC_0LA---,,Skelet 1-like Class 1,,,
+1RB0RE_1LC1LF_1RA1LD_0LB---_1RF1LE_0LB0RA,,Skelet 1-like Class 1,,,
+1RB---_1LC0RC_0LD0LC_1RE1RA_0RD1LF_0LE0LF,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_0LD---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA1RF_0RE---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_0RE---,,Skelet 1-like Class 1,,,
+1RB1RE_1LC0LD_1RA0LD_1LA1LB_0RC1RF_1RC---,,Skelet 1-like Class 1,,,
+1RB1RB_1LC1RF_1RA1LD_1RE0LC_---1RC_1LC0RD,,Skelet 1-like Class 1,,,
+1RB1LE_1LC1RE_1LE1LD_1LC0LA_1RF0LA_---0RA,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0LE1RF_0RA---,,Skelet 1-like Class 1,,,
+1RB1LC_1RC0LE_1RD1RF_1LE0LB_1RF1LB_0RA---,,Skelet 1-like Class 1,,,
+1RB0LF_1LC0RC_1RA1LD_0RB0LE_1LC0LB_---1LA,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_1LB---,,Skelet 1-like Class 1,,,
+1RB1LD_1RC1RF_1LA1RD_1RE0LB_---0RA_0LA1RC,,Skelet 1-like Class 1,,,
+1RB1LA_0LC0RE_1LD1LB_1RE1LF_1RC0RA_0RC---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE1LF_1LA0LB_0LB---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC1RF_1RD0RE_1LE0RA_0LA0LE_1LD---,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA1RF_0LD---,,Skelet 1-like Class 1,,,
+1RB0LD_1LC1RE_1LA1RC_1RA0LC_0RF---_0LD1RB,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RB_1LD0RE_0LE0LF_1LA0LB_0RA---,,Skelet 1-like Class 1,,,
+1RB1RD_1RC1RB_1LD0RA_1RA0LE_1LF0LC_---1LE,,Skelet 1-like Class 1,,,
+1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_1RD---,,Skelet 1-like Class 1,,,
+1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0LD---,,Skelet 1-like Class 1,,,
+1RB1LE_0RC---_1RD0LA_1RE0RB_0LA0LF_0LD1LF,,Skelet 1-like Class 1,,,
+1RB1RD_1LC0RF_0LA0RA_1LE1RA_---1LB_0RA0LD,,Skelet 1-like Class 1,,,
+1RB1RE_1LC0RF_1LA0LD_1LE1LC_0RA0LC_1RA---,,Skelet 1-like Class 1,,,
+1RB1LF_1RC0RA_0RD1RA_1RE1LA_0LA---_1RF0LD,,Skelet 1-like Class 1,,,
+1RB0RB_1LC0RA_1LE0LD_1LC1LF_1RA0LD_1LC---,,Skelet 1-like Class 2,,1,hipparcos
+1RB0RE_1LC0RE_1LD0LD_1RA0LC_1RA1RF_1RA---,,Skelet 1-like Class 2,Machine with the most common transitions,,
+1RB0LD_1RC0RA_1RD1RF_1LA0LE_1RE1LD_0RB---,,Skelet 1-like Class 2,,,
+1RB1LB_0LC1RD_0RA1LC_0RB1RE_0RD0LF_---1LE,,Skelet 1-like Class 2,,,
+1RB1RF_1LC0LE_1RD0LB_1RA0RC_1RE1LB_0RD---,,Skelet 1-like Class 2,,,
+1RB0RF_1RC0RB_1LD0RA_1LE0LD_1RB0LC_1LA---,,Skelet 1-like Class 2,,,
+1RB0LD_1RC0RE_1LD0RE_1LA0LA_1RB1RF_1RB---,,Skelet 1-like Class 2,,,
+1RB0LC_1RC0RC_1LD0RB_1LA0LE_1LD1LF_1LD---,,Skelet 1-like Class 2,,,
+1RB0LE_1RC0RC_1LD0RB_1LA0LE_1LD1LF_1LD---,,Skelet 1-like Class 2,,,
+1RB0RA_1LC0RE_1LD0LC_1RA0LB_1RA0RF_1LE---,,Skelet 1-like Class 2,,,
+1RB0RD_1LC0RA_---1RD_1RA1LE_1RC0LF_1LE0LB,,Skelet 1-like Class 2,,,
+1RB0RE_1LC0RD_1LD0LD_1RA0LC_1RA1RF_1RA---,,Skelet 1-like Class 2,,,
+1RB0RD_1RC1RF_1LD0LE_1RA0LC_1RE1LC_0RA---,,Skelet 1-like Class 2,,,
+1RB0RE_1LC0RA_1LD0LB_1LA1LF_1LE1RA_0LC---,,Skelet 1-like Class 2,,,
+1RB---_1LC0LA_1LD0LC_1RE0LB_1RF0RE_1LC0RD,,Skelet 1-like Class 2,,,
+1RB1LB_1LC1RE_0RD0LB_0LB1RA_1LA0RF_---0RC,NONHALT,Monotone list,FAR cert. ,1,Andrew Ducharme
+1RB1LE_0LC0RA_0RA1LD_1LA1RA_1RD0LF_---0LB,NONHALT,Monotone list,Simulated to 1.165e15 steps. FAR cert.,"1, 2","Alistaire, mxdys"
+1RB0LD_1LC1RC_1RE1LA_---0LE_0LF0RC_0RC1LB,NONHALT,Monotone list,FAR cert.,1,mxdys
+1RB1LE_0LC0RF_1LD1RD_1RC1RA_0LB0LA_0RC---,,Monotone list,Possibly a unary counter variant of Skelet 17,1,hi529
+1RB1RA_1LC1RE_---1LD_1LE0LF_0RA0LB_0RF0LA,,Monotone list,,,
+1RB1RF_0LC0RB_1LA0LD_1LE---_1RF1LF_1LC0RA,,Monotone list,,,
+1RB1RA_1LC1RE_1LA1LD_1LC0LF_---0RA_1LA0LA,,Monotone list,,,
+1RB---_0RC0LF_1LD0RE_1RC0LB_1RD1RA_1LB0LC,,Monotone list,,,
+1RB0LE_0RC1RB_1LD0RA_1LA---_1LA1LF_0LE1LC,,Monotone list,,,
+1RB0LE_0RC---_1RD0LA_1RE0RA_1LC0LF_0RC1LC,,Monotone list,,,
+1RB1LE_0RC0LC_1LD0RA_0LA0LF_0LC0LE_0LD---,,Monotone list,,,
+1RB0RF_1LC0RD_1LA0LD_1LE0RA_0LB---_0LB1RB,,Monotone list,,,
+1RB0LC_1LA0RD_0RB0LF_1RA1RE_1RC---_1LC0LB,,Monotone list,,,
+1RB0LC_0RC0RF_1LD1RE_0LA0RA_0RA0RE_0RB---,,Monotone list,,,
+1RB0LC_1LA0RD_1LB1LF_0LA0RE_1RD0RA_1LD---,,Monotone list,,,
+1RB0LA_0LC0RD_0RE1LA_0RC1LB_1LE0LF_1RD---,,Monotone list,,,
+1RB0RF_0LC0RD_1LD1LC_1RE1LB_---1RA_0LF0RC,,Monotone list,,,
+1RB1RC_1LA1RA_1RE1LD_0LE0LC_0LB0RF_0RB---,,Monotone list,,,
+1RB0LC_1RC---_1LD0RE_0LA1LD_1RC1RF_0RE1RA,,Monotone list,,,
+1RB1LB_1LC0RE_1LE0LD_1LA---_1RF1RB_0LC0RF,,Monotone list,,,
+1RB---_0LC0LF_1RD0LB_1RE0RC_0RF1RA_1LB0RC,,List merging,Analysis and Python code,1,mxdys
+1RB0LC_0RC0RA_1LD0RB_1LE0LC_0LA1LF_1LB---,,List merging,Similar to 1RB---_0LC0LF_1RD0LB_1RE0RC_0RF1RA_1LB0RC,,
+1RB0RE_0RC1RF_1LD0RE_0LE0LC_1RA0LD_1RD---,,List merging,Similar to 1RB---_0LC0LF_1RD0LB_1RE0RC_0RF1RA_1LB0RC,,
+1RB1LC_1LC0RD_0LF1LA_1LD0RE_0RB0LA_0LA---,,List merging,,,
+1RB0RD_1LC1LA_1RA0LD_0LC0RE_0LB1RF_0RA---,,List merging,,,
+1RB0LE_0RC1RD_0RD---_1LA1RB_1RE0LF_0LA0RD,,List merging,,,
+1RB---_0RC1RD_1LA0LA_1LE0RB_1LF1LE_1LC0LD,,Chaotic 1dCA-like in bell,,1,mxdys
+1RB0RE_0RC---_1LD1LE_1LE1LD_1RF0LC_1RA1RF,,Chaotic 1dCA-like in bell,,1,mxdys
+1RB1RA_1LC0RF_1LD1LC_1LE0LB_0LF---_1RA1RB,,Chaotic 1dCA-like in bell,,,
+1RB0LE_1RC1RB_1RD0RA_0RE---_1LF1LA_1LA1LF,,Chaotic 1dCA-like in bell,,,
+1RB0RE_1RC0RC_1LD---_0LB1LE_1RF0LD_1RA1RF,,Chaotic 1dCA-like in bell,,,
+1RB0RB_1LC---_0LA1LD_1RE0LC_1RF1RE_1RA0RD,,Chaotic 1dCA-like in bell,,,
+1RB0LF_1RC1RB_1RD0RA_1RE0RE_1LF---_0LD1LA,,Chaotic 1dCA-like in bell,,,
+1RB1RC_1RC1RB_1LD0RA_1LE1LD_1LF0LC_0LA---,,Chaotic 1dCA-like in bell,,,
+1RB1RA_1RC0RF_1RD0RD_1LE---_0LC1LF_1RA0LE,,Chaotic 1dCA-like in bell,,,
+1RB1RE_1LC0LC_1RD1LB_0RB1LA_1RF1RA_---0RD,NONHALT,Chaotic 1dCA-like in bouncer,FAR cert.,1,Andrew Ducharme
+1RB0RB_1LC1RA_0LA1RD_1LA1LE_1LF1LD_---0LC,NONHALT,Chaotic 1dCA-like in bouncer,FAR cert.,1,mxdys
+1RB0RF_1LC1RA_1RA0LD_1RE0LB_0RC---_1RB1RD,EQUIVALENCE,Chaotic 1dCA-like in bouncer,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB0LD_1RC0RE_1LA1RB_1RF0LC_1RC1RD_0RA---,EQUIVALENCE,Chaotic 1dCA-like in bouncer,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB1LC_1LC0RE_1LA0LD_1LA1LE_1LF0RA_0LB---,EQUIVALENCE,Chaotic 1dCA-like in bouncer,Merged into another equivalence class in April 2026.,"1, 2","mxdys, -d"
+1RB---_0RC1RD_1LD1LF_1LE0RB_1RF1LD_1LA0LC,,Chaotic 1dCA-like in bouncer,Should be CTL-able,1,Legion
+1RB1LB_1LC0RD_0LE1LA_0RF1RA_1LE0LA_---0RB,,Chaotic 1dCA-like in bouncer,,,
+1RB---_0RC0LA_1LD0RB_1LE1LD_1LF0LC_1LB1RE,,Chaotic 1dCA-like in bouncer,,,
+1RB0LE_0RC---_1RD0LA_1RE0RF_1LC1RD_1RE1RA,,Chaotic 1dCA-like in bouncer,,,
+1RB0LE_1RC0RE_1RD0RA_1RE1LC_0LA0RF_1LE---,,Chaotic 1dCA-like in bouncer,,,
+1RB1RA_1RC0RE_1RD1LB_0LE0RF_1RA0LD_1LD---,,Chaotic 1dCA-like in bouncer,,,
+1RB---_0RC0LA_1LD0RB_1LE0LB_1LF0LC_1LB1RE,,Chaotic 1dCA-like in bouncer,,,
+1RB1RE_1LC0RA_---1LD_1LA0LF_0LB0LC_1RB0LB,,Chaotic 1dCA-like in bouncer,,,
+1RB1LE_0LC0RF_1RD0LB_1RE1RD_1RA0RC_1LB---,,Chaotic 1dCA-like in bouncer,,,
+1RB0RC_0LA0RA_0LD0RA_1LE---_0LF1LB_1LA1LD,,Chaotic 1dCA-like in bouncer,,,
+1RB0RE_1RC1RE_1LD1LC_0RB0LC_1RF0RB_---1RA,,Chaotic 1dCA-like in bouncer,,,
+1RB0RD_1RC0RE_1RD1LB_0LE0RF_1RA0LD_1LD---,,Chaotic 1dCA-like in bouncer,,,
+1RB1RD_1LC0LC_0RD0LB_1RF0LE_0RD---_0RA1RC,,Chaotic 1dCA-like in bouncer,,,
+1RB0LC_1LC0RF_1LD1RC_1LA0RE_1LB1RD_---0RD,,Chaotic 1dCA-like in bouncer,,,
+1RB---_1LC1LD_0LD0RD_1RF1LE_0LF1LA_0RB0LC,HALT,,10^^3±2 steps,1,mxdys
+1RB---_0RC1RA_0LD0RE_1RE0LE_0RF0LE_1LC1RB,HALT,,10^^6±2 steps,1,mxdys
+1RB---_0RC1RA_0LD0RE_1RE0LE_0RF1RC_1LC1RB,HALT,,10^^6±2 steps,1,mxdys
+1RB0RB_0RC0LF_0RD0RA_0LE---_1LE0LA_1LF1RA,HALT,,"Halts after roughly 2^4650000000 steps, verified",1,Racheline
+1RB1RE_1LC0LB_0RD1LB_1RA0RE_0LF1RD_1RC---,HALT,,Individual proof (November 2025) ~2^100 steps,1,mxdys
+1RB0RA_0LC1RA_1LF0LD_0RE1LC_1LB---_1LA1LD,HALT,,Individual proof (November 2025) ~2^100 steps,1,mxdys
+1RB---_0RC1RA_0LD0RE_1RE1LC_0RF0LF_1LC1RB,HALT,,"Shift-overflow bouncer counter, 10^^3±2 steps","1, 2","Alistaire, hipparcos, mxdys"
+1RB1RF_0LB1LC_1LD1LF_1RE0LA_---0RA_1RA0RD,HALT,,"Shift-overflow fibonacci counter, halts after about 10^66 steps, verified",1,Racheline
+1RB0LF_0RC1RA_1LD0RB_1LE---_0LD0LA_1LF0RE,NONHALT,,Bell which almost resets the tape. Verified via Inductive decider by mxdys.,1,"Peacemaker, mxdys"
+1RB0RA_0LC0RA_0LE1LD_1LC0LF_1LA0LD_0LA---,NONHALT,,"Block size 203 (=7*29, the two optimal block sizes of the two phases, bouncer and TC). Verified",1,Alistaire
+1RB0RE_1LC0LB_0RD0LB_0RA1RE_1RD0RF_0RB---,NONHALT,,"Block size 203 (=7*29, the two optimal block sizes of the two phases, bouncer and TC). Verified",1,Alistaire
+1RB1RF_1RC0RA_1LD1RC_1LE0LE_0RA0LD_0RB---,NONHALT,,BMO 7 (verified result),1,"Pomme, mxdys, Shawn Ligocki, star"
+1RB1RD_1LC0RF_1RA1LD_0RE0LB_---1RC_1RA1RF,NONHALT,,Equivalency to Skelet 1 verified,1,hipparcos
+1RB1RD_1LC0RC_1RA1LD_0RE0LB_0RF1LE_---1RC,NONHALT,,Equivalency to Skelet 1 verified,1,hipparcos
+1RB1RF_1RC0RE_0LD1RE_---1LE_1RA1LF_0RC0LB,NONHALT,,Equivalency to Skelet 1 verified,1,hipparcos
+1RB1RA_1LC0RD_1RF1LD_0RE1LC_---0LC_1RE0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LB_1RC---_1LD0RD_1RF0LE_0LD0LC_0RA1RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LE_0RC0RF_1RD0RC_1LA0LD_1LD---_1LF1RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LB_1LC0RE_1RD0LD_1LA0RF_0RA1RD_1RE---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_1LC0RF_0LE0LD_1LB1RD_1LA1LD_1RD1RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RE_1LC0RA_1LD1LB_0LE0LF_1RF0LE_0LB---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RA_1RC0RA_1LD1LC_---0LE_1LF1LE_1RA0LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LC_1RC0LF_0RD0RB_1LE1LA_0LA---_1RA1LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LE_1RC1LB_1LD0RA_0LA1LD_0LF0LC_---0LB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RA_1LC0RE_1LF1LD_1LE0LA_0RA0LC_---1LC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LA_0RC1RE_0RD0LF_1LE1RA_0LC---_1LC1RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RA_1LC0LE_1LD0LB_1RA0LF_1LE0RD_1LA---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RA_1LC0LD_---1LD_0LE1RE_0RA1LF_0LB1LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RE_0RC0RD_1LD0RC_0RE---_1RA0LF_1LE0LC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RC_1LC0RA_1RA0LD_0LB0LE_0LF1LD_---1RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_1RC0RF_1RD1LC_1LA0RB_0LA0LD_1RA---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LF_1RC0RA_1LD0LE_---1LC_1LA1LE_1RA1RC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1LC0RE_1RE0LD_0LC0LB_1RA0RF_1RC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_0RC1RF_1LD1RC_0LE0LE_1RA0LC_0RD0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_0RC0RF_1RD1RF_0RE---_1LF1LA_1RA1LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RE_1LC0RA_1LD1LB_0LE0LF_1RF1RB_0LB---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LC_1LA1RF_1LD1RB_0LE0RD_1LB---_1LD0RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RE_1LC0RA_1LA0LD_1LB0LF_0RB0LE_1LC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LB_1RC0LE_1RD---_0RE1RF_1LA1RE_0RA0RC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LD_0LC0LF_0LD1LB_1RE0RE_0RA---_0LB0RD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RA_1LC1RE_1LD0LC_1LA1LF_1LC0RA_---0LB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_0RC0RF_1RD1RF_1LA---_1LF1LA_1RA1LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LF_0RC0RE_1LD1RA_1LE1RD_0LA0LD_---0RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RF_0LC0RA_0LD1LB_0RE0LD_1RA---_1LC0RD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LE_0LC1RA_0RE0LD_1LB1LA_1LA0RF_---0RC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LE_0RC0RF_1RD1RE_1LA0LA_0RD0LD_1RC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LF_0RC0RA_1LD1LE_0LE---_1RA0LB_1RE1LC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_1RC0LF_1RD0RA_1RE1LD_1LB0RC_0LB0LE,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RE_1LC---_1RF0LD_1LE1LC_1RC1LE_0RA0RE,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LB_1LC0LD_0LF1LA_1RE1RD_1LA0RE_1LE---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_0RC1RF_1LD1RC_1RE0LE_1RA0LC_0RD0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RA_1LC0RD_1RA0LD_0RE1LF_0LB1LC_0LC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RE_0RC0RD_1LD1LE_0RE---_1RA0LF_1LE0LC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LF_1RC1RA_0RD0RE_1LE1LA_0RA---_1LA0LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LC_1RC0RF_1LA1LD_1RE0RA_1RB1RD_1RD---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RF_0RC1RE_1RD---_1RE0LD_1LA0RA_1LD1LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RD_1LC0RF_1LD0LC_1RA0RE_1RE0LB_1RC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LD_0RC---_1RD0RF_1LE1RC_0LA1LE_0LA0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1RC1RB_1LD1RF_1RA0LE_0LD1LD_0RB---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1LA1RC_1RD0RB_1LE0LD_---1LF_1RA0LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_1LC0RC_1RF0LD_1LE---_0LF1LC_1LA0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LD_1RC---_0RD1RF_1LE1RD_1RA0LA_0RE0RB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RF_1RC1LB_1LD0RA_1RA0LE_0LD0LC_1RD---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0RF_1RC0LD_1RD0RA_1LB1LE_0LB0RE_1RC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_0RC0RB_1LD0LA_1LC---_0RF1LF_1LA1RF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LD_1RC1RB_1LA0RB_---0LE_1LA0LF_0RF1LA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1RC0LF_0RD0RA_1RE1RA_0RF---_1LA1LB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1RC0LF_0RD0RA_1RE1RA_1LB---_1LA1LB,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LC_1LC0RF_1LE0LD_1LB---_1LA1RE_0RB0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LB_1RC0LA_0LD1RE_1LB1LD_1RF0RB_---1LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LE_1RC1LB_1RD1RC_1LA1RF_0LA1LA_0RC---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1LC0RC_1LD0RA_1LE---_0LA1LF_0LB0LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_1RC1RE_1LD0LD_1RF1LE_0RC0LC_0RB0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RC_0RC---_1LD0RE_1LE0RF_0LA0LD_1LC1RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LD_1LC0RA_1RC1RA_0LF0LE_1LA0LB_---1LC,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RD_1RC0LA_1RD0RB_1LE0LF_---1LD_1LB1LF,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LE_1RC0LD_1RD0LA_0RE0RC_1LF1LB_0LB---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LF_1RC1RA_0RD0RE_1LE0RD_0RA---_1LA0LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LA_1LC0RD_0LD1LC_1RA1LE_0LF0LB_---0LA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LC_0RC0RD_1LA1LE_0LC0RB_0LF0LE_0LA---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RA_1LC0RB_1LD1LC_1LE0LC_1RF1RE_---0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1LF_0RC0LC_1RD1LE_1LB0RB_0LF---_0LA0LD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RC_1LC1RB_1LD0RA_0LE0LB_1LF1LB_0LA---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RA_1LC1RF_1RE0LD_0LC1LC_1RA1LE_0RA---,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB1RD_0RC---_1LD1LE_1RE1LD_1RF0LC_0RA0RD,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB0LB_1LC1RD_---1LA_0RB1RE_1LC1RF_0RD0RA,NONHALT,,FAR (with mxdys's DFA generator),1,mxdys
+1RB---_1RC1RF_1RD1RC_0LE1RF_0LF1LE_1RA0RD,NONHALT,,FAR (with mxdys's DFA generator),"1, 2","Peacemaker, mxdys"
+1RB1LB_1RC0LA_0LD1RF_1RE1LD_---1LA_1RD0RB,NONHALT,,FAR (with mxdys's DFA generator),"1, 2","Racheline, mxdys"
+1RB0LE_0RC0RA_1LD0RC_0LE1LF_1LA0LC_0LA---,NONHALT,,FAR (with mxdys's DFA generator) Part of Category 3,"1, 2","-d, mxdys"
+1RB0RE_1RC---_1RD1RA_1RE1RD_0LF1RA_0LA1LF,NONHALT,,FAR (with mxdys's DFA generator) Permutation of solved machine which has its configs closed. ,1,mxdys
+1RB0LE_1RC0RB_1LD0RB_1LA1LE_0LC1LF_0LD---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB---_1RC0RB_0LD1RF_1RB1LE_1LD0LE_1RA0RE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0LD_0LC0RE_---1LD_1LE1LA_1RA0LF_1LC1LE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RF_1RC---_1RD0RC_0LE1RA_1RC1LF_1LE0LF,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LF_1RC0RA_1LD0RB_0LE0LC_0LA0LC_1RB---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB---_0RC0LE_1RD1RF_1LB0RA_1LB1LF_1RC0LB,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0LA_0RC1RB_1LD1RE_0LE0RA_1RF0LD_1LA---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RA_0LC0RE_1RA1LD_0LB1LC_1LC0RF_---0RC,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB---_1LC0RB_0LD1LC_1RE1LF_0RF0LB_1LA0RE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1RA_0RC0LB_1RD0RD_1RE0RB_1LE1LF_---1LA,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LB_1LC0RE_0LD0RA_1LE1LC_1RC1LF_0LC---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LB_1LC0RB_0LF1LD_1LE---_1LF0RA_1RF0LE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LE_1RC0RB_1LD0RC_1LF0LA_1LC1RD_0LB---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LD_1RC0RB_0LA0RE_0LC1LA_1LA0RF_---0RA,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0LD_0LC0RE_---1LD_1LE1LA_1RA0LF_1LC1LF,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LE_0LC0RA_1RF1LD_1LE0RD_0LB1LF_0RB---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LE_1RC1RE_1LD0RC_1LF0LA_1LC1RD_0LB---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RD_0RC1RE_1LD1RF_0LE0LD_0RA1LC_---1RA,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RD_0RC0RA_1RD1LC_1LE1RA_0LF1RC_---0LE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LA_1LC0LB_1RD1LD_1LA0RE_1RF0RE_0RC---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RE_1LC0RA_0LD0LB_0LE0LB_1RA1LF_1RA---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1LF_1LC0RE_1LD1RC_1LA1LD_0RB1RB_0LD---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1RC_1LC1RF_0RA0LD_1LE1RE_1RC0LB_0RC---,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB1RA_0RC0LB_1RD0RD_1RE0RB_1LF1LA_---1LE,NONHALT,,FAR (with mxdys's DFA generator) round 2,1,mxdys
+1RB0RC_0RC0RA_1RD1LA_1LE0LB_0LB1LF_0LD---,NONHALT,,FAR (with mxdys's DFA generator) round 2,"1, 2","racheline, mxdys"
+1RB1RE_1LC---_1RE1LD_1RA0LC_1RF0RD_1RC0LD,NONHALT,,FAR (with mxdys's DFA generator). ,1,mxdys
+1RB0RF_1LC1RE_1LD1LC_1RB0LC_---0RA_0LF1RB,NONHALT,,FAR (with mxdys's DFA generator). Chaotic counter,1,mxdys
+1RB1LE_0LC1RD_1RD1LB_0RA1LA_1LF0RF_---0LB,NONHALT,,FAR (with mxdys's DFA generator). Fractal,1,mxdys
+1RB1LE_1LC0RA_---1LD_1LA1LA_0LD0LF_0LA0LB,NONHALT,,FAR (with mxdys's DFA generator). Fun fact: Only has 2 rightward transitions,1,mxdys
+1RB1RA_1LC0RB_1RD0LD_1LE0LA_0LF1LC_1LB---,NONHALT,,FAR (with mxdys's DFA generator). Machine with the most common transitions,1,mxdys
+1RB0LC_1RC0RA_1LA0LD_1LE0RB_0RD1LF_0LA---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0RD_1LC0RA_0LD0LB_1RE0LD_0RA1RF_0RB---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0LC_0LA1RF_1LD0LE_1RE0RA_1LC0RD_0RE---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0RD_1LC0RA_1LA0LB_1RE0LC_0LD1RF_0RB---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0LA_0RC1RF_1RD0RA_1LE0RC_0LA0LD_0RD---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0RC_1LC0LD_1RA0LB_1LE0RA_0LB1LF_0LC---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0LC_1RC0RA_1LA0LD_1LE0RB_0LC1LF_0LA---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB0RD_1LC0RA_1LA0LB_1RE0LC_0RA1RF_0RB---,NONHALT,,FAR (with mxdys's DFA generator). Part of Category 3,1,mxdys
+1RB---_0LC1LB_1RE1LD_0LB1RF_1RD1RA_0RD0RE,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RF_0LC1RE_0LD1LC_1RA1LB_1LA0RA_---0RB,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB---_0LC1RF_0LD1LC_1LE1LB_0RE1RA_0RB0RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB---_0LC1RE_0LD1LC_1RA1LB_0RB1RF_0LF0RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RF_0LC1RE_0LD1LC_1RA1LB_0RB0LA_0RA---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LC_1RC---_0LD1RE_0LA1LD_0RF0RB_0LC1RE,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RF_0LC1RE_0LD1LC_1RA1LB_0RB1LA_---0RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RE_1LC0LA_---1LD_1RA1LF_0RA1RD_1LC0LB,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_1LC0LB_1RA1LB_---0RE_0RF1RE_1RC1RD,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RA_1LC1RA_1LA1RD_---0LE_0LF1LE_1LB1LD,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LF_0LC0RE_1LA1LD_0LB---_0RF1RB_1LB1RF,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RE_1LC0RC_---1LD_1RA0LD_1RA1RF_1RD0RF,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LE_1RC0RF_1LD1RB_1RA0LA_0LD1RC_0RC---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RF_1LB0LC_1LD0RA_0LE1LC_1RA1RB_---0RE,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RF_1RC1LE_1LD1LF_---1RE_1LB0LC_1RA0LB,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RB_0RC1LD_1LA0RA_1RC1LE_1LD0LF_0LD---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LE_1LC0RB_1RD1LD_0RE1LE_1LF0LC_1LA---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LA_0RC---_1LD1RF_1LE0LD_1RC1LE_1RE0RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RF_1LC1RA_1RD0LD_1RA0LE_0LC1RB_0RB---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LC_1LA0RD_0LD---_1RE1LF_1LD0RB_0LB0LC,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_1RC1LE_1LA0LB_1LC0LA_---1RF_0LA0RF,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LB_1RC0LE_1RD0RF_1LA1RC_0LA1RD_0RD---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LA_1RC0RB_0LD1LC_1RA1LE_1LF0LA_1LB---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB---_0RC1RF_0LD1LE_1LE1RB_0LF0LE_1RA0RD,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RC_1LC1RF_1LA1RD_---1LE_0RB0LE_1RA0RB,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RB_0LC0RA_1LD1LC_0LE0LF_1RF1RB_0RB---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_1RC0RB_1LA1RC_1LC0LE_1LF0RE_0LA---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB---_0RC1RF_0LD0RC_1LE1RB_0LF0LE_1RA0RD,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_1RC0RB_1LA1LE_1LC0LA_1LF0RD_0RB---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LB_1RC1LE_0LD0RF_1LA1LD_1RF0LA_---0RB,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LC_0LC0LD_1LF1LD_1RE1RB_0RB0RD_---1LA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LB_1LC0LC_0LA1RD_1LA1RE_1RD0RF_0RD---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_0RC---_0LD0RF_1LE1LD_0LA0LB_1RC0RC,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RA_0RC0RD_1LD1LE_0LE---_0RA0LF_1LE0LE,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB---_1LC1RA_1LE0RD_1RC0RD_0LF0LC_0RA0LC,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1LD_1RC---_1RD0RB_1LE0LE_0LA1RF_0RC0LA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RF_1LC1RE_0LD0LC_1RD0RB_1RA0RB_0LC---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0LC_1LA1RF_1LD1RE_1RC0LA_0RA0RF_0RC---,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RA_1RC0LB_1RD0RF_1LE0RE_---1LB_1RC1RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB1RC_1LC0RD_1RE0LD_1LB1LC_---1RF_1RB0RA,NONHALT,,Individual proof (December 2025),1,mxdys
+1RB0RF_1LC1RA_1RD0LD_1LE0LE_0LC1RB_0RB---,NONHALT,,Individual proof (December 2025) - interesting since the C state automatically goes to the D state which automatically goes to the E state.,1,mxdys
+1RB---_1RC0LF_1RD0RA_1RE1RD_1LB0RC_0LB0LE,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0RF_0RC0LB_1LD1RE_1LB0LA_1RA1LA_---1RC,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0RF_0RC0RF_1RD---_1LE0RB_0LB0LE_1LD1RA,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0LE_0RC0RA_0LD1RF_1RE---_1LA0LF_0LB0RD,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB---_1LC0LF_1RD0LB_0RE0RC_0LA1RF_0LD0RA,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB1RA_1LC0RE_1RE0LD_0LC0LB_1RA0RF_1RC---,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0LE_1RC0RF_1RD1RC_1LA0RB_0LA0LD_1RA---,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB1LB_1RC0RF_0RD0LC_1LE1RA_1LC0LB_---1RD,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0LC_1LC0RF_1LE0LD_1LB---_1LA1LE_0RB0RA,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB1LD_1RC0RE_0LA0RC_1LE1RE_1LC0LF_---1LA,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0RF_1RC1RB_1LD0RA_1RA0LE_0LD0LC_1RD---,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB1LC_1LA0RD_0LB0LF_1RE0RE_1RB0RB_1LC---,NONHALT,,Individual proof (November 2025),1,mxdys
+1RB0RA_1RC0RC_1LD0LE_1RA1LC_1LC0LF_1RB---,NONHALT,,"Shift-overflow mixed-digit counter, verified","1, 2",mxdys
+1RB1RC_1RC0LA_1LD0RA_---1LE_1LB0LF_1LB1LC,NONHALT,,Solved by proving some bounds for a specific consistent collatz-like map,1,mxdys
+1RB1LF_1RC0RB_0RD0RF_1LE---_1LF0LB_1LA0LE,NONHALT,,Verified,1,mxdys
+1RB0RB_1LC0LE_1RD1LB_1RA0RD_1LB0LF_1RA---,NONHALT,,Verified,1,mxdys
+1RB0LB_0LC0RB_0RE1LD_1LA---_1RF0RF_0RA0LE,NONHALT,,Verified,1,LegionMammal
+1RB---_1LC0RC_0RD0LC_0LE1RA_1LF0LF_0LB0RE,NONHALT,,Verified,1,LegionMammal
+1RB---_1RC0RE_1RD0RB_1LE1RC_1LF0LE_0LA0LC,NONHALT,,Verified,1,mxdys
+1RB0RB_0RC0LA_1RD0LD_0LE0RD_0RA1LF_1LC---,NONHALT,,Verified,1,LegionMammal
+1RB0RF_1RC0RA_1LD1RB_1LE0LD_1LB0LB_1LE---,NONHALT,,Verified,1,mxdys
+1RB0RB_1LB0LC_1RD1LC_1RE0RA_1RF0RB_---1LB,NONHALT,,Verified. Part of Category 1 ,1,Racheline
