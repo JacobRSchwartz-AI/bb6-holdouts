@@ -172,6 +172,29 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   pins (from 1,541 concrete lemmas), still 100.000%/0-mismatch over the
   266,388-transition census.
 
+- **P-2026-08-13-e** (per-lemma invariant audit; registered before running
+  tools/audit.mjs): over the 1,076-lemma working book, (1) every lemma
+  grows the N-run count by exactly +1; (2) every lemma conserves the
+  block-extent of the window LEFT of the tail separator (digit rewrites
+  are in-place; RLE counts shuffle but the total block count of the
+  pre-window equals the post-window, after accounting +1 to the N-run and
+  the context marker), with the ONLY exceptions being the finitely many
+  event lemmas (borrow/pay/collapse/leader), where the extent shifts by
+  exactly the amount absorbed or released by the reservoir run inside the
+  window. M+K=207 is the global shadow of this local law.
+
+  **GRADED (tools/audit.mjs, same day): better than predicted.** N-run +1:
+  2,371/2,371 non-birth lemmas hold, 0 violations. Extent conservation:
+  2,371/2,371, 0 deviations — the predicted event-lemma exceptions DO NOT
+  EXIST: borrow/pay exchanges live inside the lemma window (reservoir run
+  included), so extent is conserved there too. Corollary chain: every
+  covered sweep preserves total block extent left of the separator
+  (= 215: preamble 8 + reservoir M + zone K + merged digits) and
+  increments N by 1. C3 (M+K=207) and the N-cadence are now per-lemma
+  THEOREMS over the book — the only remaining gap to ∀-time is closure
+  (every future transition matches the finite book), which is the counter
+  induction's job.
+
 - **P-2026-08-13-b** (fourth period, generations 29–32; registered before
   the j=32 run): borrow +1 at N+2 = 5·2^26 = 335544320; payments −1 at
   3·2^27 = 402653184, 2^29 = 536870912, 3·2^29 = 1610612736,
