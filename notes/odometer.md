@@ -381,12 +381,31 @@ non-truncated zones), zero exceptions at p4–p6:
   conserved. At a NON-paying collapse (ν=2^10), the zone length stays and
   the ENTIRE reservoir re-spells 1110^199 → 1011^199 — the reservoir font
   flip IS the generation-pair alternation observed since session 1.
-- **Lazy cell allocation (open, next session):** deep cells above ~p6 are
-  allocated as v's bit-length grows, with a LEADER cell holding the msb
-  and implicit zero-gaps between it and the plain-bit cells (observed:
-  v=260 spelled with the msb cell directly above the b6 cell, b7's zero
-  unspelled). Pin the exact allocation/rename rule from doubling-boundary
-  dumps, then Part 2 (per-lemma +1, carry-out bucketing).
+- **The cell calendar (tools/cells.mjs; EXACT — only 22 zone-size/font
+  events in the machine's whole observed life, all at ν ∈ {1,3,5}·2^k):**
+  period 4 in k: k≡0 → reservoir re-spells a→e at ν=2^k (no exchange);
+  k≡1 → PAY (+1 cell, reservoir −1) at 2^k AND at 3·2^k; k≡2 → re-spell
+  e→a at 2^k, PAY at 3·2^k, BORROW (−1 cell, reservoir +1) at 5·2^k;
+  k≡3 → PAY at 3·2^k only. Net per 4 generations: 4 pays − 1 borrow =
+  reservoir −3 — the drain law DERIVED. Zone size is a pure step function
+  of this calendar, not of the count's bit-length.
+- **The tiered frame (verified over ALL 266,351 anchors, 0 exceptions):**
+  cell p_i laws, fixed for the machine's entire observed life —
+  p0/p1 head-phase; p2 = ⌊ν/2⌋ mod 4; p3 = ⌊ν/4⌋ mod 4 (gearbox pair 1,
+  overlapping windows over bits 1–3); p4 = bit4(ν); p5 = ⌊ν/32⌋ mod 4;
+  p6 = ⌊ν/64⌋ mod 4 (gearbox pair 2, bits 5–7); p7 = bit8(ν);
+  p8 = bit9(ν). Single-bit cells use font {O,a}=0, {e,f}=1. The gearbox
+  scales (2^1/2^2, 2^5/2^6) sit at period 4 in the exponent — the SAME
+  period as the pay calendar: the machine installs a gearbox where the
+  carry traffic is, one tier per calendar period.
+- **Tree-ring settling (cells ≥ 9; the remaining open piece):** cells are
+  born at pay events at the top of the zone; the top 1–2 cells are the
+  ACTIVE CARRY FRONTIER with calendar-phase-dependent semantics; each pay
+  pushes the frontier up and settles the cell below into a permanent law
+  (naive extrapolation of the settled laws fails exactly AT the birth
+  events: p9's trial law broke at ν = 3·2^10, the birth of cell 10).
+  Next: per-cell-per-era law fit with era boundaries = calendar events →
+  completes the value map → Part 2 (per-lemma +1 verification).
 
 ## 4.5 Segment-map findings (why the induction lives on the numeral)
 
