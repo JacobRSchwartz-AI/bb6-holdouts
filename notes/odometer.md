@@ -141,10 +141,14 @@ stretches, and single sweeps only touch the tape's right end. The engine is:
   drains (observed: `1010^(n1−k)` dropping ~1 per 2 sweeps, low pattern
   churning through 1111/1011/1110-flavored spellings). Each transition is a
   provable 1-sweep ∀-lemma with affine map + side conditions.
-- **Harvester** (to build): walk sweeps symbolically, dedupe post-shapes,
-  emit the automaton (nodes = local shapes, edges = proven lemmas). Carry
-  events that need deeper tape appear as context-touched → widen the window
-  and reprove (adaptive window widening).
+- **Harvester** (to build; v1 falsified a shortcut): exact-state cycle
+  detection fails — a 400-sweep context-abstracted walk (tools/harvest.mjs)
+  produced 401 distinct exact states with zero context touches, because the
+  low window wraps only at numeral scale. v2: dedupe individual EDGES
+  (pre-template → post-template 1-sweep lemmas, params re-normalized per
+  shape), build the automaton graph offline, compose paths algebraically.
+  Carry events needing deeper tape appear as context-touched → widen the
+  window and reprove (adaptive window widening).
 - **Composition**: epoch theorem = path composition through the automaton;
   the doubling induction (T(2Q) from two T(Q)) rides the automaton's cycle
   structure with Q affine.
