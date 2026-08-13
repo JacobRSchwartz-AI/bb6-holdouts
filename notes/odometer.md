@@ -195,6 +195,20 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   (every future transition matches the finite book), which is the counter
   induction's job.
 
+- **P-2026-08-13-f** (residue structure + closure; residue part measured
+  same day, closure registered before building tools/closure.mjs):
+  MEASURED — every multi-use lemma is residue-pure with depth 3–17 (all
+  uses agree mod 2^depth; ρ₂ of gcd of use-differences); 219/292 are
+  dense (fire at every ν of their class over their active range), the 73
+  sparse ones split classes with siblings via deeper spelling context.
+  PREDICTION for the closure checker: starting from the ~63 windowed
+  post-carry shapes with big counts formal, symbolic application of the
+  book maps every shape into the same shape set (with affine count
+  updates), with deep-carry emissions absorbed consistently — i.e. the
+  window automaton CLOSES, and the only open interface is the finite
+  deep-carry emission protocol (single-digit handoffs at the context
+  boundary).
+
 - **P-2026-08-13-b** (fourth period, generations 29–32; registered before
   the j=32 run): borrow +1 at N+2 = 5·2^26 = 335544320; payments −1 at
   3·2^27 = 402653184, 2^29 = 536870912, 3·2^29 = 1610612736,
