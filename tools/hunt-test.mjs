@@ -22,7 +22,7 @@ for (let i1 = 0; i1 < 12; i1++) for (let i2 = 0; i2 < 12; i2 += 2) for (let i3 =
     const check = runNaive(m, 1e7);
     if (check.halted) { crossFail++; console.log(`CROSS-CHECK FAIL: ${code} claimed ${r.cert.type} but halts at ${check.steps}`); }
     else if (r.cert.type === 'inductive-rule') {
-      if (ruleProofs < 5) console.log(`rule proof: ${code}\n  ${r.cert.config}\n  n -> ${r.cert.p}·n${r.cert.q >= 0 ? '+' : ''}${r.cert.q}, n0=${r.cert.n0}, n1=${r.cert.n1}`);
+      if (ruleProofs < 5) console.log(`rule proof: ${code}\n  ${r.cert.config}\n  A=${JSON.stringify(r.cert.A)} d=${JSON.stringify(r.cert.d)} n0=${r.cert.n0} n1=${r.cert.n1}`);
       ruleProofs++;
     } else otherProofs++;
   }

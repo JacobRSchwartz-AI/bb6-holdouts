@@ -1,38 +1,47 @@
 import { HALT } from './machine.mjs';
 import { shapeSignature } from './macro.mjs';
 
-// Affine expressions a·n + b (BigInt) over one induction parameter n.
-export const X = (a, b) => ({ a, b });
-export const C = (b) => X(0n, b);
-const add = (e, f) => X(e.a + f.a, e.b + f.b);
-const sub1 = (e) => X(e.a, e.b - 1n);
-const mul = (e, s) => X(e.a * s, e.b * s);
-export const exprStr = (e) =>
-  e.a === 0n ? `${e.b}` : `${e.a === 1n ? '' : e.a}n${e.b === 0n ? '' : (e.b > 0n ? '+' : '') + e.b}`;
+// Affine expressions c·n + b over an m-vector of induction parameters n.
+// Coefficients are always ≥ 0 by construction (counts start as unit vectors
+// or constants and only ever add), so every side condition reduces to raising
+// a componentwise lower bound n0 — no upper bounds can arise.
+const E = (c, b) => ({ c, b });
+const konst = (mDim, b) => E(new Array(mDim).fill(0n), b);
+const unit = (mDim, j) => E(new Array(mDim).fill(0n).map((_, i) => (i === j ? 1n : 0n)), 0n);
+const add = (e, f) => E(e.c.map((v, i) => v + f.c[i]), e.b + f.b);
+const sub1 = (e) => E(e.c, e.b - 1n);
+const mul = (e, s) => E(e.c.map((v) => v * s), e.b * s);
+const evalAt = (e, n) => e.c.reduce((acc, v, i) => acc + v * n[i], e.b);
+const isConst = (e) => e.c.every((v) => v === 0n);
+export const exprStr = (e) => {
+  const terms = e.c.map((v, i) => (v === 0n ? null : `${v === 1n ? '' : v}n${i}`)).filter(Boolean);
+  if (e.b !== 0n || terms.length === 0) terms.push(`${e.b}`);
+  return terms.join('+').replace(/\+-/g, '-');
+};
 
-// Re-run one period of the macro simulation with run paramIdx's count replaced
-// by the formal variable n. Success = the machine returns to the same shape at
-// an edge event with every other count restored and the parameter now p·n+q,
-// under only lower-bound side conditions n ≥ n0. That constitutes a proof of
-// the rule C(n) → C(p·n+q) for all n ≥ n0.
-export function symbolicPeriod(m, k, macro, snap, paramIdx, opsCap = 200000) {
+// Verify one period of the macro simulation with the counts at paramIdxs
+// replaced by formal variables. Success: the machine returns to the same
+// shape at an edge event with non-parameter counts restored and parameter
+// counts forming an affine map A·n + d, valid for all n ≥ n0 componentwise.
+export function symbolicPeriod(m, k, macro, snap, paramIdxs, opsCap = 200000) {
+  const mDim = paramIdxs.length;
+  const origCounts = [...snap.left.map(([, c]) => c), ...snap.right.map(([, c]) => c)];
   const left = [];
   const right = [];
   let i = 0;
-  for (const [b, c] of snap.left) left.push([b, i++ === paramIdx ? X(1n, 0n) : C(c)]);
-  for (const [b, c] of snap.right) right.push([b, i++ === paramIdx ? X(1n, 0n) : C(c)]);
+  for (const [b, c] of snap.left) { const j = paramIdxs.indexOf(i++); left.push([b, j >= 0 ? unit(mDim, j) : konst(mDim, c)]); }
+  for (const [b, c] of snap.right) { const j = paramIdxs.indexOf(i++); right.push([b, j >= 0 ? unit(mDim, j) : konst(mDim, c)]); }
   let facing = snap.facing;
   let q = snap.q;
-  let steps = C(0n);
-  let n0 = 1n;
+  let steps = konst(mDim, 0n);
+  const n0 = new Array(mDim).fill(1n);
 
   const requireGe = (e, min) => {
-    if (e.a === 0n) return e.b >= min;
-    const need = min - e.b;
-    if (need > 0n) {
-      const bound = (need + e.a - 1n) / e.a;
-      if (bound > n0) n0 = bound;
-    }
+    const v = evalAt(e, n0);
+    if (v >= min) return true;
+    const j = e.c.findIndex((c) => c > 0n);
+    if (j < 0) return false;
+    n0[j] += (min - v + e.c[j] - 1n) / e.c[j];
     return true;
   };
 
@@ -50,17 +59,15 @@ export function symbolicPeriod(m, k, macro, snap, paramIdx, opsCap = 200000) {
     const back = facing === 'R' ? left : right;
     if (front.length === 0 && ops > 0 && shapeSignature(left, right, facing, q) === startSig) {
       const counts = [...left.map(([, c]) => c), ...right.map(([, c]) => c)];
-      let rule = null;
-      for (let j = 0; j < counts.length; j++) {
-        const e = counts[j];
-        if (j === paramIdx) {
-          rule = { p: e.a, q: e.b };
-        } else if (e.a !== 0n || e.b !== (j < snap.left.length ? snap.left[j][1] : snap.right[j - snap.left.length][1])) {
-          return { result: 'multiparam', ops };
-        }
+      const A = [];
+      const d = [];
+      for (let pos = 0; pos < counts.length; pos++) {
+        const e = counts[pos];
+        const j = paramIdxs.indexOf(pos);
+        if (j >= 0) { A[j] = e.c; d[j] = e.b; }
+        else if (!isConst(e) || e.b !== origCounts[pos]) return { result: 'widen', position: pos, ops };
       }
-      if (!rule) return { result: 'param-vanished', ops };
-      return { result: 'rule', p: rule.p, q: rule.q, steps, n0, ops };
+      return { result: 'rule', A, d, steps, n0, ops };
     }
     const enter = facing === 'R' ? 'L' : 'R';
     const run = front.pop() ?? [0, null];
@@ -77,24 +84,31 @@ export function symbolicPeriod(m, k, macro, snap, paramIdx, opsCap = 200000) {
     } else {
       if (count !== null) {
         const rem = sub1(count);
-        if (rem.a === 0n ? rem.b > 0n : requireGe(rem, 1n)) front.push([block, rem]);
+        if (isConst(rem) ? rem.b > 0n : requireGe(rem, 1n)) front.push([block, rem]);
       }
-      if (passThrough) push(back, t.block, X(0n, 1n));
-      else { push(front, t.block, X(0n, 1n)); facing = facing === 'R' ? 'L' : 'R'; }
-      steps = add(steps, X(0n, stepsPer));
+      if (passThrough) push(back, t.block, konst(mDim, 1n));
+      else { push(front, t.block, konst(mDim, 1n)); facing = facing === 'R' ? 'L' : 'R'; }
+      steps = add(steps, konst(mDim, stepsPer));
       q = t.q;
     }
   }
   return { result: 'no-period', ops: opsCap };
 }
 
-// A proved rule C(n) → C(p·n+q) sustains itself iff the parameter never
-// shrinks below its starting point: growth from n1 must be non-negative and
-// stay ≥ n0. p=1,q=0 is an exact cycle; p=1,q>0 a translated counter; p≥2
-// exponential growth.
+// A rule n → A·n + d self-sustains iff n1 ≥ n0 and A·n1 + d ≥ n1
+// componentwise: A is nonnegative, so the iteration is monotone and the
+// parameter vector never re-enters the region below n0.
 export function ruleProvesNonhalt(rule, n1) {
-  if (n1 < rule.n0) return false;
-  if (rule.p === 1n) return rule.q >= 0n;
-  if (rule.p >= 2n) return (rule.p - 1n) * n1 + rule.q >= 0n;
-  return false;
+  const { A, d, n0 } = rule;
+  const mDim = n0.length;
+  for (let j = 0; j < mDim; j++) if (n1[j] < n0[j]) return false;
+  for (let j = 0; j < mDim; j++) {
+    const next = A[j].reduce((acc, v, i) => acc + v * n1[i], d[j]);
+    if (next < n1[j]) return false;
+  }
+  return true;
 }
+
+export const ruleStr = (rule) =>
+  rule.A.map((row, j) => `n${j} -> ${exprStr({ c: row, b: rule.d[j] })}`).join('; ') +
+  ` (n >= [${rule.n0.join(',')}])`;
