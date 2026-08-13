@@ -361,17 +361,32 @@ Proof consequence: the abstraction map α(config) = ν is now explicit
 each lemma's post decodes to pre's value +1) + counter arithmetic for the
 generation theorem — no tape content anywhere.
 
-**α value-congruence status (tools/alpha.mjs Part 1):** with digit values
-O=0, e=f=1, a=2, the congruence v̂ ≡ ν (mod 2^visible) is exact for all
-anchors whose visible zone stops below the first a-digit, and fails by
-exactly a factor-2 overcount at deep a's outside debt windows (first
-cases: ν = 9·2^6-era anchors with a at p6). OPEN: the a-digit is DUAL —
-value 2 (parked borrow debt, e.g. at pay thresholds 3·2^k) vs value 1
-(plain deep set bit spelled `1011` — hypothesis: deep 1-spelling tracks
-the reservoir's alternating block 1110/1011 so the merge seam stays
-block-compatible; the reservoir phase is then part of the decode key).
-Next session: split deep-a by reservoir phase, re-validate, then Part 2
-(per-lemma +1 at parameter samples, carry-out bucketing).
+**α value-congruence status (tools/alpha.mjs, session 5 cont.):** the
+reservoir-phase hypothesis was tested and DIED (graded ✗ — conditioning
+deep-a's value on the reservoir font made the congruence worse). The
+necropsy found the truth, per-position conditional stats (restricted to
+non-truncated zones), zero exceptions at p4–p6:
+
+- **The a-digit is a ZERO.** Deep-cell value map: {O, a} = 0, {e, f} = 1.
+  Four glyphs, two values. `a` (=1011) is a zero written in a
+  token-heavier font: it carries budget WITHOUT carrying value — the
+  exact point where the conserved quantity (tokens/extent) and the
+  counted quantity (ν) decouple. No debt VALUES exist in the zone; debt
+  is pure spelling + reservoir accounting.
+- **Sliding cells unchanged:** p2 = ⌊v/2⌋ mod 4, p3 = ⌊v/4⌋ mod 4 with
+  the full 4-symbol alphabet as window VALUES (a=2 legitimately there).
+- **Collapse mechanics watched live** (ν=512, 1024 dumps): at a PAYING
+  collapse (ν=2^9), the reservoir count drops by 1 and the zone grows one
+  cell — the payment is a single block moving reservoir → zone, extent
+  conserved. At a NON-paying collapse (ν=2^10), the zone length stays and
+  the ENTIRE reservoir re-spells 1110^199 → 1011^199 — the reservoir font
+  flip IS the generation-pair alternation observed since session 1.
+- **Lazy cell allocation (open, next session):** deep cells above ~p6 are
+  allocated as v's bit-length grows, with a LEADER cell holding the msb
+  and implicit zero-gaps between it and the plain-bit cells (observed:
+  v=260 spelled with the msb cell directly above the b6 cell, b7's zero
+  unspelled). Pin the exact allocation/rename rule from doubling-boundary
+  dumps, then Part 2 (per-lemma +1, carry-out bucketing).
 
 ## 4.5 Segment-map findings (why the induction lives on the numeral)
 
