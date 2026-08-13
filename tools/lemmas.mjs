@@ -26,7 +26,9 @@ runMacro(m, K_BLOCK, {
 });
 console.log(`${anchors.length} anchors`);
 
-const cls = (c) => (c <= 5n ? String(c) : 'big');
+// Only genuinely unbounded registers (M ~190+, N) go symbolic; K-scale
+// counts are bounded by the M+K=207 conservation law and stay concrete.
+const cls = (c) => (c <= 100n ? String(c) : 'big');
 const tmplKey = (L, w) => L.slice(Math.max(0, L.length - w)).map(([b, c]) => `${b}:${cls(c)}`).join(' ');
 
 const ev = (e, vals) => e.c.reduce((a, v, i) => a + v * vals[i], e.b);
@@ -50,6 +52,7 @@ function proveTemplate(tail, withContext) {
   const r = proveLocal(m, K_BLOCK, macro, pre, {
     until: (s) => s.q === STATE_C && s.facing === 'R' && s.right.length === 0,
     maxHops: 64,
+    opsCap: 20000,
   });
   if (r.result !== 'proved') return { result: r.result };
   return { result: 'proved', params, post: r.state.left, steps: r.state.steps, n0: r.state.n0 };
@@ -61,6 +64,9 @@ const pairFail = { unexplained: 0, mismatch: 0 };
 let explained = 0;
 
 for (let i = 0; i < anchors.length - 1; i++) {
+  if (i % 25000 === 0 && i > 0) {
+    console.log(`  progress ${i}/${anchors.length}: ${lemmas.size} templates tried, ${[...lemmas.values()].filter((l) => l.proof.result === 'proved').length} proved, ${explained} explained, ${pairFail.unexplained} unexplained`);
+  }
   const L = anchors[i];
   let lemma = null;
   for (const w of WIDTHS) {

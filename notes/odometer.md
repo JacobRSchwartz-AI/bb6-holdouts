@@ -193,20 +193,26 @@ stretches, and single sweeps only touch the tape's right end. The engine is:
 ## 4.2 The rulebook (milestone 1 of the formal proof)
 
 `tools/lemmas.mjs` enumerates every observed anchor-tail template (counts
-≤5 concrete, ≥6 symbolic; adaptive window 5→8→12→full-config) and proves a
-one-sweep lemma for each. Result over 266,389 anchors (first 13+
-generations):
+≤100 concrete, >100 symbolic; adaptive window 5→8→12→full-config) and
+proves a one-sweep lemma for each. **SEALED** over 266,389 anchors (first
+13+ generations):
 
-- **932 proven ∀-lemmas, 99.609% of all transitions explained, 0
-  mismatches** — every applicable lemma predicted the next anchor exactly,
-  265,347 times. Full rulebook in `data/rulebook.txt`.
-- Residue (~1,041 transitions, ~80/generation) = exactly the EVENT sweeps
-  (N+3 at q·2^a): their restructures drain a symbolic-length run via a
-  multi-state ping-pong loop, which the engine cannot yet collapse (returns
-  `no-stop` burning opsCap). Needed feature: **symbolic loop collapse** —
-  detect the periodic op-cycle consuming a symbolic run, solve iteration
-  count, apply closed form. Standard inductive-rule acceleration; next build.
-- Birth era (N < ~50) is the proof's concrete base case; not lemma material.
+- **1,541 proven ∀-lemmas, 100.000% coverage (266,387/266,388), 0
+  mismatches.** The single uncovered transition is at N=2 — the machine's
+  third sweep, part of the concrete base case by definition. Full rulebook
+  in `data/rulebook.txt`.
+- Key design decisions that got here: (a) context abstraction (lemmas valid
+  for all tape content beyond the window, by locality); (b) symbolic loop
+  collapse in `symbolicRun` (shape recurrence with constant count drift,
+  single −1 drain → jump t*=drained−1 cycles as one affine step); (c) the
+  **symbolization threshold at 100**: only the genuinely unbounded
+  registers (M, N) become formal variables — every K-scale count is bounded
+  by the M+K=207 conservation law and stays concrete, so event-sweep drains
+  (−3/cycle on the leader) unroll concretely instead of demanding modular
+  case splits. K-generality belongs to the arithmetic layer, not the tape
+  mechanics.
+- Regressions at seal time: validate ALL PASS, hunt self-test 40/40 with 0
+  cross-fails, epoch-3 theorem byte-identical.
 
 Proof status ladder: milestone 1 (rulebook) ≈ done pending event lemmas;
 milestone 2 = numeral-arithmetic layer (TM-free); milestone 3 = endgame at

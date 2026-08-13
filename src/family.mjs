@@ -25,6 +25,7 @@ export function proveLocal(m, k, macro, pre, { until, opsCap = 100000, onHop = n
     const r = symbolicRun(m, k, guarded, state, {
       stop: (q, facing) => true,   // stop at every front-empty edge event
       opsCap,
+      loopCollapse: true,
     });
     if (r.result !== 'ok') {
       if (r.result === 'no-stop') return { result: 'no-stop' };

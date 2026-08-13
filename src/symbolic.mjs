@@ -99,13 +99,47 @@ export function symbolicPeriod(m, k, macro, snap, paramIdxs, opsCap = 200000) {
 // until the head next sits at an empty front matching `stop(q, facing)`.
 // Mutates nothing; returns a new state or a failure diagnosis. The state's
 // n0 lower-bound vector accumulates across chained calls.
-export function symbolicRun(m, k, macro, state, { stop, opsCap = 100000 } = {}) {
+export function symbolicRun(m, k, macro, state, { stop, opsCap = 100000, loopCollapse = false } = {}) {
   const mDim = state.n0.length;
   const left = state.left.map(([b, c]) => [b, c]);
   const right = state.right.map(([b, c]) => [b, c]);
   let { q, facing } = state;
   let steps = state.steps;
   const n0 = [...state.n0];
+
+  // Symbolic loop collapse: when the configuration shape (blocks, coeff
+  // vectors, state, facing) recurs with every count offset shifted by a
+  // constant and EXACTLY ONE count draining by 1 per cycle, the loop's
+  // branch decisions are count-independent for all remaining iterations,
+  // so jump t* = drained−1 cycles in one affine update.
+  const seen = loopCollapse ? new Map() : null;
+  const shapeOf = () => {
+    const part = (st) => st.map(([b, c]) => `${b}·${c.c.join(',')}`).join(' ');
+    return `${q}|${facing}|${part(left)}#${part(right)}|${steps.c.join(',')}`;
+  };
+  const dbg = typeof process !== 'undefined' && process.env.DBG_COLLAPSE;
+  const tryCollapse = (ops) => {
+    const key = shapeOf();
+    const prev = seen.get(key);
+    const counts = [...left.map(([, c]) => c), ...right.map(([, c]) => c)];
+    const snap = { bs: counts.map((c) => c.b), stepB: steps.b };
+    if (!prev) { if (seen.size < 20000) seen.set(key, snap); return; }
+    const db = snap.bs.map((b, i) => b - prev.bs[i]);
+    const negs = db.map((d, i) => [d, i]).filter(([d]) => d < 0n);
+    if (dbg) console.log(`  [dbg ${ops}] prev-hit, db=[${db.join(',')}] negs=${negs.length}`);
+    if (negs.length !== 1 || negs[0][0] !== -1n || db.length !== prev.bs.length) { seen.set(key, snap); return; }
+    const di = negs[0][1];
+    const drained = counts[di];
+    const tStar = E(drained.c, drained.b - 1n);            // (drained − 1) iterations
+    for (let i = 0; i < counts.length; i++) {
+      if (db[i] === 0n) continue;
+      const s = i < left.length ? left : right;
+      const j = i < left.length ? i : i - left.length;
+      s[j][1] = add(s[j][1], mul(tStar, db[i]));
+    }
+    steps = add(steps, mul(tStar, snap.stepB - prev.stepB));
+    seen.clear();
+  };
 
   const requireGe = (e, min) => {
     const v = evalAt(e, n0);
@@ -127,6 +161,12 @@ export function symbolicRun(m, k, macro, state, { stop, opsCap = 100000 } = {}) 
     const back = facing === 'R' ? left : right;
     if (front.length === 0 && ops > 0 && stop(q, facing)) {
       return { result: 'ok', left, right, q, facing, steps, n0, ops };
+    }
+    if (seen && ops > 512) {
+      tryCollapse(ops);
+      if (typeof process !== 'undefined' && process.env.DBG_COLLAPSE && ops % 500 === 0) {
+        console.log(`  [dbg ${ops}] seen=${seen.size} q=${q} f=${facing} L=${left.map(([b, c]) => `${b}^${exprStr(c)}`).slice(-4).join(' ')} R=${right.map(([b, c]) => `${b}^${exprStr(c)}`).slice(-4).join(' ')}`);
+      }
     }
     const enter = facing === 'R' ? 'L' : 'R';
     const run = front.pop() ?? [0, null];
