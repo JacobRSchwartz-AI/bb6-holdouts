@@ -19,6 +19,7 @@ export function contextGuard(runFn) {
 // 'context-touched' means the head left the abstracted window.
 export function proveLocal(m, k, macro, pre, { until, opsCap = 100000, onHop = null, maxHops = 10000 }) {
   const guarded = contextGuard(macro);
+  const hasCtx = pre.left.some(([b]) => b === CONTEXT);
   let state = { ...pre };
   for (let hops = 0; hops < maxHops; hops++) {
     const r = symbolicRun(m, k, guarded, state, {
@@ -30,7 +31,7 @@ export function proveLocal(m, k, macro, pre, { until, opsCap = 100000, onHop = n
       return r;
     }
     state = { left: r.left, right: r.right, q: r.q, facing: r.facing, steps: r.steps, n0: r.n0 };
-    if (state.left.some(([b]) => b === CONTEXT) === false) return { result: 'context-touched' };
+    if (hasCtx && state.left.some(([b]) => b === CONTEXT) === false) return { result: 'context-touched' };
     if (onHop) onHop(hops, state);
     if (until(state)) return { result: 'proved', state };
   }
