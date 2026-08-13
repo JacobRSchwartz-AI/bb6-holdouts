@@ -103,6 +103,17 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   ≈ 10^160. The halt transition (D,0) may become reachable there; the
   machine's fate is decided at that scale, forever beyond simulation.
 
+## 3.1 Registered predictions (written before the verifying runs)
+
+- **P-2026-08-13-a** (third payment/borrow period, generations 25–28; run
+  not yet performed at time of writing): borrow +1 at N+2 = 5·2^22 =
+  20971520; payments −1 at N+2 = 3·2^23 = 25165824, 2^25 = 33554432,
+  3·2^25 = 100663296, 3·2^26 = 201326592. Collapse K values: j=25→20,
+  j=26→21, j=27→21, j=28→22; M offsets at collapses: −7, −8, −8, −9.
+  N-coefficients (÷2^18): j=25→2045, j=26→4093, j=27→8189, j=28→16381.
+  (Note 3·2^25 > 2^26−2, i.e. the 3·2^25 payment lands inside generation
+  27; ordering of events within periods follows the period-2 pattern.)
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
