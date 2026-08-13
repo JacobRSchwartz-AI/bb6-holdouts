@@ -134,6 +134,44 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
     observed super-period event. The schedule stayed exact through it;
     whether period 5+ (j ≥ 33) shifts is the open question for the j=32 run.
 
+- **P-2026-08-13-c** (rulebook family structure; registered before running
+  the family analysis): the 1,541 sealed lemmas collapse under "skeleton
+  grouping" (same pre block-sequence, counts allowed to vary) into **at most
+  ~120 families**; the largest families are the `1111^k` carry ladders
+  (k = digit-sum accumulation); **most families vary in exactly one count
+  position**; and every varying count position varies over a contiguous
+  integer range (no gaps), consistent with each family being one symbolic
+  lemma instantiated along the K-growth of successive generations.
+
+  **GRADED (tools/families.mjs, same day):** 35 families (✓ vs ≤120; 9
+  singletons = birth + event lemmas). "Most vary in exactly one position"
+  ✗ — the mode is 3–5 varying positions (the numeral low-window spells
+  several digits at once). "Contiguous ranges" ✗-partial — ~half the ranges
+  are arithmetic progressions of step 3 (e.g. `1111`-counts 1,4,7,10) or
+  bimodal {1, big}: the mod-3 classes are the M+K budget's +3/period cadence
+  showing up in the census, structure rather than noise.
+
+- **P-2026-08-13-d** (∀-form lift; registered before running tools/lift.mjs):
+  proving each family ONCE with every varying count position replaced by a
+  free formal parameter (family-constant counts kept concrete) will succeed
+  for **≥ 25 of the 35 families**, failures concentrated where a varying
+  count participates in a carry cascade (value/parity-dependent branching);
+  a residue split (n → 2m+r or 3m+r, still affine) rescues the failures.
+  The lifted rulebook re-applied to all 266,388 observed transitions will
+  keep coverage at 100.000% (minus the N=2 base case) with 0 mismatches.
+
+  **GRADED (tools/lift.mjs v3, same day):** coverage retention ✓ (100.000%,
+  0 mismatches), rescue-by-specialization ✓ in mechanism but value-PINNING
+  (recursive refinement: pin each below-bound or failure-implicated observed
+  value, keep the rest formal) is what worked, not residue splits — residue
+  structure never needed to enter the lemma language. Three iterations to
+  get there: naive lift covered 12.5% (side conditions exclude the p=2
+  workhorses), success-only refinement 50.0% (forests died at failed
+  intermediate nodes), failure-recursion refinement **99.006% via lifted
+  ∀-lemmas**. Final book: 648 lifted ∀-lemmas + 428 concrete small-count
+  pins (from 1,541 concrete lemmas), still 100.000%/0-mismatch over the
+  266,388-transition census.
+
 - **P-2026-08-13-b** (fourth period, generations 29–32; registered before
   the j=32 run): borrow +1 at N+2 = 5·2^26 = 335544320; payments −1 at
   3·2^27 = 402653184, 2^29 = 536870912, 3·2^29 = 1610612736,
@@ -218,6 +256,41 @@ Proof status ladder: milestone 1 (rulebook) ≈ done pending event lemmas;
 milestone 2 = numeral-arithmetic layer (TM-free); milestone 3 = endgame at
 M-bottom; milestone 4 = proof-assistant port (community standard is
 Coq/busycoq rather than Lean; target that).
+
+## 4.3 Milestone 2 architecture (settled 2026-08-13, session 5)
+
+**M2a — family census** (`tools/families.mjs`, done): the 1,541 sealed
+lemmas collapse into 35 skeleton families (9 singletons = birth + event
+lemmas). Varying count positions form mod-3 progressions (the budget
+cadence) and {1, big} bimodals.
+
+**M2b — the ∀-form lift** (`tools/lift.mjs`): one symbolic lemma per
+skeleton with every varying-or-big count position formal; the engine's
+side conditions (runs can't be consumed to zero while formal) exclude small
+values, so each excluded observed value gets a specialized re-proof with
+that value pinned (recursive refinement → a finite lemma FOREST per
+skeleton). Union = finite, j-independent rulebook: formal params cover all
+values ≥ n0, pinned lemmas cover the finitely many below. Soundness of
+application at any width: a proven context-abstracted lemma never popped
+beyond its window's top run (doing so would have aborted context-touched),
+so splitting a larger host run into (context excess + window top) is a
+tape no-op — lemmas apply inside any host config whose tail matches.
+
+**M2c/M2d — composition calculus** (`src/compose.mjs`, to build): the
+TM-free layer. A lemma is an affine map on tail shapes with side
+conditions; composition of lemma words is shape unification + affine
+substitution + side-condition pullback (all exact BigInt, no tape
+simulation). Generation structure: infer the lemma-word grammar of one
+generation empirically from the chain logs (`tools/grammar.mjs`), expect
+counting-segment words W_d (2^d sweeps) with the doubling recurrence
+W_{d+1} = W_d · X_d · W_d. Key algebraic fact making ∀j expressible in the
+EXISTING engine: the generation maps' linear parts are integer-constant;
+only offset vectors carry 2^d terms, so introducing P := 2^d as one more
+formal parameter keeps everything affine (doubling = the substitution
+P := 2P, also affine). The c' = 2c + 3·2^18 coefficient recursion is the
+predicted fingerprint of W_{d+1} = W_d X_d W_d at the steps coordinate.
+Endgame composition is then LINEAR in j (compose ~constant many macro-maps
+per generation, generations 16..~275), not exponential.
 
 ## 5. Reproduction
 
