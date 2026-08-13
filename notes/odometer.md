@@ -181,6 +181,14 @@ stretches, and single sweeps only touch the tape's right end. The engine is:
 - **Composition**: epoch theorem = path composition through the automaton;
   the doubling induction (T(2Q) from two T(Q)) rides the automaton's cycle
   structure with Q affine.
+- **Census (266,389 anchors, 4M macro-ops)**: the active tail vocabulary is
+  12 distinct 4-run templates (24 at width 5; count classes 1/2/big). The
+  8-run figure of 1,583 is passive-context inflation. So the machine-level
+  half of the formal proof is an enumeration of a few dozen
+  context-abstracted sweep lemmas (d-symbolic carries included); the
+  remainder of the proof is numeral arithmetic with no TM content — the
+  Lean-friendly half. Proof structure: (1) finite TM-lemma set, machine-
+  verified; (2) counting-system induction on top, TM-free.
 
 ## 5. Reproduction
 
