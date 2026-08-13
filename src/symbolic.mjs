@@ -132,6 +132,7 @@ export function symbolicRun(m, k, macro, state, { stop, opsCap = 100000 } = {}) 
     const run = front.pop() ?? [0, null];
     const [block, count] = run;
     const t = macro(q, block, enter);
+    if (t.context) return { result: 'context-touched', ops };
     if (t.halt) return { result: 'halt-reached', ops };
     if (t.loop) return { result: 'proof-confined', n0, ops };
     const stepsPer = BigInt(t.steps);

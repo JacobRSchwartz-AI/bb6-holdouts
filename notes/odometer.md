@@ -126,6 +126,29 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
    the constructed config (RLE counts are BigInt — astronomical N is fine).
 4. Lean formalization of 1–3; submit to bbchallenge.
 
+## 4.1 Build B architecture (settled by first context-abstracted runs)
+
+No starred-segment language needed: RLE already collapses uniform digit
+stretches, and single sweeps only touch the tape's right end. The engine is:
+
+- **Context abstraction** (`src/family.mjs`): a lemma proven from a config
+  whose left stack bottoms out in a CONTEXT marker is valid for every tape
+  content beyond it — sound because the symbolic run aborts if the head
+  ever consumes the marker (tape locality). Implemented; first runs show
+  the sweep dynamics never touch context through ≥8 sweeps.
+- **Phase automaton**: the numeral's low digits cycle through a finite set
+  of local tail shapes, one transition per sweep, while the high-digit run
+  drains (observed: `1010^(n1−k)` dropping ~1 per 2 sweeps, low pattern
+  churning through 1111/1011/1110-flavored spellings). Each transition is a
+  provable 1-sweep ∀-lemma with affine map + side conditions.
+- **Harvester** (to build): walk sweeps symbolically, dedupe post-shapes,
+  emit the automaton (nodes = local shapes, edges = proven lemmas). Carry
+  events that need deeper tape appear as context-touched → widen the window
+  and reprove (adaptive window widening).
+- **Composition**: epoch theorem = path composition through the automaton;
+  the doubling induction (T(2Q) from two T(Q)) rides the automaton's cycle
+  structure with Q affine.
+
 ## 5. Reproduction
 
 - `node tools/validate.mjs` — simulator exactness (BB(2)–BB(5) step counts).
