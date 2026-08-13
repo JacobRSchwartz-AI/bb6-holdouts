@@ -114,6 +114,35 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   (Note 3·2^25 > 2^26−2, i.e. the 3·2^25 payment lands inside generation
   27; ordering of events within periods follows the period-2 pattern.)
 
+  **GRADED (run completed same day, 31.3 min, chain to N=2^28, final side
+  condition M ≥ 10, total verified span ≈5.8×10^17 steps):**
+  - Schedule events: **5/5 exact** (all five thresholds hit, no extra
+    events). Third full period confirms the 5-event period-4 schedule.
+  - N-coefficients: **4/4 exact** (2045, 4093, 8189, 16381).
+  - K values: 3/4 — actual (20, 20, 21, 22): the stall pair is (25,26),
+    not (26,27). Corrected law, fitting ALL data j=17..28: **K (and the
+    M-offset) stall in the generation-pair containing the borrow** (borrows
+    land in generations 4m+1: 17? no — 21, 25 observed; stalls (21,22),
+    (25,26); earlier stall (17,18) ↔ borrow at 5·2^14 in generation 17 ✓).
+  - M offsets: 3/4, same single phase error, same correction (−7,−7,−8,−9).
+  - M+K = 207 at all four new collapses (through N = 2^28). Invariant now
+    exact over the machine's entire life to ~5.8×10^17 steps.
+  - **Preamble verdict: drifting counter, NOT a short cycle.** Tail
+    spellings tick once per generation-pair, all seven observed states
+    distinct (j=16..28), and at j=28 the carry reached the frozen head for
+    the first time (`1011 1010^3 1111` → `1011 1010^3 1111^2`) — the first
+    observed super-period event. The schedule stayed exact through it;
+    whether period 5+ (j ≥ 33) shifts is the open question for the j=32 run.
+
+- **P-2026-08-13-b** (fourth period, generations 29–32; registered before
+  the j=32 run): borrow +1 at N+2 = 5·2^26 = 335544320; payments −1 at
+  3·2^27 = 402653184, 2^29 = 536870912, 3·2^29 = 1610612736,
+  3·2^30 = 3221225472; no other M-events. Collapse K values: j=29→23,
+  j=30→23 (stall pair (29,30): borrow lands in generation 29), j=31→24,
+  j=32→25. M offsets: −10, −10, −11, −12. N-coefficients (÷2^18): 32765,
+  65533, 131069, 262141. M+K=207 throughout. Null hypothesis on the j=28
+  head-carry: no schedule change within this period.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across

@@ -9,7 +9,7 @@ import { symbolicRun, makeSymbolicState, evalExprAt, exprStr } from '../src/symb
 const CODE = '1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA';
 const K_BLOCK = 4;
 const N_START = 49150n;
-const TARGET_N = 2n ** 28n - 2n;
+const TARGET_N = 2n ** BigInt(process.argv[2] ?? 28) - 2n;
 const SPAN = Number(TARGET_N - N_START);
 const M_VAL = 194n;
 const STATE_C = 2;
