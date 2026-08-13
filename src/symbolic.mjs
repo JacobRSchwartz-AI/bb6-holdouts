@@ -95,6 +95,77 @@ export function symbolicPeriod(m, k, macro, snap, paramIdxs, opsCap = 200000) {
   return { result: 'no-period', ops: opsCap };
 }
 
+// Free-running symbolic execution: advance a symbolic state (expr counts)
+// until the head next sits at an empty front matching `stop(q, facing)`.
+// Mutates nothing; returns a new state or a failure diagnosis. The state's
+// n0 lower-bound vector accumulates across chained calls.
+export function symbolicRun(m, k, macro, state, { stop, opsCap = 100000 } = {}) {
+  const mDim = state.n0.length;
+  const left = state.left.map(([b, c]) => [b, c]);
+  const right = state.right.map(([b, c]) => [b, c]);
+  let { q, facing } = state;
+  let steps = state.steps;
+  const n0 = [...state.n0];
+
+  const requireGe = (e, min) => {
+    const v = evalAt(e, n0);
+    if (v >= min) return true;
+    const j = e.c.findIndex((c) => c > 0n);
+    if (j < 0) return false;
+    n0[j] += (min - v + e.c[j] - 1n) / e.c[j];
+    return true;
+  };
+  const push = (stack, block, count) => {
+    if (stack.length === 0 && block === 0) return;
+    const top = stack[stack.length - 1];
+    if (top && top[0] === block) top[1] = add(top[1], count);
+    else stack.push([block, count]);
+  };
+
+  for (let ops = 0; ops < opsCap; ops++) {
+    const front = facing === 'R' ? right : left;
+    const back = facing === 'R' ? left : right;
+    if (front.length === 0 && ops > 0 && stop(q, facing)) {
+      return { result: 'ok', left, right, q, facing, steps, n0, ops };
+    }
+    const enter = facing === 'R' ? 'L' : 'R';
+    const run = front.pop() ?? [0, null];
+    const [block, count] = run;
+    const t = macro(q, block, enter);
+    if (t.halt) return { result: 'halt-reached', ops };
+    if (t.loop) return { result: 'proof-confined', n0, ops };
+    const stepsPer = BigInt(t.steps);
+    const passThrough = t.exit !== enter;
+    if (passThrough && t.q === q) {
+      if (count === null) return { result: 'proof-runaway', n0, ops };
+      push(back, t.block, count);
+      steps = add(steps, mul(count, stepsPer));
+    } else {
+      if (count !== null) {
+        const rem = sub1(count);
+        if (isConst(rem) ? rem.b > 0n : requireGe(rem, 1n)) front.push([block, rem]);
+      }
+      if (passThrough) push(back, t.block, konst(mDim, 1n));
+      else { push(front, t.block, konst(mDim, 1n)); facing = facing === 'R' ? 'L' : 'R'; }
+      steps = add(steps, konst(mDim, stepsPer));
+      q = t.q;
+    }
+  }
+  return { result: 'no-stop', ops: opsCap };
+}
+
+export function makeSymbolicState(snap, paramIdxs) {
+  const mDim = paramIdxs.length;
+  const left = [];
+  const right = [];
+  let i = 0;
+  for (const [b, c] of snap.left) { const j = paramIdxs.indexOf(i++); left.push([b, j >= 0 ? unit(mDim, j) : konst(mDim, c)]); }
+  for (const [b, c] of snap.right) { const j = paramIdxs.indexOf(i++); right.push([b, j >= 0 ? unit(mDim, j) : konst(mDim, c)]); }
+  return { left, right, q: snap.q, facing: snap.facing, steps: konst(mDim, 0n), n0: new Array(mDim).fill(1n) };
+}
+
+export const evalExprAt = evalAt;
+
 // A rule n → A·n + d self-sustains iff n1 ≥ n0 and A·n1 + d ≥ n1
 // componentwise: A is nonnegative, so the iteration is monotone and the
 // parameter vector never re-enters the region below n0.
