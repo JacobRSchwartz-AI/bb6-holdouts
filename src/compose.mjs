@@ -70,7 +70,7 @@ export function applyLemma(config, lemma) {
           topRemainder = rem;
         }
       } else {
-        if (!(isConstE(hc) && hc.b === want)) return { result: 'count-mismatch' };
+        if (!(isConstE(hc) && hc.b === want)) return { result: 'count-mismatch', runIdx: base + i, want };
       }
     }
   }

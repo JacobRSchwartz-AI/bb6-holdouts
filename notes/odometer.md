@@ -292,6 +292,48 @@ predicted fingerprint of W_{d+1} = W_d X_d W_d at the steps coordinate.
 Endgame composition is then LINEAR in j (compose ~constant many macro-maps
 per generation, generations 16..~275), not exponential.
 
+## 4.4 The number system, decoded (session 5)
+
+Digit symbols (zone runs, one digit per repeated block): O=`1010`=0,
+e=`1110`=1, a=`1011`=2, f=`1111`=3. Writing ν = N+2 = 2^(L+1) + v with L
+zone digits (p_{L−1}…p_0 left to right), verified mechanically over all
+132,892 post-birth anchors:
+
+- **Sliding-window law (EXACT, all anchors, no exceptions):** p2 = ⌊v/2⌋
+  mod 4 and p3 = ⌊v/4⌋ mod 4 — the two low positions hold OVERLAPPING
+  2-bit windows of v (they share a bit). This redundancy is the increment
+  engine: the shared bit is what lets one sweep advance the counter with
+  O(1) local work. p1/p0 are head-phase cells (v mod 2 driven).
+- **Plain-bit law (exact for v < 64):** p_i = bit_i(v) for i ≥ 4, spelled
+  f at even positions and e at odd positions (the 4-cell block phase).
+- **Merge law (discovered via the v ≥ 64 failure wall):** a deep zone
+  digit spelled with the same block as the adjacent M-reservoir run MERGES
+  into it (RLE). The reservoir count therefore carries merged digit debt —
+  this IS the M-offset drift we have tracked since session 1, and why
+  M + K = 207 is exact: tokens flow between spelled digits and the merged
+  run without loss. Failure intervals [(2^k+1)·2^6, 2^(k+3)) in every
+  generation = precisely the anchors where p6+ is set.
+- **Debt spellings:** during borrow windows (first fails at ν = 5·2^4,
+  5·2^5, 5·2^6 before the merge wall) the event position holds a (=2) — a
+  double token parked in the zone until the payment sweeps repay it. The
+  payment/borrow schedule is digit arithmetic in the open.
+
+Proof consequence: the abstraction map α(config) = ν is now explicit
+(windowed digits + merge-aware reservoir accounting). Milestone-2 plan:
+α-preservation per lemma (finite symbolic check over the 1,076-lemma book:
+each lemma's post decodes to pre's value +1) + counter arithmetic for the
+generation theorem — no tape content anywhere.
+
+## 4.5 Segment-map findings (why the induction lives on the numeral)
+
+Composed segment-interior maps (tools/segmap.mjs) are guarded-affine and
+compose EXACTLY (0 irregular over all depths), but their guard values pin
+carry-history debris — records fragment at every depth (no finite
+inventory at fixed depth). Windowed post-carry boundary shapes DO form a
+depth-stable ~63-shape inventory (tools/grammar.mjs), but the A-drift of
+the data is popcount-flavored, not affine. Conclusion: the ∀j induction
+must run on the decoded numeral (α above), not on segment maps.
+
 ## 5. Reproduction
 
 - `node tools/validate.mjs` — simulator exactness (BB(2)–BB(5) step counts).
