@@ -14,13 +14,21 @@ jobs:
       - uses: actions/checkout@v4
 
       # Private-repo runners have 7GB RAM; OdometerOrbit.v peaks ~7.2GB RSS.
-      - name: Add swap
+      # Disk swap alone thrashed the runner agent into a job cancellation;
+      # zram keeps the paging at RAM speed (Coq heaps compress ~3x).
+      - name: Add zram + disk swap
         run: |
-          sudo fallocate -l 10G /mnt/swapfile-coq
+          sudo modprobe zram num_devices=1
+          echo lz4 | sudo tee /sys/block/zram0/comp_algorithm
+          echo 12G | sudo tee /sys/block/zram0/disksize
+          sudo mkswap /dev/zram0
+          sudo swapon -p 100 /dev/zram0
+          sudo fallocate -l 8G /mnt/swapfile-coq
           sudo chmod 600 /mnt/swapfile-coq
           sudo mkswap /mnt/swapfile-coq
-          sudo swapon /mnt/swapfile-coq
-          free -h
+          sudo swapon -p 10 /mnt/swapfile-coq
+          sudo sysctl vm.swappiness=180 vm.page-cluster=0
+          free -h; swapon --show
 
       - name: Install Coq 8.18 (Ubuntu 24.04 apt)
         run: |
@@ -39,7 +47,8 @@ jobs:
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
-          make -f Makefile.port -j1
+          # nice: leave the runner agent CPU headroom under memory pressure.
+          nice -n 10 make -f Makefile.port -j1
 
       - name: Print Assumptions odometer_halts (must be axiom-free)
         run: |
