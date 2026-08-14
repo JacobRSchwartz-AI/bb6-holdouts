@@ -534,6 +534,48 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      era-free laws (+ one era-invariant respell constant). This is the
      finite presentation the ∀j induction closes over.
 
+- **P-2026-08-14-i** (THE GLOBAL CLOCK; registered before building/
+  running tools/assembly.mjs). Cross-family comparison of the skeleton
+  offsets suggests the per-class and per-family constants are all ONE
+  function of the carry depth. Predictions:
+  1. **The global surcharge law**: for every non-respell sweep,
+     steps(ν) = 16·ν + 34 + 6·t + 2·[t even] + 4·[ν+1 = 2^k], with
+     t = trailing-ones(ν) — holding for ≥ 99.9% of all 266,349 sweeps;
+     exceptions confined to calendar-event sweeps (the even-k respells
+     at flat 1680, plus possibly pay/borrow-window specials), finitely
+     many per era, each a constant.
+  2. With those finitely many event constants included, coverage is
+     **100.000% — 266,349/266,349**. The machine's entire clock is one
+     line plus a short price list.
+  3. Summing the law over the trailing-ones distribution reproduces all
+     12 phase-A generation totals EXACTLY, yielding the closed-form
+     generation theorem G(j) by pure algebra.
+
+  **GRADED (tools/assembly.mjs, same day): ✓✓✓ — better than predicted.**
+  1. ✓ The law holds for **266,343/266,350 sweeps (99.997%) with ZERO
+     non-respell deviations** — the only exceptions are the seven
+     respell sweeps themselves.
+  2. ✓ 100.000% with a SEVEN-entry price list. The k≡2 respells (e→a;
+     ν = 63, 1023, 16383, 262143) cost flat **1680**. The k≡0 respells
+     (a→e) cost 1680 + c where c tracks the preamble register's carry
+     ripple r on that tick: ν=4095 (r=1) → c=20; ν=255 (r=2) → c=24;
+     ν=65535 (r=3) → c=32. Diffs +4, +8 — the lattice staircase again,
+     now in the register's own carry cost.
+     **Blind addendum for the running j=32 chain**: its final sweep is a
+     k=32 (k≡0) respell with ripple r=4 (s: 15→16) — predicted cost
+     1680 + c(4) with primary c(4) = 36 (staircase alternation), i.e.
+     **1716**; alternate 1720.
+  3. ✓ 12/12 generation totals EXACT from the law + price list. With
+     Σt = 2^j over a generation (amortized binary counter: average carry
+     depth exactly 1) and one q=1 sweep per generation, the closed form
+     is pure algebra:
+     **S_j = 24·4^j − 2^(j+3) + 40·2^j + 2·E_j + 4 + respell-corr(j)**,
+     E_j = #even-t sweeps (closed form by parity of j), respell-corr
+     nonzero only when j+1 is even (the generation ending in a respell).
+  **THE MACHINE'S COMPLETE CLOCK: steps(ν) = 16ν + 34 + 6t + 2[t even]
+  + 4[ν+1=2^k], plus seven priced respells. One line and a price list,
+  for ~10^18 observed steps.**
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
