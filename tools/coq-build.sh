@@ -8,7 +8,7 @@ REPO=/mnt/c/Users/JacobSchwartz/Documents/bb6-holdouts
 VERIFY="$HOME/busycoq/verify"
 cp "$REPO"/coq/*.v "$VERIFY"/
 cd "$VERIFY"
-FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v"
+FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v"
 coq_makefile -Q . BusyCoq -o Makefile.port $FILES
 make -f Makefile.port -j"$(nproc)"
 echo "PORT BUILD OK"
