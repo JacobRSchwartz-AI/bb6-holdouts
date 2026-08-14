@@ -390,6 +390,58 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      c' = 2c + 3·2^18 recursion requires. Symbolic derivation (era
      self-similarity, period 4 in k) = phase B, pending the j=32 grades.
 
+- **P-2026-08-14-f** (M2 step 4 phase B — era self-similarity; registered
+  before building/running tools/selfsim.mjs). The ∀j induction needs the
+  class table to be era-periodic. Predictions:
+  1. **Era-independence of the workhorses**: every multi-use lemma that
+     does not touch the reservoir has ONE (α, β) steps form — identical
+     across every interval it fires in, all eras.
+  2. **Reservoir-touchers are R-affine**: lemmas whose window includes the
+     reservoir run have constant α and β affine in the era's R with a
+     constant integer slope (the per-block crossing cost) — β = β0 + βR·R,
+     same βR across all intervals of that lemma.
+  3. **Period-4 fingerprints**: comparing generation j to j+4, the
+     era-independent classes scale exactly ×16 in member count (up to the
+     same ±O(1) carry-boundary corrections seen in phase A), and the
+     era-specific residual lemmas of generation j+4 correspond
+     one-for-one to those of generation j (same count pattern, deeper
+     scale) — no new kinds of behavior appear with k.
+  4. **Second difference law**: D_j := S_{j+1} − 2·S_j obeys
+     D_{j+4} = 16·D_j + (era constant), the absolute-total shadow of
+     c' = 2c + 3·2^18.
+
+  **GRADED (tools/selfsim.mjs, same day):**
+  1. ✓ **BETTER than predicted: 182/182** lemmas firing in ≥2 intervals
+     have ONE (α, β) — constant across every interval and era, no
+     exceptions, including the reservoir-touchers.
+  2. Moot (subsumed by 1): ZERO lemmas needed an R-affine β. Ordinary
+     sweeps never pay an R-dependent crossing cost; the only R-sensitive
+     sweeps are the per-era event singletons.
+  3. Partial ✓: the ×16-exact core grows steadily (11 → 138 lemmas by
+     j=13→17) with the predicted ±O(1)-per-boundary band around it; every
+     residual is a class BIRTH (0→n, n ∈ {1,4,8} — deeper classes
+     activating as j grows), zero deaths, zero chaotic changes. The
+     1:1 skeleton correspondence of newborns across periods remains to be
+     mechanized (skeleton mapping, next build).
+  4. ✗ as formulated — wrong observable: raw totals have a 4^j leading
+     term, so D_j ≈ 4·D_{j−1}, not 16·D_{j−4} + const. The corrected law
+     the data forces: **E_j := D_{j+1} − 4·D_j alternates between two
+     near-constants (period 2: ≈ −9.5k, +14.3k)** — i.e.
+     S_j = A·4^j + B_p·2^j + C_p with p-periodic lower coefficients.
+     Era self-similarity confirmed at the totals level in corrected form;
+     the c' = 2c + 3·2^18 recursion lives in the N-coefficient and needs
+     the symbolic split S_j(n0, n1) — next build alongside the skeleton
+     map.
+  **Phase B status: the class table is era-INVARIANT for the entire
+  multi-use book (stronger than self-similar — the same finite rulebook
+  with the same step forms serves every era; only the event singletons
+  and class-birth schedule carry k-dependence). The ∀j induction now
+  reduces to: (a) the class-birth schedule as a function of k (the
+  calendar, already formulaic), (b) skeleton correspondence of event
+  singletons across periods, (c) the N-coefficient recursion from the
+  symbolic sum. All three are finite checks over structures already in
+  hand.**
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
