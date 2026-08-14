@@ -147,11 +147,12 @@ Lemma A_O_left1 : forall l r,
   l <* <[0; 1; 0; 1] <{{A}} r -->* l <{{C}} [1; 1; 1; 1] *> r.
 Proof. execute. Qed.
 
-(** The deepest dipped cell reflects the head: F hits O, which becomes e
-    (the carry lands), and the out-walk begins in E. *)
-Lemma O_bounce : forall l r,
-  l <* <[0; 1; 0; 1] <{{F}} r -->* l <* <[0; 1; 1; 1] {{E}}> r.
-Proof. execute. Qed.
+(** The deepest dipped cell reflects the head: F hits a glyph with x=0
+    (an even window value), the carry lands (+1: O->e, a->f), and the
+    out-walk begins in E. One rule for both, y-independent. *)
+Lemma F_x0_bounce : forall (y : sym) l r,
+  l <* <[y; 1; 0; 1] <{{F}} r -->* l <* <[y; 1; 1; 1] {{E}}> r.
+Proof. destruct y; execute. Qed.
 
 (** * The edge of the world (the tail's +1).
 
@@ -204,6 +205,38 @@ Proof.
   follow F_f_left1.
   follow A_O_left1.
   follow sep_bounce.
+  follow (E_glyph_right 1 1).
+  follow (E_glyph_right 1 1).
+  follow (E_es_right (S n)).
+  follow virgin_reflect0.
+  follow (C_as_left (S n)).
+  follow sep_bounce.
+  follow (E_as_right (S n)).
+  follow virgin_finish.
+  finish.
+Qed.
+
+(** * The shallow odd sweep.
+
+    At an anchor with bit0 set (cell 1 = f) and an even window at cell 2
+    (x-bit clear: O or a), one sweep clears bit0 and lands the carry in
+    cell 2 (window +1). Left-to-right:
+    zc | cell2 = y1x1, x=0 | cell1 f | cell0 O | sep f | e^n | edge O. *)
+Lemma sweep_odd_shallow : forall zc (y2 : sym) n,
+  zc <* <[y2;1;0;1] <* <[1;1;1;1] <* <[0;1;0;1] <* <[1;1;1;1]
+     <* <[0;1;1;1]^^n <* <[0;1;0;1] {{C}}> const 0 -->*
+  zc <* <[y2;1;1;1] <* <[0;1;0;1] <* <[0;1;0;1] <* <[1;1;1;1]
+     <* <[0;1;1;1]^^(S n) <* <[0;1;0;1] {{C}}> const 0.
+Proof.
+  introv.
+  follow edge_start.
+  step.
+  follow (F_es_left (S n)).
+  follow F_f_left1.
+  follow A_O_left1.
+  follow C_f_left1.
+  follow (F_x0_bounce y2).
+  follow (E_glyph_right 1 1).
   follow (E_glyph_right 1 1).
   follow (E_glyph_right 1 1).
   follow (E_es_right (S n)).

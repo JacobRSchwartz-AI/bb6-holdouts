@@ -1291,3 +1291,11 @@ Coq port state after `sweep_even` (all green under Coq 8.18, zero axioms):
   cases; D-walk ground truth for deeper carries via rawrules.mjs
   WATCH), then the generic depth-t sweep by induction, then SPELL3 as a
   Coq config family.
+- **sweep_odd_shallow** also proved (same session): bit0 set + even
+  window at cell 2 (x=0) -> bit0 cleared, cell-2 window +1, tail +1.
+  O_bounce generalized to F_x0_bounce (forall y: O->e and a->f are the
+  same 3-step reflection). Together the two sweep theorems cover ~75% of
+  all sweeps (all even v, and odd v with even cell-2 window);
+  cross-checked against rawrules.mjs anchor pairs (sweeps 3->4, 4->5).
+  Remaining sweep family: deeper carries (cell2 x=1: the walk continues;
+  D-walk ground truth needed) -> generic depth-t lemma by induction.
