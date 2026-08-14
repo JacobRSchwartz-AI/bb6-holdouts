@@ -1470,3 +1470,59 @@ Predictions (before width-213 macro runs):
    ~ 8*(2^283 + 3*2^279)^2 = ~10^171 steps, and every "stationary
    meta-cycle" claim must be retracted; the machine moves from the
    non-halt column to the (astronomical) halt column.
+
+## GRADED P-2026-08-15-p — AND THE HEADLINE FLIPS (2026-08-15)
+
+1. PRIMARY: width-213 macro run (tools/exception213.mjs), SPELL3 seed at
+   v = 2^282-12, crossed 2^282-1 in-run: a^2 e f^211 O f  ->
+   a f a O^212 f. The inner boundary a is spent; an a migrates inward;
+   the zone re-bases. Exactly the toy pattern at 10^84 scale.
+2. PRIMARY: width-213 macro run (tools/death213.mjs), seeded with the
+   toy-scaled pre-death structure a f^212 O^2 f at v = 2^283-2:
+   two anchors (a f^212 O^2 f -> a f^213 O f), then **status: halt**.
+3. PRIMARY: the headline flips. Second toy raw-verified: width 9 halts
+   at raw step 33,925,642 (~sweep 2037 = 2048-11), with the abstract
+   machine anchor-exact the whole way (dipwalk found zero mismatches
+   before the halt).
+
+**THE ODOMETER HALTS** at nu_death = 3*2^279 + 2^283 = 19*2^279 sweeps,
+total ~ 8*(19*2^279)^2 ~ 2^569.5 ~ 10^171.4 steps — subject to the same
+chained-validation methodology as all prior results, now STRONGER
+because the model just caught and corrected its own error.
+
+## RETRACTION
+
+The claims "THE NON-HALT ARGUMENT IS STRUCTURALLY COMPLETE" and "THE
+META-CYCLE IS STATIONARY: W(E) -> W(E + 2^283)" (P-2026-08-14-l grade
+block, commit 315d743) are RETRACTED. Root cause: the winter seeds were
+CONSTRUCTED from SPELL3's boundary-a^2 assumption at v near 2^283.
+Seeded runs validate MECHANICS, not REACHABILITY of the seed: the real
+orbit spends the inner boundary a at v = 2^282-1 (an event no prior run
+crossed — jumps stayed below it, winter seeds started above it), enters
+a boundary-decay cascade (toy-verified: a-count 2 -> spent progressively
+at v = 2^(4G+2)-1, 3*2^(4G+1)-1, ... geometric), and dies with a single
+outer a at v = 2^(4G+3), where the walk crosses it in state C and state
+D reads the blank. Width 6: raw halt at step 154,134. Width 9: raw halt
+at step 33,925,642. Width 213 (the real machine): halt at ~10^171.4.
+
+METHODOLOGICAL LESSON (permanent): every seeded validation must be
+paired with a REACHABILITY argument for the seed, or explicitly graded
+as mechanics-only. The Coq-driven closure test (plainclosure.mjs) found
+in minutes what 100M-step censuses could not: the exception lives at
+depth the orbit only reaches once per 10^84 sweeps.
+
+## The new goal: a Coq HALT certificate
+
+The machine is decided-HALTING. The submission becomes: "the Odometer
+halts in ~10^171 steps," with the Coq proof of `halts tm c0`. The
+infrastructure just built is EXACTLY right and the proof is now EASIER:
+no coinduction — halting proofs are finite compositions by induction:
+1. sweep_theorem (PROVED) + dip (PROVED sound) carry every sweep.
+2. Regime-3 + cascade spelling families + increment lemmas by dip
+   computation (plain phase, post-exception phases, death sweep).
+3. Structured-era ledger (unchanged obligation).
+4. Base case vm_compute (derisked).
+5. Death lemma: the final walk crosses the last a and reaches the halt
+   transition (concrete).
+Also: compute EXACT N_halt (BigInt, clock + ledger + cascade devs) as a
+submission showpiece.

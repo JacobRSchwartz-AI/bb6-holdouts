@@ -95,5 +95,5 @@ while (sweep <= SWEEPS) {
     if (sweep + 1 === TRACE_SWEEP) tracing = true;
     lastAnchorSteps = steps; prevNu = nu; sweep++;
   }
-  if (steps > 5e6) { console.log('step cap'); break; }
+  if (steps > 8e7) { console.log("step cap"); break; }
 }
