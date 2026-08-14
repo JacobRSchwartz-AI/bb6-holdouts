@@ -223,6 +223,12 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   j=32→25. M offsets: −10, −10, −11, −12. N-coefficients (÷2^18): 32765,
   65533, 131069, 262141. M+K=207 throughout. Null hypothesis on the j=28
   head-carry: no schedule change within this period.
+  **GRADED ✓ COMPLETE (j=32 chain finale, 562.5 min, 2026-08-14): every
+  component of the fourth period exact — all M-events at the predicted ν,
+  K values 23/23/24/25, M offsets −10/−10/−11/−12, N-coefficients
+  2^18·{32765, 65533, 131069, 262141} (j=32: 68718690304 = 2^18·(2^18−3)),
+  M+K=207 throughout, no schedule change. The c_j = 2^18·(2^(j−14)−3)
+  law now stands verified j=16..32 — seventeen consecutive generations.**
 
 - **P-2026-08-14-a** (bit-cell font overlay; registered before running
   tools/font.mjs): the only remaining spelling freedom is which glyph a
@@ -357,6 +363,13 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      per 4 bits), the register holds s ≤ 255 ⇒ k ≤ 510 — the preamble
      never needs to grow before the endgame at k ≈ 275. The 4th register
      rides to M-bottom at fixed width.
+  **Prediction 2 GRADED ✓ PRIMARY EXACT (j=32 chain finale +
+  tools/respell32.mjs, 2026-08-14): the s=15→16 carry produced preamble
+  `a O² e O⁴` — low four cells cleared, c4 lit as glyph e, the zone-style
+  window continuation. Doubly confirmed: the 9.4 h symbolic chain (from
+  j=16) and a closed-form seed + one concrete sweep (respell32.mjs)
+  produced the IDENTICAL anchor `a¹ O² e¹ O⁴ e^182 O^25 f¹ e^(2^32−2)` —
+  independent methods, same tape, run for run (R=182, zone 25, font e).**
 
 - **P-2026-08-14-e** (M2 step 4 phase A — steps as class arithmetic;
   registered before building/running tools/gentheorem.mjs). With SPELL +
@@ -565,6 +578,14 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      k=32 (k≡0) respell with ripple r=4 (s: 15→16) — predicted cost
      1680 + c(4) with primary c(4) = 36 (staircase alternation), i.e.
      **1716**; alternate 1720.
+     **GRADED ✓ PRIMARY EXACT (tools/respell32.mjs, 2026-08-14): the
+     k=32 respell sweep measured concretely at 16(ν−1) + 1716 —
+     c(4) = 36, the +4/+8 staircase confirmed at r=4 (20, 24, 32, 36);
+     the alternate 1720 and geometric 16+2^(r+1) (→1728) are dead.
+     Neighboring sweeps clock-exact (dev 40, 36 | 36, 40). The
+     staircase now has 4/4 support; only r ≥ 5 (first at k=64, inside
+     the descent range) remains extrapolated — the descent total's
+     residual uncertainty shrinks accordingly.**
   3. ✓ 12/12 generation totals EXACT from the law + price list. With
      Σt = 2^j over a generation (amortized binary counter: average carry
      depth exactly 1) and one q=1 sweep per generation, the closed form
