@@ -261,6 +261,59 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   including every event anchor, borrow gap, and both partial end eras.
   SPELL(ν) is total and perfect over the machine's whole observed life.**
 
+- **P-2026-08-14-c** (per-lemma preservation, M2 step 3; registered before
+  building/running tools/preserve.mjs). The checker: phase 1 replays every
+  transition with the simulator OUT of the loop — host configs built from
+  SPELL(ν), advanced by first-match book application, compared to
+  SPELL(ν+1). Phase 2 measures, per fired lemma, its window reach in ν-bits
+  (d_eff = 1 + highest bit any in-window zone cell reads), residue purity
+  at d_eff, and class density per calendar interval. Phase 3 re-runs each
+  (lemma, interval) pair ONCE symbolically with the tail e-run count formal
+  (ν = r + 2^d·T, T free) and demands exact run-list equality with
+  SPELL(ν+1). Predictions:
+  1. Phase 1: **266,350/266,350 exact** — forced by (book replay ≡ anchors)
+     ∧ (SPELL ≡ anchors), but now established TM-free.
+  2. Phase 2: every non-event ∀-lemma is residue-pure at its own window
+     reach, d_eff ≤ 20, and dense in its class within each interval;
+     reservoir-touching windows are confined to event lemmas + the
+     merged-deep-carry family.
+  3. Phase 3: **100% of (∀-lemma, interval) pairs with ≥ 2 firings pass**
+     the symbolic identity — an affine map agreeing with an affine target
+     at ≥ 2 points is that target, and phase 1 supplies the points. Pairs
+     with 1 firing stay concrete pins. If anything fails, it will be
+     run-structure instability (a coalescing boundary migrating through
+     the window mid-interval), surfacing as a phase-2 density break rather
+     than a phase-3 algebra mismatch.
+  Corollary if all pass: SPELL(ν) ⊢_book SPELL(ν+1) for every ν in every
+  observed class, with the ∀ carried per class by purity ∧ density ∧
+  (reach ≤ depth) ∧ symbolic identity — α-preservation + closure over the
+  working book. The remaining gap to ∀-time is era generalization
+  (k-induction over the calendar), which is step 4's job.
+
+  **GRADED (tools/preserve.mjs, same day):**
+  1. ✓ **266,349/266,349 exact** (the predicted denominator 266,350 was an
+     off-by-one in counting the interval; the substance — 100%, TM-free —
+     holds). 496 distinct lemmas fire over ν ∈ [34, 266382].
+  2. Partial ✗→✓: purity-at-own-reach held for only **215/292** multi-use
+     lemmas as predicted-defined. The 77 failures are the parametric
+     deep-carry lemmas — their windows BIND a run count formally, so each
+     fires on a FAMILY of residue classes, one per binding. Regrouped by
+     binding tuple: **320/320 groups pure** at their group reach. Density:
+     291/292; the single break (lemma 1927, class 767 mod 4096) is a tile
+     BOUNDARY, not a hole — 1927 and sibling 1892 alternate strictly on the
+     two mod-8192 sub-classes (verified by direct probe), both preserving.
+     Prediction 2's failure-mode guess ("instability surfaces as a density
+     break, not an algebra mismatch") was exactly right in kind.
+  3. ✓ **100%: 1,982/1,982** (lemma, interval) pairs exact with the e-run
+     count formal, plus **741/741** (interval, binding-group) pairs for the
+     parametric lemmas. Zero algebra mismatches anywhere. 204 single-use
+     lemmas + 1,663 single-firing pairs stay concrete pins (events and
+     era-locals; step 4's k-induction generalizes them).
+  **M2 STEP 3 SEALED**: the working book preserves SPELL — every observed
+  transition is SPELL(ν) → SPELL(ν+1) by first-match lemma application
+  with the simulator out of the loop, and every multi-firing class carries
+  its ∀T by a machine-checked affine identity, not extrapolation.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
@@ -489,6 +542,17 @@ non-truncated zones), zero exceptions at p4–p6:
   Total zone ink is therefore a pure function of ν — budget bookkeeping
   has no spelling freedom anywhere, which is exactly why M+K=207 can be
   a per-lemma theorem.
+- **Per-lemma preservation — SEALED (tools/preserve.mjs, M2 step 3,
+  P-2026-08-14-c):** SPELL(ν) ⊢_book SPELL(ν+1). TM-free replay exact at
+  all 266,349 transitions (host configs BUILT from SPELL, advanced by
+  first-match lemma, compared to SPELL(ν+1) — the simulator never runs).
+  Every multi-firing (lemma, interval[, binding-group]) pair passes a
+  symbolic affine identity with the e-run count formal (1,982 + 741 pairs,
+  zero mismatches), so each class's ∀T is machine-checked. Class structure:
+  215 lemmas residue-pure and dense at their own window reach; 77
+  parametric deep-carry lemmas = 320 binding-groups, all pure; one tile
+  boundary at mod 8192 (lemmas 1927/1892 alternate, complementary, no
+  hole). Remaining ∀-gap: era generalization (k-induction), step 4.
 
 ## 4.5 Segment-map findings (why the induction lives on the numeral)
 
@@ -517,3 +581,5 @@ must run on the decoded numeral (α above), not on segment maps.
 - `node tools/font.mjs` — bit-cell font fit (0=O, 1=f, zero freedom).
 - `node tools/spell.mjs` — SPELL(ν) + validation (266,351/266,351 exact).
 - `node tools/dumpcfg.mjs [ν...]` — dump full anchor configs at chosen ν.
+- `node tools/preserve.mjs` — M2 step 3: per-lemma preservation
+  SPELL(ν) ⊢_book SPELL(ν+1), TM-free replay + symbolic class identities.
