@@ -341,6 +341,10 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   preamble counts ⌊log₄ ν⌋ in binary. Predictions:
   1. **j=31 collapse** (ν=2³¹, no respell): preamble `a O³ f² a e`
      (s=15), reservoir font a, zone O²⁴, M-offset −11.
+     **GRADED mid-run: ✓ EXACT on all four components** (chain line:
+     `1011^1 1010^3 1111^2 1011^1 1110^1 1011^n0-11 1010^24 …`), and the
+     P-2026-08-13-b coefficient for j=31 is also exact
+     (34358951936 = 2^18·131069). Prediction 2 (the s=16 carry) pending.
   2. **j=32 collapse** (ν=2³², respell k=32, s: 15→16, a 4-deep carry):
      low four cells all clear, c4 lights for the first time. Primary
      guess: c4 = window(bits 4,5) continuing the zone lattice at shift −1
@@ -488,6 +492,47 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      correct correspondence key for the induction is (skeleton,
      carry-depth class, interval type) — next build. The narrowness (28
      kinds for 1,045 firings) strongly supports finite k-parametrization.
+
+- **P-2026-08-14-h** (phase B part 3 — skeleton k-parametrization;
+  registered before building/running tools/skeleton.mjs). The last ∀j
+  ingredient: each of the 28 singles skeleton families is one
+  k-parametrized law, not sporadic instances. Predictions:
+  1. **Affine depth model**: ≥ 24 of 28 families satisfy
+     steps = α·ν + γ·t + δ (t = trailing-ones(ν); α, γ, δ per family)
+     EXACTLY, fitted on 3 members and verified on all others. Failures,
+     if any, split by a small-power-of-2 residue of ν into exact
+     subfamilies (carry-phase branches).
+  2. **Position ladder**: within each family (or split subfamily),
+     writing ν+1 = q·2^a (q odd), q takes ≤ 4 distinct values and there
+     is exactly ONE firing per (q, a) slot — each family is a clean
+     ladder in a, i.e. a single law marching up the scales with k.
+  3. Corollary if 1+2 hold: the complete generation composition is
+     finitely presented — era-invariant classes (182 forms) + calendar
+     (formulaic) + 28 parametrized singleton families — and the ∀j
+     induction closes over this finite presentation.
+
+  **GRADED (tools/skeleton.mjs, same day):**
+  1. ✗ as registered, ✓ refined — the (ν, t)-affine model fails
+     everywhere; the data forced two corrections, each structural:
+     (a) the depth term is **γ·t + γ₄·⌊t/4⌋** — the 3-cells-per-4-bits
+     lattice appearing in the crossing cost (a carry of depth t crosses
+     the staircase of cells, not raw bits); (b) the even-k respell
+     collapses (ν = 2^k−1, k even) cost a **flat 1680 steps regardless
+     of era** — the full-reservoir re-spell, whose cost the M+K
+     conservation law holds constant while R and len drift. With the
+     lattice term + respell interaction: **22/23 testable families pass
+     whole (margins up to 156 held-out rows), 1 exactly-determined
+     (n=4, consistent, unverifiable), 0 refuted.** 20 of 22 need NO era
+     regressors at all — the singles' step laws are era-free.
+  2. ✗ — q-sets are rich (odd parts of ν+1 are unbounded co-factors);
+     but the position law is SUBSUMED: singles are (lemma, interval)
+     classes, and their firing positions already follow from the step-3
+     residue classes. No separate position law exists or is needed.
+  3. ✓ in refined form: **the complete generation composition is
+     finitely presented** — 182 era-invariant workhorse forms + the
+     formulaic calendar + 28 singleton families with lattice-affine
+     era-free laws (+ one era-invariant respell constant). This is the
+     finite presentation the ∀j induction closes over.
 
 ## 4. Proof roadmap
 
