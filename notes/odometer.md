@@ -1170,3 +1170,49 @@ must run on the decoded numeral (α above), not on segment maps.
   3·2^279 ink-poverty crisis and runs the finale raw.
 - `node tools/finale.mjs` — M3: the O-pay crisis seed run with
   regime-3 instrumentation (bounded left structure, counting resumes).
+
+## M4 — the busycoq port (started 2026-08-14)
+
+Target: a Coq proof `nonhalt : ~ halts tm c0` in busycoq style
+(github.com/meithecatte/busycoq), the framework used for the Skelet
+machines. Toolchain: WSL Ubuntu 24.04, Coq 8.18.0 (apt), busycoq cloned at
+`~/busycoq` inside WSL. Our files live in `coq/` here and are copied in +
+compiled by `tools/coq-build.sh` (run inside WSL; see its header).
+
+Framework survey (verified against source):
+- `TM.v` — coinductive-stream tape semantics, `c0`, `-->`/`-->*`/`-->+`,
+  and the closers: `multistep_nonhalt` (c -->* c' and c' nonhalts ⇒ c
+  nonhalts) and `progress_nonhalt_simple` (a family `C : A -> config` with
+  `C i -->+ C (next i)` from a start point ⇒ nonhalt). A conditional
+  variant exists for invariant-carrying families.
+- `Individual.v` — the tactic kit: `execute` (concrete stepping),
+  `triv` (induction workhorse: step/finish/follow), `follow` (apply a
+  proved `-->*` lemma mid-run). All Ctx-parameterized; 6 states is just a
+  new instantiation (they already have 5×2, 3×3, 5×4).
+- Closest relatives: `Skelet34.v`/`Skelet35.v` — shift-overflow counters.
+  Their proof shape IS our proof shape: config family + carry-cascade
+  lemmas by induction (`R_inc_has0` ≈ our carry lemma), reset theorem,
+  `progress_nonhalt_simple` at the top.
+
+Port plan, mapped from the structural argument:
+1. `BB62.v` + `Individual62.v` — 6-state context (done, mirrors BB52).
+2. `Odometer.v` — tm + startup + raw shift rules (started). The k=4 glyph
+   lemma book compiles down to raw-symbol lemmas over `[1;x;1;y]` blocks;
+   alignment bookkeeping comes from `src/macro.mjs` ground truth.
+3. Glyph layer: `O/e/a/f` as list defs, run powers `^^n`, the sweep lemma
+   (anchor ν → ν+1) by induction on carry depth — busycoq's `bin`
+   machinery in `FixedBin.v`/`ShiftOverflow.v` is the model.
+4. Regime-3 layer: SPELL₃(v) as a config family over v < 2^283; sweep
+   lemmas ∀v (same lattice mechanics as the structured era).
+5. THE MELT LEMMA: zone-all-f + a² boundary → zone-all-O re-based, one
+   sweep. Symbolic, count formal.
+6. Meta-cycle: `W (n) -->+ W (n+1)` where W n = winter config at epoch
+   3·2^279 + n·2^283; close with `progress_nonhalt_simple`.
+7. Reachability: `c0 -->* W 0` — the startup + structured era + descent +
+   crisis chain. The heaviest item; needs the calendar as lemmas (finitely
+   many event kinds × an induction over k), the descent ledger, and the
+   endgame cascade moments. `multistep_nonhalt` composes it with (6).
+
+Status: scaffold compiles or is being compiled (BB62, Individual62,
+Odometer.v with startup lemma to the step-29 anchor `1101 0111 C>` plus
+first two raw shift rules: B eats 11-pairs → 10-pairs; F slides over 0s).
