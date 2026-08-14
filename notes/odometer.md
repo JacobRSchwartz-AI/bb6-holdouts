@@ -442,6 +442,53 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   symbolic sum. All three are finite checks over structures already in
   hand.**
 
+- **P-2026-08-14-g** (phase B part 2 — the N-coefficient theorem;
+  registered before building/running tools/ccoef.mjs). Each sweep's step
+  cost is α·ν + β; in a formal-N chain the generation's N-coefficient is
+  therefore Σα over the generation's sweeps, where each lemma's α can be
+  read directly off its PROVEN step expression (the coefficient of the
+  e-run parameter) — no fitting. Predictions:
+  1. **Book α ≡ fitted α**: for every multi-member class, the affine
+     slope fitted from concrete steps equals the e-run coefficient in the
+     lemma's symbolic steps expression. 0 mismatches.
+  2. **Σα_j = 2^(j+4) exactly** for every full observed generation
+     (j = 7..17). External anchors at both ends: the epoch-3 theorem's
+     N-coefficient 1024 = 2^10 (j=6) and the chain table's cumulative
+     diffs 2^(j+4) (j = 16..17).
+  3. **Pure doubling with exact cancellation**: Σα_{j+1} − 2·Σα_j = 0,
+     i.e. the α-weighted boundary corrections (the 2n±1 classes and
+     newborns) cancel exactly each generation — this is the class-level
+     mechanism of the c' = 2c + 3·2^18 recursion (whose +3·2^18 lives
+     purely in the cumulative composition, since exact diff-doubling ⇔
+     that recursion).
+  4. **Singles census**: the single-firing classes collapse into skeleton
+     families whose firing ν's form geometric ladders (consecutive ratios
+     ∈ {2, 4, 16}), covering ≥90% of singles — the event lemmas are
+     periodic families, not sporadic behavior.
+
+  **GRADED (tools/ccoef.mjs, same day):**
+  1. ✓ **1,982/1,982** — every multi-member class's fitted slope equals
+     the e-run coefficient of the lemma's proven steps expression. α is
+     now read off the book, not measured.
+  2. ✓ **Σα_j = 2^(j+4) EXACT, all 11 full generations (j=7..17)** —
+     matching the epoch-3 theorem (2^10 at j=6) and the chain table's
+     diffs at j=16..17. **THE N-COEFFICIENT THEOREM: the per-generation
+     N-coefficient is 2^(j+4), and its exact doubling IS the
+     c' = 2c + 3·2^18 recursion in cumulative form.** C1's mechanism is
+     now derived from the class table instead of conjectured from fits.
+  3. ✓ Σα_{j+1} − 2·Σα_j = 0 exactly, every generation — the α-weighted
+     boundary corrections cancel identically. (Where a 2n±1 class loses a
+     member, sibling classes gain matching α; the cancellation is
+     class-level bookkeeping, ripe for a per-calendar-position proof.)
+  4. ✗ as formulated — the singles are NOT geometric ladders in raw ν:
+     they all fire at ODD ν. They are sparse deep-carry classes with one
+     member per interval (including the event-crossing sweeps at
+     ν = 2^k−1, 3·2^k−1, …), organized by trailing-ones depth and
+     calendar-relative position, in just **28 skeleton families**. The
+     correct correspondence key for the induction is (skeleton,
+     carry-depth class, interval type) — next build. The narrowness (28
+     kinds for 1,045 firings) strongly supports finite k-parametrization.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
