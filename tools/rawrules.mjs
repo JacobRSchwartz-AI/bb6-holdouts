@@ -9,12 +9,16 @@ const QN = 'ABCDEF';
 const RAW = { a: '1101', O: '0101', f: '1111', e: '0111' };
 const GLYPH_OF = Object.fromEntries(Object.entries(RAW).map(([g, s]) => [s, g]));
 
-const m = Number(process.argv[2] ?? 6);
+// argv[2]: zone width m (numeric) OR an explicit layout string like
+// "aafffffOfeeeeeeeeO" (one letter per block, left-to-right).
+const arg2 = process.argv[2] ?? '6';
 const n = Number(process.argv[3] ?? 8);
 const SWEEPS = Number(process.argv[4] ?? 40);
 const TRACE_SWEEP = Number(process.argv[5] ?? 3);
 
-const layout = ['a', 'a', ...Array(m).fill('O'), 'f', ...Array(n).fill('e'), 'O'];
+const layout = /^[Oeaf]+$/.test(arg2)
+  ? arg2.split('')
+  : ['a', 'a', ...Array(Number(arg2)).fill('O'), 'f', ...Array(n).fill('e'), 'O'];
 const tape = new Map();
 layout.forEach((g, bi) => RAW[g].split('').forEach((c, j) => tape.set(4 * bi + j, +c)));
 let pos = 4 * layout.length, q = QN.indexOf('C'), steps = 0;
@@ -39,7 +43,7 @@ const rle = (bs) => {
 };
 
 let lastAnchorSteps = 0, sweep = 0, prevNu = null;
-let traceLog = [], tracing = false;
+let traceLog = [], tracing = TRACE_SWEEP === 0;
 const WATCH = Number(process.argv[6] ?? 12);   // tail block to transcribe
 let watchLog = [];
 while (sweep <= SWEEPS) {

@@ -140,6 +140,56 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      context differs from the real winter config), not in the tail/edge
      mechanics.
 
+- **P-2026-08-14-n** (the census; written before `tools/census.mjs`
+  exists or runs — Phase A of the M4 completion plan):
+  1. The census of all block-boundary transitions over ~10^7 raw steps
+     from c0 finds a FINITE small case list: <= 30 distinct
+     (entry state/side, content, exit state/side, content') signatures,
+     including every case already transcribed in session 2 (the four
+     passes, the bounces, the edge stages) plus a handful of D-walk and
+     b-era cases not yet seen.
+  2. D never reads 0 anywhere in the census (glyph structure keeps 1s at
+     c1/c3, and D only ever appears mid-block over those cells).
+  3. Case counts are wildly skewed (the four tail passes dominate by
+     orders of magnitude); rare cases cluster at calendar events.
+  4. The case list is CLOSED well before 10^7 steps: predict no new
+     signature after step ~10^6 (self-similarity: every event kind has
+     fired by k~20).
+  5. Melt analog (a-boundary reflection): the maximal dip preserves the
+     a-pair and reflects; crossed f-cells toggle to O on the out-pass;
+     cell0 round-trips O->f->O. (Exact boundary states deliberately NOT
+     predicted — the in-walk phase into the first a depends on zone
+     length mod 3 and entry state, to be transcribed, not guessed.)
+
+  **GRADED (tools/census.mjs 10M + 100M runs, tools/rawrules.mjs melt
+  analog, same day):**
+  1. WRONG on count, right on shape: 53 distinct signatures (not <=30).
+     The overshoot is a whole second DIALECT: the early era runs 3 cells
+     OFF the absolute glyph grid ([1011]=e@offset3, [1110]=a@offset3 —
+     the four tail passes off-grid), and the machine REALIGNS ONCE at
+     ~step 353k (nu~210). 35/53 signatures are early-era-only; the
+     mature era runs ~18 signatures forever.
+  2. PRIMARY: no halt in 100M steps; D appears only in-block over 1s
+     (D< O->e C> is a 3.5k-count REFLECTION rule, plus rare D< a->f C>,
+     D< e->O C>).
+  3. PRIMARY: counts skewed ~600k:1 (tail passes vs event cases).
+  4. PRIMARY: closed at 355k << 1M; ZERO new signatures in the last
+     99.65M steps of the 100M run.
+  5. PRIMARY (melt analog, seed a^2 f^5 O f e^8 O, melt traced raw):
+     the melt is the ORDINARY dip at maximal depth. Boundary: the walk
+     reaches the INNER a in state A and reflects off it in an 11-step
+     single-block dance (a -> transients -> a, exit E>) — the outer a
+     never touched; all crossed f's toggle f->O on the out-pass; cell0
+     round-trips O->f->O. THE MELT LEMMA IS ONE SINGLE-BLOCK PRIMITIVE.
+     Bonus discovery: `A< a -> a E>` fires 3x in the 100M census at the
+     2^k collapses — the structured era's collapses are mini-winters
+     using the SAME primitive.
+  Post-melt analog re-based exactly (zone all-O, v counts 1,2,3... with
+  dev=0 clock every sweep). Open item for next session: census rows
+  `C> f->f F<`, `C< e->f D<`, `D< a->f C>`, `D< e->O C>` (n=4..10, last
+  seen ~2.4M): confirm whether they recur at 2^12+ carries via seeded
+  deep-carry analogs, or are era-position-specific.
+
   **GRADED (tools/rawrules.mjs, same day):** decoding claim CONFIRMED —
   raw spelling is value-bits reversed (`1x1y` value = `y1x1` on tape:
   O=0101 e=0111 a=1101 f=1111); every anchor parses as glyphs.
@@ -1299,3 +1349,17 @@ Coq port state after `sweep_even` (all green under Coq 8.18, zero axioms):
   cross-checked against rawrules.mjs anchor pairs (sweeps 3->4, 4->5).
   Remaining sweep family: deeper carries (cell2 x=1: the walk continues;
   D-walk ground truth needed) -> generic depth-t lemma by induction.
+
+### M4 Phase A log (2026-08-14, session 3)
+
+Census architecture result (tools/census.mjs; the M4-completion plan's
+Phase A): the Coq case list is SMALL and CLOSED. Mature era = ~18
+block-transition signatures; early era = ~35 more in a 3-cell-offset
+dialect that dies at the one-time realignment (~step 353k, nu~210).
+Options for the Coq base case, to decide next session: (a) lemma-ize
+both dialects + the realignment sweep (concrete, ~3.4k-step execute);
+(b) use busycoq's Compute.v verified interpreter + vm_compute to cross
+the entire early era (353k steps) computationally and start the
+invariant at the first mature anchor — CHECK Compute.v's API for a
+cmultistep->evstep correspondence lemma first. Melt/collapse primitive
+transcribed and identical (A-entered inner a, 11-step reflect, E> out).
