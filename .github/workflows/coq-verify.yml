@@ -18,6 +18,8 @@ jobs:
       # zram keeps the paging at RAM speed (Coq heaps compress ~3x).
       - name: Add zram + disk swap
         run: |
+          sudo apt-get update
+          sudo apt-get install -y "linux-modules-extra-$(uname -r)"
           sudo modprobe zram num_devices=1
           echo lz4 | sudo tee /sys/block/zram0/comp_algorithm
           echo 12G | sudo tee /sys/block/zram0/disksize
@@ -32,7 +34,6 @@ jobs:
 
       - name: Install Coq 8.18 (Ubuntu 24.04 apt)
         run: |
-          sudo apt-get update
           sudo apt-get install -y --no-install-recommends coq
           coqc --version
 
