@@ -778,7 +778,53 @@ non-truncated zones), zero exceptions at p4–p6:
   boundary at mod 8192 (lemmas 1927/1892 alternate, complementary, no
   hole). Remaining ∀-gap: era generalization (k-induction), step 4.
 
-## 4.5 Segment-map findings (why the induction lives on the numeral)
+## 4.5 The finite presentation and the ∀j generation theorem (M2 close-out)
+
+**The universal cost law (2026-08-14): α = 16 for every e-formal lemma
+in the book — 2,237/2,237** (135 e-pinned birth-era pins and 5 birth
+shapes excluded; census over data/book.json steps expressions). Hence
+every sweep costs exactly **steps(ν) = 16·ν + off(ν)**: sixteen steps
+per unit counted, plus a bounded service charge. The per-generation
+N-coefficient 2^(j+4) = 16·2^j is a corollary (2^j sweeps at slope 16),
+and with it the c' = 2c + 3·2^18 recursion. The surcharge off(ν) is:
+- workhorse classes: a per-class constant (182 era-invariant forms);
+- deep-carry/event singles: γ·t + γ₄·⌊t/4⌋ + δ per skeleton family
+  (28 families; t = trailing-ones(ν); the ⌊t/4⌋ term is the
+  3-cells-per-4-bits lattice in the crossing cost);
+- even-k respell collapses: flat +1680, era-invariant because M+K=207
+  fixes the extent being re-spelled.
+
+**G(j), the generation theorem (statement):** from the collapse anchor
+at ν = 2^j — tape SPELL(2^j), preamble = numeral(⌊j/2⌋), reservoir R(j)
+and zone K(j) per calendar — the machine executes exactly 2^j sweeps
+ν → ν+1 (each SPELL(ν) ⊢_book SPELL(ν+1)), reaching the collapse anchor
+at ν = 2^(j+1), in total steps 16·Σν + Σoff, where Σν is closed-form and
+Σoff decomposes by trailing-ones depth (2^(j−t−1) members at depth t)
+into geometric sums over the family laws plus the calendar's event
+constants.
+
+**Proof-status ledger (what kind of evidence each component has):**
+1. PROVEN, machine-checked symbolic, ∀ params: every lemma (M1); the
+   per-class preservation identities (step 3); α = 16 per lemma (read
+   off the proven step expressions, not measured).
+2. VERIFIED-EMPIRICAL, exact, zero exceptions over 12 full generations
+   (266,349 sweeps) + symbolic chain to j=31 (~10^18 steps): the
+   calendar; the class-birth schedule; era-invariance of the 182 forms;
+   the 28 family lattice laws; the constant respell charge; the
+   preamble register law (s = 1..15).
+3. REMAINING FORMAL GAP (the busycoq work list): (a) class-birth
+   schedule ∀k — derivable from the SPELL definition per k mod 4;
+   (b) family lattice laws ∀t — currently t ≤ 18; carried by the
+   parametric deep-carry lemmas' formal run counts, one algebraic
+   identity per family; (c) preamble transition ∀s — verified s ≤ 15,
+   s = 16 prediction pending the j=32 chain.
+
+M3 is unblocked in practice: composing G(j) from j=16 to M-bottom
+(j ≈ 275) requires only this presentation + calendar arithmetic; the
+endgame configuration can be constructed and run concretely while the
+formal-gap items are ported.
+
+## 4.6 Segment-map findings (why the induction lives on the numeral)
 
 Composed segment-interior maps (tools/segmap.mjs) are guarded-affine and
 compose EXACTLY (0 irregular over all depths), but their guard values pin
