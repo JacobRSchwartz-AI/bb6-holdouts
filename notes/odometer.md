@@ -576,6 +576,175 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   + 4[ν+1=2^k], plus seven priced respells. One line and a price list,
   for ~10^18 observed steps.**
 
+- **P-2026-08-14-j (THE ENDGAME — registered before the first
+  terra-incognita seeded run; tools/descent.mjs + tools/endgame.mjs).**
+  The descent ledger (pure calendar arithmetic, closed forms verified
+  12/12 against simulator generation totals) fixes the geography:
+  R hits 0 at the pay at ν = 3·2^273 — exactly when the zone reaches
+  len = 207 = the M+K invariant (the zone eats the entire budget); the
+  machine then runs [3·2^273, 3·2^274) with NO reservoir run at all;
+  the **fatal event is the pay at ν\* = 3·2^274** (≈9.1·10^82), zone
+  must grow cell 208 with nothing to pay; the k=274 borrow at 5·2^274
+  is scheduled after — the rescue arrives too late. The fatal sweep
+  begins at absolute step ≈6.6339·10^166 (exact 167-digit integer in
+  descent.mjs output, ±432 pending the respell-c(r) grade). Seed
+  harness proven in-range first: 643/643 seeded one-sweep runs exact.
+  Predictions, in run order:
+  1. **lastpay** (seed ν = 3·2^273 − 12, R=1, len=206, s=137, font a):
+     the last pay completes lawfully like every observed pay; post-pay
+     anchors spell SPELL₀(ν) = preamble(137) · zone(ν) · f e^(ν−2) O
+     with len 207 and no reservoir run. The newborn cell 207 spells
+     const f (adolescence); preamble c0 = e adjacent — no RLE merge.
+  2. **collapse** (seed ν = 2^275 − 12, R=0): the full-depth carry
+     works with zero reservoir; at ν = 2^275 every zone cell washes to
+     O (all windows above the top wrap to 0 — the zone is a modular
+     register; magnitude lives in the tail alone); clock-exact
+     (t=275 odd, q=1: steps = 16ν + 34 + 6·275 + 4).
+  3. **fatal** (seed ν\* − 12): PRIMARY — no halt at the fatal sweep.
+     The carry, finding no reservoir block, disturbs the preamble's
+     right edge (same glyph alphabet — the register boundary is a
+     convention, not a wall) and the machine continues in a novel
+     regime: the preamble erodes as later pays consume it (~8 cells of
+     grace), after which the left boundary is blank tape and the fate
+     is decided by the first blank-block crossing — expected outcome a
+     translated-cycler/runaway NON-HALT certificate, possibly many
+     events further out. ALTERNATE — immediate HALT at the fatal sweep
+     (state D reads 0 in the disturbed window; D0 is the machine's
+     only halt transition and it has never been within reach).
+     LONG-SHOT — clean self-repair (a lawful mechanism converts tail
+     or preamble material back into reservoir); nothing observed
+     supports it (token flow has been one-way; the only +1 is the
+     borrow, which takes from the zone).
+  4. Preamble c6 dialect (bit7 of s=137, never observed): the fate of
+     1–3 is INVARIANT across c6 ∈ {e, a, f} — all three variants run.
+
+  **GRADED (tools/endgame.mjs, same day):**
+  1. ✓ EXACT — 13,309/13,309 post-pay anchors match SPELL₀; last block
+     becomes zone cell 206 (f: lattice window AND adolescence agree);
+     no merge at the new preamble|zone boundary.
+  2. Partial ✓ with two discoveries. Zone wash to O^207 exact, carry
+     works at R=0 — but (i) the collapse sweep costs 16ν + 34 + 6t
+     (NO q-bonus: the +4[ν+1=2^k] term is R>0-only; verified ±2 sweeps
+     clock-exact around it), and (ii) the carry-out, which the
+     reservoir used to absorb (those 4 steps), instead lands on the
+     preamble's rightmost cell and flips it e→a — ink-conserving
+     x↔y swap, the register boundary is a convention. All 13,309
+     post-collapse anchors exact under SPELL₀ + marked c0.
+  3. ✓ primary family, mechanism sharper than predicted: **no halt; no
+     disturbance at all.** The pay consumed the MARKED c0 (an a-glyph
+     is locally indistinguishable from a 1-block a-font reservoir):
+     zone grew to 208 cells spelled exactly on the lattice
+     (f a O^206 = win@274, win@273, zeros), preamble 8→7 cells,
+     machine ran 133,308 further sweeps flawlessly. The fatal sweep
+     cost EXACTLY base 16ν + 1664 — excess zero. Collapse carry-outs
+     UNLOCK preamble cells (font-flip to a); pays CONSUME them: the
+     odometer burns its fourth register as fuel.
+  4. ✓ — e/a/f variants byte-identical at and after the event.
+  **Conservation, amended: preamble + reservoir + zone = 215 blocks,
+  invariant (8+0+207 = 7+0+208). M+K = 207 was the corollary visible
+  while the preamble stayed frozen at 8.**
+
+- **P-2026-08-14-k (endgame chapters 2+ — registered before the runs;
+  the true end is ~7 fuel cells + borrow deposits away).** Event order
+  after ν\* = 3·2^274: respell-collapse 2^276, borrow 5·2^274, pay
+  3·2^275, paying-collapse 2^277 (k=277≡1), … State entering 2^276:
+  preamble a e O O f O O (7 cells), len=208, R=0. Predictions:
+  1. **respell 2^276** (s-tick 137→138 = ripple through bit0+bit1; but
+     the c0 cell is GONE): no halt; the tick's c1 flip lands on the
+     physical rightmost preamble cell (O→a, giving a e O O f O a);
+     the c0 write is absorbed at the boundary (zone top or a minted
+     mark); font-flip a→e applies to nothing (no reservoir); zone
+     washes to O^208. Honest uncertainty: the truncated register's
+     tick mechanics are the least constrained prediction yet.
+  2. **borrow 5·2^274**: the zone's top cell returns left and re-forms
+     a 1-block reservoir in the new era font (e), i.e. anchors spell
+     preamble(7) · e¹ · zone(207). Alternate: it coalesces into the
+     preamble as a new 8th cell.
+  3. **pay 3·2^275**: consumes the borrow's deposit lawfully; left
+     structure back to 7 cells + len 208.
+  4. **The true end**: the 215-block conservation + net −3 per period
+     says the left structure exhausts in ~2–3 more calendar periods
+     (k ≈ 284–290); the FINAL pay (or final carry-out) then faces
+     0^∞ — blank blocks (0000, ink-0, not a glyph). PRIMARY: the
+     leftward crossing into blank tape yields a translated-cycler /
+     runaway NON-HALT certificate. ALTERNATE: state D reads a 0 in
+     the un-spelled window — HALT. Ledger v2 (descent with the
+     amended conservation) to compute the exact final event first.
+
+  **Chapters 2–3 GRADED (same day):** k.1 partial ✓ — respell 2^276:
+  no halt, zone wash ✓, tick landed on the rightmost cell but as a
+  DOUBLE-write O→f (x1y1: bit-set + homeless carry-write on one
+  cell), not O→a; left context freezes as a e O O f O f; the register
+  no longer decodes as the s-numeral and the machine doesn't care.
+  k.2 ✓ EXACT (primary) — borrow 5·2^274: the borrowed block re-forms
+  a 1-block reservoir e¹ minted in the CURRENT era font (the "era
+  font" is calendar phase, not stored state); zone 207 lattice-exact;
+  7+1+207 = 215 ✓.
+
+  5. **Ledger v2 (registered before tools/cascade.mjs runs).** Block
+     count L of the left structure (preamble remnant + reservoir):
+     L=8 after the 5·2^274 borrow; pays −1, borrows +1, marks/ticks 0.
+     Walking the calendar: pay 3·2^275 →7, paycollapse 2^277 →6, pay
+     3·2^277 →5, respell 2^278 →5, pay 3·2^278 →4, borrow 5·2^278 →5,
+     collapse 2^279 (mark) →5, pay 3·2^279 →4, respell 2^280 →4,
+     paycollapse 2^281 →3, pay 3·2^281 →2, respell 2^282 →2, pay
+     3·2^282 →1, borrow 5·2^282 →2, collapse 2^283 (mark) →2, pay
+     3·2^283 →1, respell 2^284 →1, **paycollapse 2^285 →0 (consumes
+     the a-head itself)**; len = 215 − L = the whole tape is zone.
+     Ordinary sweeps never touch the left edge (carries turn around
+     shallow), so the machine coasts until **THE TRUE FATAL EVENT:
+     the pay at ν† = 3·2^285**, zone must grow cell 216 from blank
+     tape. Primary: cascade reproduces every step of this ledger with
+     no halt anywhere before ν†. At ν†: primary = non-halt certificate
+     (runaway/translated-cycler) on the blank crossing; alternate =
+     HALT (D reads 0); wildcard = the machine MINTS structure from
+     blank (it built everything from blank at birth) and enters a
+     post-register phase needing its own analysis.
+
+  **GRADED (tools/cascade.mjs + tools/finale.mjs, same day) — the
+  count arithmetic was right, the crisis condition was wrong, and the
+  wildcard family won, one level earlier than predicted:**
+  - Cascade parsing lesson (methodological, cost one bad run): at
+    post-event anchors the left|zone boundary is invisible when both
+    sides spell O, so the parser MUST use the ledger-dictated len
+    (pay +1, borrow −1, else 0); a free len parse steals zone-top O's,
+    rebuilds a counterfeit seed (the top cell's glyph depends on len),
+    and silently diverges from the true timeline. First cascade run
+    was poisoned this way (L appeared to GROW 8→61); the hand-crossed
+    chapters exposed it. Ledger-locked rerun reproduces all four
+    hand-verified chapters exactly.
+  - Cascade (locked) walked 10 moments lawfully, L: 8→7→7→8→7→6→6→5
+    →5, all stable, total 215 every moment. New micro-laws seen:
+    paycollapse 2^277 consumed the f-mark AND deposited its own
+    carry-mark (O→e) in one sweep; respell 2^278 rewrote the remnant
+    deeply (a e O O f e → a e f O O a); collapse 2^279's mark landed
+    on the SECOND-rightmost cell (a e f O O → a e f f O).
+  - **THE REAL CRISIS: the pay at 3·2^279 — the boundary block was O
+    (ink 2).** Every block ever consumed by a pay was ink-3+ (e, a,
+    f). An O cannot fund a zone cell. The crisis is ink-poverty, not
+    blank tape, and it fires six years early (3·2^279, not 3·2^285).
+  - **THE MACHINE'S RESPONSE: wholesale register conversion.** No
+    halt, no escape: the sweep re-spells the ENTIRE unary tail
+    e^(ν−2) → a^(ν−2) — the same ink-neutral x↔y font-flip as the c0
+    mark, applied to all ~10^84 blocks of the third register in one
+    shift-rule pass (~4.7·10^90 steps).
+  - **REGIME 3 (post-conversion), observed 2.5M sweeps:** the
+    odometer keeps counting. Giant-run count ≈ ν incrementing 1 per
+    sweep; tail font now ALTERNATES e↔a with sweep phase; left
+    structure (zone + crisis remnants) BOUNDED — blocks oscillate in
+    {214, 216, 217}, runs 11–19, no growth, no drain at sweep scale.
+    Head cycles all states; no halt transition ever in reach.
+  - The machine has now survived: reservoir exhaustion (R=0 era),
+    register cannibalization (preamble as fuel), and ink poverty
+    (tail conversion). Each crisis resolved by a structural
+    conversion, each new regime lawful. **Open question for the
+    non-halt proof: is the crisis→conversion→regime pattern periodic
+    (the calendar's O-pay recurs every 4 k's; conversions alternate
+    the tail font) — a meta-cycle that closes the ∀-induction over
+    everything?** That is M3.5: decode regime 3 with the M1/M2
+    pipeline (lemma harvest → SPELL analog → calendar → its next
+    crisis), then look for the meta-periodicity.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
@@ -895,3 +1064,18 @@ must run on the decoded numeral (α above), not on segment maps.
 - `node tools/dumpcfg.mjs [ν...]` — dump full anchor configs at chosen ν.
 - `node tools/preserve.mjs` — M2 step 3: per-lemma preservation
   SPELL(ν) ⊢_book SPELL(ν+1), TM-free replay + symbolic class identities.
+- `node tools/gentheorem.mjs` / `selfsim.mjs` / `ccoef.mjs` /
+  `skeleton.mjs` / `assembly.mjs` — M2 step 4: steps as class
+  arithmetic, era-invariance, Σα = 2^(j+4), the 28 singles families,
+  and the global clock + G(j) (§4.5).
+- `node tools/descent.mjs` — M3: the descent ledger (fatal pay at
+  ν\* = 3·2^274, R=0 at len=207) + exact closed-form pricing
+  (~6.6339·10^166 steps), regression-checked 12/12 vs simulator.
+- `node tools/endgame.mjs validate|lastpay|collapse|fatal [e|a|f]` —
+  M3: seeded concrete crossings (runMacro init); validate = 643/643
+  in-range one-sweep reproduction; the rest are the endgame chapters.
+- `node tools/cascade.mjs` — M3: automated moment-by-moment walk from
+  the 2^275 collapse; reproduces the hand chapters, breaks at the
+  3·2^279 ink-poverty crisis and runs the finale raw.
+- `node tools/finale.mjs` — M3: the O-pay crisis seed run with
+  regime-3 instrumentation (bounded left structure, counting resumes).

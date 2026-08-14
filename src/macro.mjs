@@ -42,14 +42,14 @@ export function makeMacro(m, k) {
   };
 }
 
-export function runMacro(m, k, { maxOps = 1e7, maxSteps = null, onSample = null, sampleEvery = 0, onEdge = null, macro = null } = {}) {
+export function runMacro(m, k, { maxOps = 1e7, maxSteps = null, onSample = null, sampleEvery = 0, onEdge = null, macro = null, init = null } = {}) {
   macro ??= makeMacro(m, k);
 
-  const left = [];   // [block, count]; count is BigInt
-  const right = [];
-  let facing = 'R';
-  let q = 0;
-  let steps = 0n;
+  const left = init ? init.left.map(([b, c]) => [Number(b), c]) : [];   // [block, count]; count is BigInt
+  const right = init ? init.right.map(([b, c]) => [Number(b), c]) : [];
+  let facing = init?.facing ?? 'R';
+  let q = init?.q ?? 0;
+  let steps = init?.steps ?? 0n;
   let ops = 0;
 
   const push = (stack, block, count) => {
