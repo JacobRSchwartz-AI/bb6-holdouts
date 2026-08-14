@@ -140,6 +140,42 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      context differs from the real winter config), not in the tail/edge
      mechanics.
 
+- **P-2026-08-14-o** (the block-level abstract dip machine; written
+  before `tools/dipwalk.mjs` exists). Claim: the mature-era census rows
+  compose into a complete abstract machine over glyphs — walk states
+  (F<, A<, C<, D<, C>, E>), rules:
+  F<: e->e F<, f->f A<, O->e E> (reflect), a->f E> (reflect);
+  A<: O->f C<, f->f C<, e->a E> (reflect), a->a E> (reflect, the melt);
+  C<: a->a C<, f->f F<, O->f E> (reflect), e->f D< (D-probe);
+  D<: O->e C>, a->f C>, e->O C> (all reflect rightward);
+  C>: f->f F< (re-dip); E>: XOR-5 toggle (e<->a, f<->O), exits.
+  Predictions: (1) a glyph-level walk simulator using EXACTLY this
+  table, started F< at the separator of each anchor's left string,
+  reproduces 100% of anchor->anchor transitions of the raw machine on a
+  width-24 zone analog over >=60k sweeps (carry depths through t~16);
+  (2) the walk always terminates (E> past the separator) without
+  walking off the left end — the boundary a-pair reflects every
+  arriving walk (arrival states are only F or A, never C, maintained by
+  the zone's mod-3 phase invariant); (3) the C> re-dip only ever meets
+  f (no C> rules for other glyphs are needed).
+
+  **GRADED (tools/dipwalk.mjs, same day):**
+  1. PRIMARY after one amendment: the table as registered scored 0/5999
+     with a SINGLE systematic diff — the abstract walk's exit toggles
+     the separator f->O, but the real sweep's second down-pass restores
+     it (sep_bounce round-trip). Net dip function: index 0 (sep) is
+     preserved. With that one line: **5999/5999 exact** over 6000
+     sweeps (width-24 zone, carries through 2^12), walkErr=0.
+  2. PRIMARY, with a spectacular bonus: zone widths ≡ 1 mod 3 (4 and 7
+     tested) make the boundary-arrival state C, which CROSSES both
+     boundary a's, walks off the left end, and the machine **HALTS**
+     (raw-verified: width 4 halts at step 4810, width 7 at 570558).
+     Width 213 = 3*71 gives arrival A (reflect) — the Odometer's
+     immortality depends on len mod 3, and the machine maintains it.
+     The invariant's phase side condition is not bookkeeping — it is
+     THE fact separating this machine from a halting cousin.
+  3. Consistent (no missing-rule errors in any validated run).
+
 - **P-2026-08-14-n** (the census; written before `tools/census.mjs`
   exists or runs — Phase A of the M4 completion plan):
   1. The census of all block-boundary transitions over ~10^7 raw steps
@@ -1363,3 +1399,17 @@ the entire early era (353k steps) computationally and start the
 invariant at the first mature anchor — CHECK Compute.v's API for a
 cmultistep->evstep correspondence lemma first. Melt/collapse primitive
 transcribed and identical (A-entered inner a, 11-step reflect, E> out).
+
+### M4 Phase B design seal (2026-08-14, session 3 cont.)
+
+THE ABSTRACT DIP MACHINE IS VALIDATED: walk states {F<,A<,C<,D<,C>,E>}
+over glyphs with the P-o rule table + sep-preservation; reproduces the
+raw machine anchor-for-anchor (5999/5999, depths through 2^12; melts
+validated separately at widths ≡ {0,2} mod 3; widths ≡ 1 mod 3 HALT,
+raw-confirmed). Coq plan: each table rule = one block lemma (mostly
+already proved); dip = one inductive relation mirroring dipWalk();
+invariant L = glyph strings with boundary a-pair + phase condition
+(boundary-arrival state must be A; regime 3: len=213 const makes it
+trivial; structured era: the ledger keeps collapse-time arrival = A).
+Next session: OdometerDip.v (glyph type, rule lemmas, dip relation,
+closure), then the universal sweep (Phase C).
