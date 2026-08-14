@@ -4,7 +4,10 @@ Status: work in progress. Verified = proven by our symbolic chain prover
 (exact BigInt affine arithmetic over formal parameters, every step mirroring
 the concrete simulator, cross-checked against concrete execution at every
 anchor with zero mismatches). NOT yet independently verified in a proof
-assistant; Lean translation is the end goal. Conjectures are labeled as such.
+assistant; Coq/busycoq port is the end goal (community standard).
+Conjectures are labeled as such. A fresh session should read this file
+top to bottom, then §4.3–4.5 for current state; every claim is
+re-derivable via §5.
 
 ## 0. Conventions
 
@@ -436,3 +439,11 @@ must run on the decoded numeral (α above), not on segment maps.
 - `node tools/chain.mjs 30 64 202` — epoch-3 theorem.
 - `node tools/factory.mjs 49150 1100000 194 8000000` — generations 16–20.
 - `node tools/epoch.mjs 50000000` — concrete epoch table from birth.
+- `node tools/lemmas.mjs` — milestone-1 rulebook (1,541 lemmas, 100.000%).
+- `node tools/lift.mjs` — ∀-form lift; writes data/book.json (the working book).
+- `node tools/compose-test.mjs` — 266,383 transitions by pure composition.
+- `node tools/audit.mjs` — per-lemma N+1 and extent-conservation (0 exceptions).
+- `node tools/cells.mjs` — the 22-event cell calendar.
+- `node tools/frontier.mjs` — per-cell per-era lattice fits (data/frontier.txt).
+- `node tools/decode.mjs`, `tools/alpha.mjs` — decoder development probes
+  (historical; the settled laws live in §4.4).
