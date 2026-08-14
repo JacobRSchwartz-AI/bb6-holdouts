@@ -805,6 +805,37 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   3. Falsifier for the meta-cycle: any winter whose post-structure is
      NOT of the a^b·zone·f·tail form.
 
+  **GRADED (tools/winter2.mjs, 2026-08-14) — STRONGER THAN PRIMARY:
+  THE META-CYCLE IS STATIONARY.** Winter #2 at v = 2^283 exactly as
+  scheduled: crisis sweep dev = +28 (the same constant as winter #1),
+  post-structure `a² O^213 f¹` — boundary INTACT, zone re-based to
+  v' = 0, zero blocks consumed. Winter is a pure loop:
+  **W(E) → W(E + 2^283)** with the left structure literally equal and
+  only the tail count advanced. Winters #3 and #1,000,002 probed at
+  their shifted epochs: byte-identical melt, structure, clock. The
+  locality argument closes ∀n: every winter's crisis tape is
+  identical except the giant run's count, which is crossed by the
+  shift rule count-independently — same local tape, same behavior.
+  Predictions 2 (boundary shrink / naked winter) are MOOT — nothing
+  is ever consumed again; there is no naked winter.
+
+  **THE NON-HALT ARGUMENT IS STRUCTURALLY COMPLETE.** The machine's
+  entire infinite future: from any winter anchor
+  W(E) = a² · O^213 · f · e^(E−2) · O, it executes 2^283 − 1
+  SPELL₃-lawful clock-exact sweeps, then one +28 melt sweep, reaching
+  W(E + 2^283). Eventually periodic in structure with period 2^283
+  sweeps; state D never faces a 0 anywhere in the loop. Formal work
+  list for the busycoq port (M4): (a) regime-3 sweep lemmas ∀v
+  (the v-zone runs the SAME lattice mechanics as the old zone — the
+  existing lemma book should largely cover it; the class-algebra
+  method of M2 step 3 applies verbatim); (b) THE MELT LEMMA — one
+  symbolic lemma, giant count formal (zone-all-f + a² boundary →
+  zone-all-O, +28 over base); (c) the reachability chain from blank
+  tape through the structured era, the descent, crisis 1, and into
+  the first winter (M1+M2 cover the structured era; the endgame
+  cascade moments need lemma status); (d) shift-rule count-formality
+  (already the simulator's core soundness argument).
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
