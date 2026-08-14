@@ -94,6 +94,13 @@ Fixpoint gright (W : list glyph) (r : side) : side :=
 Definition toggle (g : glyph) : glyph :=
   match g with gO => gf | gf => gO | ge => ga | ga => ge end.
 
+(** The out-pass: toggle the crossed cells back onto the result. *)
+Fixpoint unwind (sh deep : list glyph) : list glyph :=
+  match sh with
+  | [] => deep
+  | g :: sh' => unwind sh' (toggle g :: deep)
+  end.
+
 Inductive wstate := wF | wA | wC | wD | wCr | wE.
 
 Definition is_inward (s : wstate) : bool :=
@@ -121,11 +128,7 @@ Fixpoint dip_go (fuel : nat) (s : wstate) (deep shallow : list glyph)
   | O => None
   | S fuel =>
     match s with
-    | wE =>
-      match shallow with
-      | [] => Some deep
-      | g :: sh => dip_go fuel wE (toggle g :: deep) sh
-      end
+    | wE => Some (unwind shallow deep)
     | wCr =>
       match shallow with
       | gf :: _ => dip_go fuel wF deep shallow
@@ -157,6 +160,18 @@ Definition dip (W : list glyph) : option (list glyph) :=
 Lemma E_toggle : forall g l r,
   l {{E}}> graw g *> r -->* l <* grev (toggle g) {{E}}> r.
 Proof. destruct g; execute. Qed.
+
+Lemma unwind_sound : forall (shallow deep : list glyph) bl r,
+  gside bl deep {{E}}> gright shallow r -->*
+  gside bl (unwind shallow deep) {{E}}> r.
+Proof.
+  induction shallow as [| a shallow IHshallow]; introv.
+  - cbn. finish.
+  - cbn. follow E_toggle.
+    change (grev (toggle a) *> gside bl deep)
+      with (gside bl (toggle a :: deep)).
+    apply IHshallow.
+Qed.
 
 (** The tape configuration of a walk state. *)
 Definition wcfg (s : wstate) (bl : side) (deep shallow : list glyph)
@@ -210,10 +225,7 @@ Proof.
     cbn.
     follow C_f_redip. apply (IHfuel _ _ _ _ _ _ H).
   - (* wE *)
-    destruct shallow as [| g sh].
-    + injection H as <-. cbn. finish.
-    + cbn.
-      follow E_toggle. apply (IHfuel _ _ _ _ _ _ H).
+    injection H as <-. apply unwind_sound.
 Qed.
 
 (** The dip, from the anchor side: entering the string in state F. *)

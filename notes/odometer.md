@@ -1526,3 +1526,37 @@ no coinduction — halting proofs are finite compositions by induction:
    transition (concrete).
 Also: compute EXACT N_halt (BigInt, clock + ledger + cascade devs) as a
 submission showpiece.
+
+### M4 orbit campaign, session log (2026-08-15 cont.)
+
+PROVED in coq/OdometerOrbit.v (compiles standalone; full-build check
+running): byte_S/byte_C/carry_desc (mod-16 arithmetic), gcells (16-row
+LITERAL TABLE — vital: formula-form blew cbn to 3.7GB; table + strict
+delta-whitelist compiles in minutes), **zwalk** (THE INCREMENT THEOREM:
+carry walk over the group region, 15 concrete terminating cases + the
+all-ones recursion on v/16), zgroups_len, **dip_spell** (one sweep
+advances the counter), **dip_iter_spell** (n sweeps advance by n, any n
+below group capacity — covers the entire 2^282-sweep regime-3 plain
+span in one lemma). Refactor: dip_go's wE mode is now `Some (unwind
+shallow deep)` (structural fold, not fuel loop) — cbn-stable, and
+unwind_sound replaces the old wE soundness case.
+
+THE POST-CRISIS LADDER (designed, hand-verified against raw runs, next
+to prove): T(vhigh) = [bit(vhigh odd); wg(vhigh/2); ga; ga] for
+vhigh = v/16^70 in 0..7. Eight rung lemmas (concrete T-fragments):
+0->1 [O,O,a,a]->[f,O,a,a]; 1->2 ->[O,e,a,a]; 2->3 ->[f,e,a,a];
+3->4 = THE EXCEPTION ->[O,ga,gf,ga] (inner a spent, matches raw
+width-213 crossing `a f a O^212 f` EXACTLY incl. the new top-win = a);
+4->5, 5->6, 6->7 in the spent family [bit,win,gf,ga];
+7->8 = THE DEATH: T = [f,f,f,a], walk enters C, crosses all + the last
+a, deep = [] in C -> dip_go_dies. Between rungs: dip_iter_spell spans
+(16^70-ish each). Needed infra: zwalk_ones (all-ones carry-through, an
+implication with continuation at fuel 60+(3G+len sh), shallow gains
+repeat gf (3G); induction like zwalk's b=15 branch; converse arithmetic
+lemma ones_desc), dip_iter_add (a+b composition), then the eight rungs
+by whitelisted cbn, then assembly: the post-crisis orbit theorem
+dip_iter (~2^283) (crisis string) = dying string.
+
+STILL OPEN after that: the structured era (base anchor nu~211 ->
+crisis 3*2^279) — the calendar/ledger formalization. Everything else
+(base reachability, tape soundness, death, assembly) is DONE.
