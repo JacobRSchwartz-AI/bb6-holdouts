@@ -1560,3 +1560,140 @@ dip_iter (~2^283) (crisis string) = dying string.
 STILL OPEN after that: the structured era (base anchor nu~211 ->
 crisis 3*2^279) — the calendar/ledger formalization. Everything else
 (base reachability, tape soundness, death, assembly) is DONE.
+
+### Ladder simplification + prediction (2026-08-15 cont.)
+
+DESIGN REVISION: zwalk_ones / ones_desc are NOT needed. Every rung sits
+at a CONCRETE counter value (vlow = 16^70 - 1, a binary N literal), so
+each rung is a single dip on a concrete 214-glyph string — vm_compute
+territory, same pipeline as toy6_halts. The parametric spans between
+rungs are already covered by dip_iter_spell. Remaining infra: only
+dip_iter_add (composition). File: coq/OdometerCrisis.v.
+
+P-2026-08-15-q (registered before running): the eight rung transitions
+as designed — T(h) = [bit;win;top] with tops
+0:[O,O,a,a] 1:[f,O,a,a] 2:[O,e,a,a] 3:[f,e,a,a] 4:[O,a,f,a]
+5:[f,a,f,a] 6:[O,f,f,a] 7:[f,f,f,a] —
+verify mechanically end to end: (a) the JS abstract dip on width-213
+crisis strings maps T(h)@vlow=16^70-1 to T(h+1)@vlow=0 for h=0..6 and
+DIES (C falls off) at h=7; (b) Coq vm_compute proves rung0..rung6 +
+dies7 as stated. Confidence 0.9 (patterns hand-derived from the instep
+table and matched against raw exception213/death213 runs).
+
+### The ledger enumerator (2026-08-15 cont.)
+
+INSIGHT (extends the ladder simplification): the ENTIRE structured era
+collapses the same way. Every anchor string in the real orbit is
+concrete; only span counts are huge. Era = alternation of parametric
+spans (dip_iter_spell, carry confined to a maximal zgroups-parse
+prefix) and EVENT dips (carry probes past the parse, concrete string,
+vm_compute). A JS fast-forward enumerator (tools/ledger.mjs) that
+mirrors exactly {parse maximal G,v | span-jump to all-ones | one
+abstract dip} enumerates every event from W_BASE to death, with exact
+BigInt sweep totals. Soundness note: ANY valid (G,v,T) decomposition
+makes the span jump sound (dip_iter_spell is indifferent to semantics),
+and every generated event lemma is re-checked by vm_compute in Coq —
+the JS can be wrong only in ways Coq will catch.
+
+P-2026-08-15-r (registered before running ledger.mjs):
+1. The enumerator terminates at the dying string (C falls off), with
+   total events (= generated lemmas) <= 10^4, dominated by the early
+   formation era (W_BASE's zone is mostly virgin a's).
+2. Exact total sweeps from the W_BASE anchor to death = 19*2^279 - nu0
+   for the known nu0 ~ 211 offset, i.e. ~1.83e84, matching the raw
+   ladder algebra (nu_death = 3*2^279 + 2^283 from machine start).
+3. The last 8 events reproduce the proved crisis ladder rungs exactly
+   (cross-validation of OdometerCrisis.v).
+Confidence: (1) 0.6 — the early-era event density is the open unknown;
+(2) 0.75; (3) 0.9. Fallback if (1) fails: advance the base anchor past
+the formation era via genbase.mjs (brun is cheap at 10^7 steps).
+
+### Gradings + THE LEDGER RESULT (2026-08-15 cont.)
+
+P-2026-08-15-q GRADED: (a) PASS — tools/rungcheck.mjs, all 8 rungs OK
+including the exception and the death. (b) pending Coq compile of
+OdometerCrisis.v (expected pass; mechanical vm_compute).
+BUT — see below — the ladder's ENTRY FAMILY IS UNREACHABLE: the real
+orbit never passes through the [O,O,a,a]-top family at vlow=0. The
+crisis-ladder theorems are correct mechanics about a counterfactual
+string family (counterfeit lesson, THIRD instance — this time caught
+same-day by end-to-end enumeration, which is the permanent cure).
+Salvage: dies7's string IS the real dying string; the machinery
+(dip_iter_add / span / leg) is exactly what the real proof uses.
+
+P-2026-08-15-r GRADED:
+1. PASS, spectacularly: 549 events total, W_BASE all the way to DEATH
+   (not just to a "crisis entry"). Early formation era far cleaner
+   than feared — confidence 0.6 was too pessimistic.
+2. FAIL as stated, and the failure is a HEADLINE CORRECTION:
+   nu_death(after W_BASE) = 3*2^279 - 5 EXACTLY (enumerator, BigInt).
+   W_BASE anchor sits at parse-nu = N_TAIL + 2 = 5, so the machine's
+   fatal sweep is EXACTLY nu = 3*2^279 (absolute-offset check still
+   owed: count raw anchors to step 354,540). The old figure
+   19*2^279 = 3*2^279 + 2^283 was built on the same counterfeit
+   crisis-entry assumption. Steps ~ 8*nu^2 = 72*2^558 ~ 2^564.2
+   ~ 10^169.8 (was 10^171.4).
+3. FAIL: crisis-entry string never appears (see P-q grading).
+Cross-validation: 37 event strings reproduced by plain dip iteration
+over 3,000,000 sweeps (tools/ledger.mjs).
+
+THE LEDGER (tools/ledger.mjs -> data/ledger-events.json ->
+tools/genledger.mjs -> coq/OdometerLedger.v): the ENTIRE orbit from
+W_BASE to death = 549 event dips (concrete, vm_compute) alternating
+with parametric spans (dip_iter_spell via span_any/leg), chained by
+dip_iter_add' into ledger_chain, closing:
+
+    Theorem odometer_halts : halts tm c0.
+
+The "structured era ledger formalization" — expected to be the hardest
+remaining piece — collapsed into a 611KB generated file. Nothing is
+open after this compiles except validation + submission polish.
+
+Absolute-offset check (raw run from blank tape): the W_BASE anchor at
+step 354,540 is raw anchor ordinal #10; anchors #1-5 are degenerate
+tiny-tape hits (steps 12..256), then the misaligned era has NO
+4-aligned anchor for ~352k steps, then #6-#10 as alignment locks in.
+So raw ordinal is NOT the odometer clock. The intrinsic clock is the
+anchor tail index n (explicit in the Coq terms): base anchor has
+n = N_TAIL = 3, each dip adds exactly 1 (dip_iter_sound: m -> m + n),
+completed dips = 3*2^279 - 6, so the DYING anchor has
+n = 3*2^279 - 3 and the fatal sweep is tail-clock sweep
+nu = n + 2 = 3*2^279 - 1 + 1 = 3*2^279 EXACTLY (parse convention
+nu = tail + 2, under which W_BASE sits at nu = 5). Headline:
+
+  The Odometer halts on sweep 3*2^279 of its tail clock,
+  ~ 2^564.2 ~ 10^169.8 machine steps.
+
+### The exact clock (2026-08-15 cont.)
+
+tools/clock.mjs: instrumented 3000 real-orbit sweeps from W_BASE.
+Exact integer law, residual 0 on ALL rows (rational Gaussian solve):
+  cost = 56 + 16n + 4*bounces + 16*Aa + 12*Ae + 24*Af - 4*CO + 8*Ca
+       + 8*Fe   (other rule weights 0; n = tail length nu-2)
+tools/toyclock.mjs: the SAME weights give 0 misses on toy6 (127
+sweeps) and toy9 (2047 sweeps), raw halt steps reproduced exactly
+(154,134 / 33,925,642). Fatal partial cost = 4n + 4*crossings + 14
+exactly on both toys (crossings = inward cells of the dying walk).
+
+P-2026-08-15-s (registered before running tools/nhalt.mjs):
+1. The pipeline (ledger enumeration + clock sums + fatal formula)
+   reproduces toy6 = 154,134 and toy9 = 33,925,642 EXACTLY.
+2. Real machine: N_halt = 354,540 + sum + (4*(3*2^279-3) + 4*216 + 14)
+   lands in [2^564.1, 2^564.3] (~10^169.8), a ~170-digit integer,
+   computed exactly in BigInt. Confidence 0.85.
+
+P-2026-08-15-s GRADED: ALL PASS.
+1. PASS — tools/nhalt.mjs reproduces toy6 = 154,134 and
+   toy9 = 33,925,642 EXACTLY (fatal sweeps nu=138 / 2058).
+2. PASS — the real machine:
+
+N_halt = 67931323646787744340347982457788840036504581967495927710
+         77171340442123492305867933761244645774908114601585353157
+         21018132084275421883147320661638136374334659122557882929
+         34
+
+(170 digits, = 2^564.1699, ~6.79e169 steps; single line in
+tools/nhalt.mjs output). Internal cross-checks: fatal sweep
+nu = 3*2^279 exactly; dying-walk crossings = 216 = sep + cell0 +
+213 f's + the last a. THE ODOMETER HALTS AFTER ~6.8*10^169 STEPS,
+on tail-clock sweep 3*2^279.

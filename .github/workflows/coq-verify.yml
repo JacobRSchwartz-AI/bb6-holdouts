@@ -1,0 +1,56 @@
+name: coq-verify
+
+on:
+  push:
+    branches: [master]
+    paths: ['coq/**', 'tools/coq-build.sh', '.github/workflows/coq-verify.yml']
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      # Private-repo runners have 7GB RAM; OdometerOrbit.v peaks ~7.2GB RSS.
+      - name: Add swap
+        run: |
+          sudo fallocate -l 10G /mnt/swapfile-coq
+          sudo chmod 600 /mnt/swapfile-coq
+          sudo mkswap /mnt/swapfile-coq
+          sudo swapon /mnt/swapfile-coq
+          free -h
+
+      - name: Install Coq 8.18 (Ubuntu 24.04 apt)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends coq
+          coqc --version
+
+      - name: Clone busycoq
+        run: git clone --depth 1 https://github.com/meithecatte/busycoq ~/busycoq
+
+      - name: Build the port (full dependency chain, clean clone)
+        run: |
+          cd ~/busycoq/verify
+          cp "$GITHUB_WORKSPACE"/coq/*.v .
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v"
+          coq_makefile -Q . BusyCoq -o Makefile.port $FILES
+          # -j1: parallel make once raced Orbit against Dip's rebuild,
+          # producing checksum-inconsistent .vo despite exit 0.
+          make -f Makefile.port -j1
+
+      - name: Print Assumptions odometer_halts (must be axiom-free)
+        run: |
+          cd ~/busycoq/verify
+          echo 'Require Import BusyCoq.OdometerLedger. Print Assumptions odometer_halts.' > check_axioms.v
+          coqtop -Q . BusyCoq -batch -l check_axioms.v 2>&1 | tee assumptions.txt
+          grep -q 'Closed under the global context' assumptions.txt
+          echo 'AXIOM-FREE: odometer_halts is closed under the global context.'
+
+      - name: Also check toy6_halts and base_reach
+        run: |
+          cd ~/busycoq/verify
+          echo 'Require Import BusyCoq.OdometerLedger. Require Import BusyCoq.OdometerBase. Print Assumptions base_reach.' > check2.v
+          coqtop -Q . BusyCoq -batch -l check2.v 2>&1 | tail -3

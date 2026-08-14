@@ -8,7 +8,9 @@ REPO=/mnt/c/Users/JacobSchwartz/Documents/bb6-holdouts
 VERIFY="$HOME/busycoq/verify"
 cp "$REPO"/coq/*.v "$VERIFY"/
 cd "$VERIFY"
-FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerBase.v"
+FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v"
 coq_makefile -Q . BusyCoq -o Makefile.port $FILES
-make -f Makefile.port -j"$(nproc)"
+# -j1: parallel make raced OdometerOrbit against OdometerDip once (stale
+# .v.d deps), producing checksum-inconsistent .vo files despite exit 0.
+make -f Makefile.port -j1
 echo "PORT BUILD OK"
