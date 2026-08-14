@@ -398,14 +398,27 @@ non-truncated zones), zero exceptions at p4–p6:
   scales (2^1/2^2, 2^5/2^6) sit at period 4 in the exponent — the SAME
   period as the pay calendar: the machine installs a gearbox where the
   carry traffic is, one tier per calendar period.
-- **Tree-ring settling (cells ≥ 9; the remaining open piece):** cells are
-  born at pay events at the top of the zone; the top 1–2 cells are the
-  ACTIVE CARRY FRONTIER with calendar-phase-dependent semantics; each pay
-  pushes the frontier up and settles the cell below into a permanent law
-  (naive extrapolation of the settled laws fails exactly AT the birth
-  events: p9's trial law broke at ν = 3·2^10, the birth of cell 10).
-  Next: per-cell-per-era law fit with era boundaries = calendar events →
-  completes the value map → Part 2 (per-lemma +1 verification).
+- **THE COMPLETE LATTICE (tools/frontier.mjs; per-era fits, settled laws
+  exact in every era from settling onward, tiers m = 0..3 all verified):**
+  cell 3m+2 = window ⌊ν/2^(4m+1)⌋ mod 4; cell 3m+3 = window
+  ⌊ν/2^(4m+2)⌋ mod 4; cell 3m+4 = bit_{4m+4}(ν) (font {O,a}=0, {e,f}=1).
+  **Three cells per four bits — the −3-per-4-generations reservoir drain
+  IS the information rate of the encoding.** Window-cell symbols are fully
+  value-determined; bit-cell FONTS are the only freedom, and that freedom
+  is where the budget ink lives (finite overlay, still to map).
+- **Frontier adolescence, identical at every tier (period-4 shifted):** a
+  window cell born at the 3·2^k pay spells `const f` until the next
+  collapse, `const O` until the borrow, VANISHES during the borrow gap
+  (the borrowed cell is the newest one — the K-stall law in the flesh),
+  is re-bought at the next pay, then settles into its window law
+  permanently. Observed identically for cell 6 ([192,384)), cell 9
+  ([3072,6144)), cell 12 ([49152,98304)). Bit cells (4, 7, 10, 13) are
+  born at the 2^k pays (k ≡ 1 mod 4) and settle instantly.
+- **SPELL(ν) status:** deterministic given the lattice + calendar +
+  adolescence table, up to bit-cell font choice (budget overlay). Next:
+  pin the font overlay, state SPELL as one function, demand 266k-for-266k
+  agreement, then per-lemma preservation (SPELL(ν) ⇒ SPELL(ν+1)) — which
+  delivers α-preservation, closure, and the calendar in one finite check.
 
 ## 4.5 Segment-map findings (why the induction lives on the numeral)
 
