@@ -286,3 +286,195 @@ Proof.
     + exact HS'.
   - exact HS.
 Qed.
+
+(** * The halt direction. *)
+
+(** Falling off the left end of the written tape in state C: one step
+    puts D over blank — the halt transition. *)
+Lemma death_blank : forall r, halts tm (const 0 <{{C}} r).
+Proof.
+  introv.
+  eapply halted_evstep_halts.
+  - step. finish.
+  - reflexivity.
+Qed.
+
+(** Death detector: the walk falls off the left end inward in state C.
+    (Any reflection means the dip succeeds; wF/wA falloffs do not occur
+    on the orbit and are conservatively not-death.) *)
+Fixpoint dip_go_dies (fuel : nat) (s : wstate) (deep shallow : list glyph)
+    : bool :=
+  match fuel with
+  | O => false
+  | S fuel =>
+    match s with
+    | wE => false
+    | wCr =>
+      match shallow with
+      | gf :: _ => dip_go_dies fuel wF deep shallow
+      | _ => false
+      end
+    | _ =>
+      match deep with
+      | [] => match s with wC => true | _ => false end
+      | g :: deep' =>
+        match instep s g with
+        | Some (_, wE) => false
+        | Some (g', wCr) => dip_go_dies fuel wCr (g' :: deep') shallow
+        | Some (g', s') => dip_go_dies fuel s' deep' (g' :: shallow)
+        | None => false
+        end
+      end
+    end
+  end.
+
+Lemma dip_go_dies_sound : forall fuel s deep shallow r,
+  dip_go_dies fuel s deep shallow = true ->
+  halts tm (wcfg s (const 0) deep shallow r).
+Proof.
+  induction fuel; introv H. { discriminate. }
+  destruct s; cbn in H.
+  - (* wF *)
+    destruct deep as [| g deep']; [discriminate |].
+    destruct g; cbn in H; try discriminate.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow F_e_left1. finish.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow F_f_left1. finish.
+  - (* wA *)
+    destruct deep as [| g deep']; [discriminate |].
+    destruct g; cbn in H; try discriminate.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow A_O_left1. finish.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow A_f_left1. finish.
+  - (* wC *)
+    destruct deep as [| g deep'].
+    + cbn. apply death_blank.
+    + destruct g; cbn in H; try discriminate.
+      * eapply halts_evstep.
+        { eapply IHfuel. exact H. }
+        { cbn. follow C_e_probe. finish. }
+      * eapply halts_evstep.
+        { eapply IHfuel. exact H. }
+        { cbn. follow C_a_left1. finish. }
+      * eapply halts_evstep.
+        { eapply IHfuel. exact H. }
+        { cbn. follow C_f_left1. finish. }
+  - (* wD *)
+    destruct deep as [| g deep']; [discriminate |].
+    destruct g; cbn in H; try discriminate.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow D_O_reflect. finish.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow D_e_reflect. finish.
+    + eapply halts_evstep.
+      * eapply IHfuel. exact H.
+      * cbn. follow D_a_reflect. finish.
+  - (* wCr *)
+    destruct shallow as [| g sh]; [discriminate |].
+    destruct g; try discriminate.
+    eapply halts_evstep.
+    + eapply IHfuel. exact H.
+    + cbn. follow C_f_redip. finish.
+  - (* wE *) discriminate.
+Qed.
+
+Definition dip_dies (W : list glyph) : bool :=
+  dip_go_dies (12 * length W + 60) wF W [].
+
+(** The fatal sweep: an anchor whose string dies halts the machine. *)
+Theorem death_sweep : forall Z n,
+  dip_dies (gf :: Z) = true ->
+  halts tm (anchor (gf :: Z) n).
+Proof.
+  introv H.
+  eapply halts_evstep.
+  - eapply (dip_go_dies_sound _ _ _ _ _ H).
+  - unfold anchor.
+    follow edge_start. step.
+    follow (F_es_left (S n)).
+    finish.
+Qed.
+
+(** * Iterating sweeps, and the assembled halting theorems. *)
+
+Fixpoint dip_iter (n : nat) (W : list glyph) : option (list glyph) :=
+  match n with
+  | O => Some W
+  | S n' =>
+    match dip W with
+    | Some (gO :: Z') => dip_iter n' (gf :: Z')
+    | _ => None
+    end
+  end.
+
+Lemma dip_iter_sound : forall n Z W' m,
+  dip_iter n (gf :: Z) = Some W' ->
+  exists Z', W' = gf :: Z' /\ anchor (gf :: Z) m -->* anchor W' (m + n).
+Proof.
+  induction n; introv H.
+  - injection H as <-. exists Z. split.
+    + reflexivity.
+    + rewrite PeanoNat.Nat.add_0_r. finish.
+  - cbn [dip_iter] in H.
+    destruct (dip (gf :: Z)) as [W1 |] eqn:E; [| discriminate].
+    destruct W1 as [| g Z1]; [discriminate |].
+    destruct g; try discriminate.
+    destruct (IHn _ _ (S m) H) as (Z' & -> & Hrun).
+    exists Z'. split. { reflexivity. }
+    eapply evstep_trans.
+    + apply progress_evstep. apply sweep_theorem. exact E.
+    + replace (m + S n) with (S m + n) by lia. exact Hrun.
+Qed.
+
+(** Halting from any anchor whose orbit reaches a dying string. *)
+Theorem halts_of_orbit_death : forall Z m n W',
+  dip_iter n (gf :: Z) = Some W' ->
+  dip_dies W' = true ->
+  halts tm (anchor (gf :: Z) m).
+Proof.
+  introv Hiter Hdies.
+  destruct (dip_iter_sound _ _ _ m Hiter) as (Z' & -> & Hrun).
+  eapply halts_evstep.
+  - eapply death_sweep. exact Hdies.
+  - exact Hrun.
+Qed.
+
+(** Halting from the blank tape, given reachability of such an anchor.
+    The two hypotheses are the remaining proof obligations for the
+    Odometer: (1) is a finite computation (Compute.v + vm_compute);
+    (2) needs the orbit acceleration lemmas (N ~ 19*2^279). *)
+Theorem halts_c0_of : forall Z nb n W',
+  c0 -[ tm ]->* anchor (gf :: Z) nb ->
+  dip_iter n (gf :: Z) = Some W' ->
+  dip_dies W' = true ->
+  halts tm c0.
+Proof.
+  introv Hreach Hiter Hdies.
+  eapply halts_evstep.
+  - eapply halts_of_orbit_death; eassumption.
+  - exact Hreach.
+Qed.
+
+(** * End-to-end validation: the width-6 toy odometer halts.
+
+    Its entire 127-sweep orbit is computed inside Coq by vm_compute;
+    the 128th sweep dies. A complete, unconditional halting proof for
+    the toy — the same pipeline the real machine's proof will use. *)
+Definition toy6 : list glyph :=
+  [gf; gO; gO; gO; gO; gO; gO; ga; ga].
+
+Theorem toy6_halts : forall m, halts tm (anchor toy6 m).
+Proof.
+  intro m.
+  eapply (halts_of_orbit_death _ _ 127).
+  - vm_compute. reflexivity.
+  - vm_compute. reflexivity.
+Qed.
