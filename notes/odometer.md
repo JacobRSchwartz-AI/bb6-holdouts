@@ -354,6 +354,42 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
      never needs to grow before the endgame at k ≈ 275. The 4th register
      rides to M-bottom at fixed width.
 
+- **P-2026-08-14-e** (M2 step 4 phase A — steps as class arithmetic;
+  registered before building/running tools/gentheorem.mjs). With SPELL +
+  preservation sealed, per-generation step counts should reduce to sums
+  of affine functions over the residue classes. Predictions:
+  1. **Book steps ≡ simulator steps per sweep, 0 mismatches** over all
+     transitions ν ∈ [34, 266382] — the lemmas' proven step expressions,
+     applied to SPELL configs, reproduce the machine's exact step count
+     with the simulator out of the loop (steps join the TM-free layer).
+  2. **steps(ν) is affine in ν per (class, interval)** — exact on every
+     member, not a fit (the same affine-identity mechanism as
+     preservation, now read off the steps coordinate).
+  3. **Generation sums close**: Σ steps over each full observed
+     generation [2^j, 2^{j+1}), j = 6..17, computed from the per-class
+     affine formulas (α_c·Σν + β_c·#members), equals the simulator total
+     exactly.
+  4. **Doubling structure**: classes at depth d < j contribute member
+     counts 2^(j−d) that double with j; the non-doubling residual of
+     S_{j+1} − 2·S_j is confined to the event + deepest-carry classes —
+     the class-level seed of the observed c' = 2c + 3·2^18 recursion,
+     to be derived symbolically once phase A is green.
+
+  **GRADED (tools/gentheorem.mjs, same day):**
+  1. ✓ **266,349/266,349** — book steps ≡ simulator steps at every sweep.
+     The step count is now fully inside the TM-free layer.
+  2. ✓ **1,982/1,982** multi-member classes exactly affine in ν (1,045
+     singletons concrete).
+  3. ✓ **12/12 generations exact** (j = 6..17): Σ over each generation of
+     the per-class affine formulas equals the simulator total to the step.
+     The generation step count IS class arithmetic.
+  4. ✓-with-refinement: every non-doubling residual j→j+1 is structured —
+     either an event/newborn singleton (0→1) or a carry-boundary
+     near-double (2n±1) on the workhorse ladder lemmas; no chaotic
+     residuals anywhere. Exactly the boundary-term shape the
+     c' = 2c + 3·2^18 recursion requires. Symbolic derivation (era
+     self-similarity, period 4 in k) = phase B, pending the j=32 grades.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
