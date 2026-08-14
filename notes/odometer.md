@@ -99,7 +99,10 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
 - **C4 (preamble register)**: the runs left of the M-run form a bounded
   numeral ("preamble register") ticking once per generation; it determines
   when M pays vs borrows, and generates the {5,3,1,3,3,1,...} odd-part
-  pattern of the pre-2^16 era.
+  pattern of the pre-2^16 era. **DECODED 2026-08-14 (P-2026-08-14-d in
+  §3.1): the preamble spells s = ⌊log₄ ν⌋ in an 8-cell SPELL-style
+  numeral, exact on all 15 observed states; graded predictions pending
+  the j=32 chain.**
 - **C5 (endgame)**: with the payment/borrow law (−3 per 4 generations from
   M-offset 0 at j=16, M=194), M-bottom (K→207) lands near generation
   j ≈ 16 + 194·(4/3) ≈ 275, i.e. N ≈ 2^275 and total steps ~ 4^275/2^10
@@ -314,6 +317,43 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   with the simulator out of the loop, and every multi-firing class carries
   its ∀T by a machine-checked affine identity, not extrapolation.
 
+- **P-2026-08-14-d (THE PREAMBLE LAW — C4 resolved; registered while the
+  j=32 chain is still running, whose final collapse will grade it).**
+  Decode of all 15 observed preamble states (chain logs j=16..30 + SPELL
+  table + dumpcfg ν=6..33): the preamble is a fixed-width 8-cell numeral
+  spelling **s = ⌊log₄ ν⌋** — s = k/2 where 2^k is the latest even-k
+  respell; it ticks at every respell, once per generation-pair. Cell
+  dialect, right to left (c0 rightmost, head c7 = const a):
+  - c0 = bit0(s) in x-font {O, e}
+  - c1 = bit1(s) in y-font {O, a}
+  - c2 = window bit1 + 2·bit2 (full alphabet O,e,a,f — overlaps c1's bit,
+    the same gearbox redundancy as the zone)
+  - c3 = bit3(s) in bit-font {O, f}
+  - c4..c6 = bits ≥ 4, all O so far (dialect not yet observed)
+  Verified exact on every state s = 1..15: aO⁶e (s=1), aO⁴eaO (s=2),
+  aO⁴eae (3), aO⁴aO² (4), aO⁴aOe (5), aO⁴faO (6), aO⁴fae (7), aO³fO³ (8),
+  aO³fO²e (9), aO³feaO (10), aO³feae (11), aO³faO² (12), aO³faOe (13),
+  aO³f²aO (14), aO³f²ae (15) — the "head carry" at j=28 was just bit3
+  turning on (s=14 = 1110₂). bit0(s) IS the respell-type alternation
+  (k≡0 vs k≡2 mod 4) and the reservoir-font phase — the register's low
+  bit drives the calendar's visible alternations. The machine is a
+  three-storey odometer: tail counts ν in unary, zone counts ν in binary,
+  preamble counts ⌊log₄ ν⌋ in binary. Predictions:
+  1. **j=31 collapse** (ν=2³¹, no respell): preamble `a O³ f² a e`
+     (s=15), reservoir font a, zone O²⁴, M-offset −11.
+  2. **j=32 collapse** (ν=2³², respell k=32, s: 15→16, a 4-deep carry):
+     low four cells all clear, c4 lights for the first time. Primary
+     guess: c4 = window(bits 4,5) continuing the zone lattice at shift −1
+     (c3 ~ zone cell 4 pattern) → glyph e → preamble **`a O² e O⁴`**.
+     Alternates, in order: `a O² a O⁴` (y-font carry cell), `a O² f O⁴`
+     (plain bit cell). Reservoir font flips a→e, zone O²⁵, M-offset −12.
+  3. Future j=33/34 run: j=33 unchanged (s=16); j=34 respell → s=17 =
+     `a O² ? O³ e` with the same c4 glyph as (2).
+  4. **Capacity corollary**: if c4..c6 hold bits 4..7 zone-style (3 cells
+     per 4 bits), the register holds s ≤ 255 ⇒ k ≤ 510 — the preamble
+     never needs to grow before the endgame at k ≈ 275. The 4th register
+     rides to M-bottom at fixed width.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
@@ -525,8 +565,12 @@ non-truncated zones), zero exceptions at p4–p6:
   - reservoir font: e/a, flipping at the even-k respells.
   - preamble: finite per-respell-era table, 8 entries over the observed
     range (a¹O⁴e¹a¹O¹ → a¹O⁴e¹a¹e¹ → a¹O⁴a¹O² → a¹O⁴a¹O¹e¹ → a¹O⁴f¹a¹O¹
-    → a¹O⁴f¹a¹e¹ → a¹O³f¹O³ → a¹O³f¹O²e¹) — the 4th register; its own
-    transition law is step-4 work, with j≤32 chain data as evidence.
+    → a¹O⁴f¹a¹e¹ → a¹O³f¹O³ → a¹O³f¹O²e¹) — the 4th register. **DECODED
+    (P-2026-08-14-d): the table is the numeral of s = ⌊log₄ ν⌋, an 8-cell
+    fixed-width SPELL-dialect counter ticking at each respell; all 15
+    states s=1..15 decode exactly (cell laws in §3.1). The machine is a
+    three-storey odometer: ν in unary (tail), ν in binary (zone),
+    ⌊log₄ ν⌋ in binary (preamble).**
   - **No adolescence overrides exist**: the const-f/const-O phases of
     newborn window cells ARE their window values on those short eras, and
     "merge" is nothing but the tape's own RLE coalescing when the deepest
