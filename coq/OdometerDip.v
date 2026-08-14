@@ -478,3 +478,52 @@ Proof.
   - vm_compute. reflexivity.
   - vm_compute. reflexivity.
 Qed.
+
+(** * A bare (certificate-free) executor over ctapes.
+
+    [cmultistep] accumulates its correctness certificate as it runs,
+    which makes vm_compute over 10^5 steps impractical. [brun] computes
+    pure data; soundness is proved once, by induction. *)
+
+Definition bstep (c : Q * ctape) : option (Q * ctape) :=
+  match c with
+  | (q, (l, s, r)) =>
+    match tm (q, s) with
+    | None => None
+    | Some (s', L, q') => Some (q', left (l, s', r))
+    | Some (s', R, q') => Some (q', right (l, s', r))
+    end
+  end.
+
+Fixpoint brun (k : nat) (c : Q * ctape) : option (Q * ctape) :=
+  match k with
+  | O => Some c
+  | S k' =>
+    match bstep c with
+    | Some c' => brun k' c'
+    | None => None
+    end
+  end.
+
+Lemma bstep_sound : forall c c',
+  bstep c = Some c' -> lift c -[ tm ]-> lift c'.
+Proof.
+  intros [q [[l s] r]] c' H.
+  unfold bstep in H.
+  destruct (tm (q, s)) as [[[s' []] q'] |] eqn:E; cbn in H;
+    try discriminate; injection H as <-; unfold lift.
+  - rewrite lift_left. cbn [lift_tape]. apply step_left. exact E.
+  - rewrite lift_right. cbn [lift_tape]. apply step_right. exact E.
+Qed.
+
+Lemma brun_sound : forall k c c',
+  brun k c = Some c' -> lift c -[ tm ]->* lift c'.
+Proof.
+  induction k; introv H.
+  - cbn in H. injection H as <-. finish.
+  - cbn in H.
+    destruct (bstep c) as [c1 |] eqn:E; [| discriminate].
+    eapply evstep_step.
+    + apply bstep_sound. exact E.
+    + eapply IHk. exact H.
+Qed.
