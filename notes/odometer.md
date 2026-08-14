@@ -111,6 +111,59 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
 
 ## 3.1 Registered predictions (written before the verifying runs)
 
+- **P-2026-08-14-m** (raw-level small-analog testbench for the Coq glyph
+  layer; written before `tools/rawrules.mjs` exists or runs). Decoding
+  claim, from hand-tracing the turnaround: a k=4 block of value b is
+  written on tape with bits REVERSED — glyph raw spellings left-to-right
+  are O=`0101`, e=`0111`, a=`1101`, f=`1111` (`1x1y` value ⇒ `y1x1` raw),
+  which is why the cell left of every anchor head is 1 and D never reads
+  0 at the edge. Predictions for a raw-simulated small analog
+  `a² O^m f e^n O` (head at right edge, state C), m=6, n=8:
+  1. It sweeps exactly like regime 3 at small scale: anchors recur with
+     the tail growing one e per sweep, structure `a² zone f e^* O`
+     preserved, zone counting sweeps s = 0, 1, 2, … in the low lattice
+     (cell 1 = bit0 spelled O/f, cells 2–3 the overlapping windows).
+  2. Sweep cost obeys the old clock 16ν + 34 + 6t + 2[t even] with
+     ν = tail e-count + 2 and t = trailingOnes(s) of the zone value s
+     being incremented (t < 3 range only, since m=6 and carries stay
+     shallow; deeper t needs a larger analog to check).
+  3. Per-block crossing cost is 8 raw steps each way (16/block/sweep);
+     the left pass preserves tail e-blocks byte-for-byte; the right pass
+     also leaves them as e (ink changes happen only at the zone and the
+     edge).
+  4. The turnaround converts the edge O to e (it becomes the tail's +1)
+     and a fresh O materializes one block to the right; the first two
+     cells the machine writes at the edge (11) end up as the new block's
+     `_1_1` cells.
+  5. If the analog DOESN'T sweep cleanly (structure decays), the failure
+     is at the a² boundary (the only place where the small analog's
+     context differs from the real winter config), not in the tail/edge
+     mechanics.
+
+  **GRADED (tools/rawrules.mjs, same day):** decoding claim CONFIRMED —
+  raw spelling is value-bits reversed (`1x1y` value = `y1x1` on tape:
+  O=0101 e=0111 a=1101 f=1111); every anchor parses as glyphs.
+  1. PRIMARY: the analog sweeps cleanly, structure preserved, zone counts
+     in the low lattice. Nuance: deep-carry increments complete LATE (the
+     sliding-window redundancy shows transient spellings at the next
+     anchor) — the redundant encoding IS the deferral mechanism.
+  2. WRONG in an instructive way: the analog DECOUPLES tail count nu from
+     zone value, and the clock's t-terms decompose into borrow/repay
+     pairs (carry sweep runs 4*floor(3t/2) under base; next sweep repays
+     exactly). The real config's exact clock is the coupled special case.
+  3. WRONG: not 2 passes x 8 steps but FOUR passes x 4 steps/block =
+     16/block/sweep (total confirmed): F-down (e preserved), E-up
+     (e->a), C-down (a preserved), E-up (a->e). The E-crossing over ANY
+     glyph y1x1 toggles both free bits (value XOR 5): e<->a, O<->f — the
+     ink-neutral respell primitive, the tail round-trip, and the zone
+     increment are ONE rule.
+  4. PRIMARY: edge O -> e at sweep start; virgin block built in stages
+     1000 -> 1110 (E-up reflects as C) -> 0101=O (final E-up lands the
+     next anchor).
+  5. n/a — no decay; the a-boundary is untouched by normal sweeps (the
+     zone dip is shallow: depth = carry depth, NOT full zone width — the
+     34-constant in the clock is the shallow-dip cost).
+
 - **P-2026-08-13-a** (third payment/borrow period, generations 25–28; run
   not yet performed at time of writing): borrow +1 at N+2 = 5·2^22 =
   20971520; payments −1 at N+2 = 3·2^23 = 25165824, 2^25 = 33554432,
@@ -1216,3 +1269,25 @@ Port plan, mapped from the structural argument:
 Status: scaffold compiles or is being compiled (BB62, Individual62,
 Odometer.v with startup lemma to the step-29 anchor `1101 0111 C>` plus
 first two raw shift rules: B eats 11-pairs → 10-pairs; F slides over 0s).
+
+### M4 session 2 log (2026-08-14, cont.)
+
+Coq port state after `sweep_even` (all green under Coq 8.18, zero axioms):
+- Run lemmas: F_es_left, E_es_right, C_as_left, E_as_right (the four tail
+  passes, arbitrary run length, proved by induction with the
+  change + `rewrite <- lpow_shift'` idiom for the Cons/Str_app mismatch).
+- Single-block primitives (all by `execute`): E_glyph_right (the XOR-5
+  toggle, ANY glyph, 2 bool params), C_f_left1, F_f_left1, A_O_left1
+  (zone cell-0 entry O->f), O_bounce (deepest-cell reflection, carry
+  lands O->e), edge_start, virgin_reflect(+0), sep_bounce (doubles as
+  the even-sweep cell-1 flip O->f — same shape), virgin_finish.
+- **sweep_even**: forall zone-context zc, tail n: anchor(bit0 clear) -->*
+  anchor(bit0 set, tail n+1). First composed forall-theorem; proof is a
+  13-follow chain. Composition gotcha: `follow` cannot instantiate a
+  lemma whose LHS needs `const 0` unfolded (unification will not expose
+  the zeros, and `adjust` dies on dependent products) — state a
+  const-specialized variant (virgin_reflect0) instead.
+- Next: the odd/carry sweep family (dip past cell 1 = f; cell-2 window
+  cases; D-walk ground truth for deeper carries via rawrules.mjs
+  WATCH), then the generic depth-t sweep by induction, then SPELL3 as a
+  Coq config family.
