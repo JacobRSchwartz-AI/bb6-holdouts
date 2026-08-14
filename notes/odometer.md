@@ -221,6 +221,46 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
   65533, 131069, 262141. M+K=207 throughout. Null hypothesis on the j=28
   head-carry: no schedule change within this period.
 
+- **P-2026-08-14-a** (bit-cell font overlay; registered before running
+  tools/font.mjs): the only remaining spelling freedom is which glyph a
+  settled bit cell (index 3m+4) uses for its value. Predictions:
+  (1) **1-fonts by tier parity** — the v<64 observation "f at even
+  positions, e at odd" generalizes: each bit cell's 1-glyph is fixed for
+  life at birth, alternating f/e by tier (cell 4 = f, cell 7 = e,
+  cell 10 = f, cell 13 = e — or the complement; the fit decides which).
+  (2) **0-fonts are O except during open borrow windows**
+  [5·2^k, 3·2^(k+1)), where exactly one implicated cell spells a (the
+  parked double token), plus merge-adjacent deep cells spelled in the
+  reservoir's current font. (3) **Era-constancy** — within one calendar
+  era every (cell, value) pair uses ONE glyph; font changes happen only
+  at the 22 calendar events. Falsifier: any cell whose 0/1 glyph varies
+  within an era on non-merged anchors.
+  **GRADED (tools/font.mjs): (1) ✗, (2) ✗, (3) ✓-subsumed — the truth is
+  simpler than every guess: bit cells spell 0 = O and 1 = f, at every
+  tier, in every era, with ZERO mixed rows and ZERO a-glyphs at bit cells
+  anywhere in 266k anchors. There is NO font freedom.** The old "e at odd
+  positions" observation was window cells wearing their value glyphs; the
+  borrow-window a's are window-cell VALUES (w=2), not fonts. Wrong in the
+  best way: SPELL(ν) has no free parameters at all.
+
+- **P-2026-08-14-b** (SPELL(ν); registered after the font fit and manual
+  calibration dumps, before running tools/spell.mjs validation): the full
+  left tape at every anchor ν ≥ 34 is EXACTLY
+  preamble(era) · resFont^R(ν) · zone(ν) · f^1 e^(ν−2) O^1, RLE-coalesced,
+  where zone cell i (right-to-left) = cell 0 const O, cells i≡1 mod 3 =
+  bit glyph (O/f) of bit@2^0 (i=1) or bit@2^(4m+4) (i=3m+4), cells 3m+2 /
+  3m+3 = window glyph [O,e,a,f] of ⌊ν/2^(4m+1)⌋ / ⌊ν/2^(4m+2)⌋ mod 4;
+  zone length = 5 + #pays − #borrows; R(ν) = 202 − #pays + #borrows;
+  reservoir font e/a flips at even-k respells; preamble = finite per-era
+  table (8 entries over the observed range). No adolescence overrides
+  needed: the const-f/const-O phases ARE the window values on those eras,
+  and "merge" is nothing but RLE coalescing of the deepest zone run with
+  the reservoir. Expect 100.000% of anchors exact; plausible failure mode:
+  off-by-one timing at the 22 event anchors themselves.
+  **GRADED: ✓ EXACT — 266,351/266,351 anchors (ν ∈ [34, 266384]),
+  including every event anchor, borrow gap, and both partial end eras.
+  SPELL(ν) is total and perfect over the machine's whole observed life.**
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
@@ -417,11 +457,38 @@ non-truncated zones), zero exceptions at p4–p6:
   permanently. Observed identically for cell 6 ([192,384)), cell 9
   ([3072,6144)), cell 12 ([49152,98304)). Bit cells (4, 7, 10, 13) are
   born at the 2^k pays (k ≡ 1 mod 4) and settle instantly.
-- **SPELL(ν) status:** deterministic given the lattice + calendar +
-  adolescence table, up to bit-cell font choice (budget overlay). Next:
-  pin the font overlay, state SPELL as one function, demand 266k-for-266k
-  agreement, then per-lemma preservation (SPELL(ν) ⇒ SPELL(ν+1)) — which
-  delivers α-preservation, closure, and the calendar in one finite check.
+- **SPELL(ν) — SEALED (tools/spell.mjs, 266,351/266,351 anchors exact,
+  the machine's whole observed life, zero exceptions):**
+  SPELL(ν) = preamble(era) · resFont^R(ν) · zone(ν) · f^1 e^(ν−2) O^1,
+  RLE-coalesced, with:
+  - zone cell i (right-to-left): cell 0 = const O; cell 1 = bit0(ν);
+    cell 3m+2 = ⌊ν/2^(4m+1)⌋ mod 4; cell 3m+3 = ⌊ν/2^(4m+2)⌋ mod 4
+    (window glyphs O,e,a,f = 0,1,2,3); cell 3m+4 = bit_{4m+4}(ν) —
+    bit glyphs 0 = O, 1 = f ALWAYS (no font freedom; P-2026-08-14-a).
+  - zone length = 5 + #pays(≤ν) − #borrows(≤ν); R(ν) = 202 − #pays +
+    #borrows; both from the calendar generated formulaically (k≡0:
+    respell a→e @2^k; k≡1: pay @2^k, @3·2^k; k≡2: respell e→a @2^k,
+    pay @3·2^k, borrow @5·2^k; k≡3: pay @3·2^k).
+  - reservoir font: e/a, flipping at the even-k respells.
+  - preamble: finite per-respell-era table, 8 entries over the observed
+    range (a¹O⁴e¹a¹O¹ → a¹O⁴e¹a¹e¹ → a¹O⁴a¹O² → a¹O⁴a¹O¹e¹ → a¹O⁴f¹a¹O¹
+    → a¹O⁴f¹a¹e¹ → a¹O³f¹O³ → a¹O³f¹O²e¹) — the 4th register; its own
+    transition law is step-4 work, with j≤32 chain data as evidence.
+  - **No adolescence overrides exist**: the const-f/const-O phases of
+    newborn window cells ARE their window values on those short eras, and
+    "merge" is nothing but the tape's own RLE coalescing when the deepest
+    zone glyph equals the reservoir font. The entire zone is pure lattice
+    whenever a cell exists at all.
+- **The x/y decomposition (why there is no font freedom):** every glyph
+  is the block 1x1y with x, y ∈ {0,1}: O=1010 (x0 y0), e=1110 (x1 y0),
+  a=1011 (x0 y1), f=1111 (x1 y1). Window value w = x + 2y, so a window
+  cell at scale s stores x = bit_s(ν), y = bit_{s+1}(ν) — its two
+  physical spare bits ARE two consecutive bits of the count. A bit cell
+  at scale s stores x = y = bit_s(ν) (the bit duplicated). The deep value
+  map {O,a}=0, {e,f}=1 is just "read x"; ink (token count) is 2 + x + y.
+  Total zone ink is therefore a pure function of ν — budget bookkeeping
+  has no spelling freedom anywhere, which is exactly why M+K=207 can be
+  a per-lemma theorem.
 
 ## 4.5 Segment-map findings (why the induction lives on the numeral)
 
@@ -447,3 +514,6 @@ must run on the decoded numeral (α above), not on segment maps.
 - `node tools/frontier.mjs` — per-cell per-era lattice fits (data/frontier.txt).
 - `node tools/decode.mjs`, `tools/alpha.mjs` — decoder development probes
   (historical; the settled laws live in §4.4).
+- `node tools/font.mjs` — bit-cell font fit (0=O, 1=f, zero freedom).
+- `node tools/spell.mjs` — SPELL(ν) + validation (266,351/266,351 exact).
+- `node tools/dumpcfg.mjs [ν...]` — dump full anchor configs at chosen ν.
