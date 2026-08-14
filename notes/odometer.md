@@ -766,6 +766,45 @@ N+999424) in exactly 24M + 15990784N + 7990851949928 steps.
     pipeline (lemma harvest → SPELL analog → calendar → its next
     crisis), then look for the meta-periodicity.
 
+- **P-2026-08-14-l (M3.5 — regime 3 decoded; winter #2 predictions
+  registered before the v=2^283 probes).** Step-1/2 findings
+  (tools/regime3.mjs, regime3b.mjs, spell3.mjs), all verified:
+  - The crisis sweep (ν = 3·2^279, t=279) cost base + 28 — converting
+    the 10^84-block tail and melting the zoo cost 28 steps over the
+    ordinary clock. In the same sweep the left structure collapsed to
+    **a²** and the zone grew 210→213 (5-block zoo → 2 + 3; total 216
+    with separator, conserved).
+  - **SPELL₃(ν) = a² · zone(v, 213) · f¹ · e^(ν−2) · O¹ with
+    v = ν − 3·2^279**: the binary storey RE-BASED at the crisis (zone
+    counts time-since-crisis; the tail alone holds ν; a² is the
+    compressed epoch memory). Verified: 19,984/19,985 sweeps
+    clock-exact (16ν+34+6t+2[t even], q-bonus stays gone); low-lattice
+    exact at 20k anchors; jump-seeds at v = 64, 2^40, 2^100, 2^200,
+    5·2^150, 2^212 all 100% SPELL₃- and clock-exact (3,164 anchors).
+  - **The calendar is dead in regime 3.** Jumps crossed old event
+    points ({1,5}·2^k analogs) — no pays, no borrows, no respells, len
+    frozen at 213. The calendar was regime-1 machinery (s-register +
+    reservoir), both melted. Regime 3 is a pure fixed-width binary
+    counter with unary mirror.
+  Winter #2 predictions (zone capacity v < 2^283; crisis when the
+  carry needs cell 213, at v = 2^283, ν = 19·2^279):
+  1. PRIMARY: another melt-and-rebase, one sweep, cost base + O(30):
+     post-crisis structure ≅ a^b · zone(v', L') · f · e^(ν−2) · O with
+     new epoch ν = 19·2^279, boundary b ≤ 2, L' = 216 − b − 1,
+     v' re-based to 0 — THE META-CYCLE CAUGHT TWICE. Boundary
+     accounting (crisis 1: 5 zoo → 2) suggests b shrinks; each winter
+     buys ~1 cell ≈ 4/3 doublings of capacity.
+  2. If b shrinks by 1 per winter: winters at ν ≈ 2^283, ~2^284.3,
+     ~2^285.7, then **the naked winter** (~2^287): boundary
+     exhausted, the deep carry's leftward edge faces 0^∞ mid-sweep —
+     the last unobserved configuration. Fate there: primary NON-HALT
+     (blank blocks read as value-0 cells; the machine mints structure
+     from blank exactly as at birth — possibly re-based zone with
+     grown width, possibly a translated-cycler certificate).
+     Alternate: HALT (D reads 0). This is the true last question.
+  3. Falsifier for the meta-cycle: any winter whose post-structure is
+     NOT of the a^b·zone·f·tail form.
+
 ## 4. Proof roadmap
 
 1. Preamble register law (finite-state; enumerate variants across
