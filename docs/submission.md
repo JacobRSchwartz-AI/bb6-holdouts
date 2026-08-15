@@ -11,8 +11,7 @@ exactly
 
 steps (170 digits, = 2^564.1699 ≈ 6.79·10^169). It should move from the
 BB(6) holdout list to the halting column.
-**Authors:** Jacob Schwartz (direction, prediction-first protocol, the
-empirical campaign) and Claude (Anthropic) — joint work.
+**Authors:** Jacob Schwartz & Claude Fable 5, joint work.
 
 ## Where to submit, in order
 

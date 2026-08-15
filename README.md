@@ -25,14 +25,15 @@ tooling for attacking those holdouts — and one fully solved case.
 The holdout machine `1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA`
 (that string is its complete rule table; we nicknamed it **the
 Odometer** because its tape behaves like a mileage counter that ticks,
-carries, and rolls over) **halts** — after
+carries, and rolls over) **halts**. We also computed a conjectured
+exact step count:
 
     N_halt = 67931323646787744340347982457788840036504581967495927710
              77171340442123492305867933761244645774908114601585353157
              21018132084275421883147320661638136374334659122557882929
              34
 
-steps. That's a 170-digit number, about 6.8 × 10^169 — you could never
+That's a 170-digit number, about 6.8 × 10^169 — you could never
 run the machine to see this; the universe's ~10^80 atoms working since
 the Big Bang wouldn't scratch it. The only way to know is to *prove* it.
 
@@ -47,7 +48,7 @@ Two independent artifacts back the claim:
    step reduces to Coq's core logic. A GitHub Actions workflow
    ([.github/workflows/coq-verify.yml](.github/workflows/coq-verify.yml))
    rebuilds the whole proof from a fresh busycoq clone on every push.
-2. **The exact step count.** The proof certifies *that* it halts; the
+2. **The conjectured step count.** The proof certifies *that* it halts; the
    170-digit *count* comes from an exact per-step cost formula
    (`tools/nhalt.mjs`), derived from instrumented runs (residual zero
    over 3000 measured sweeps) and validated by reproducing — to the
@@ -64,8 +65,7 @@ scaffolding and halts. The full discovery story, evidence chain, and
 submission plan are in [docs/submission.md](docs/submission.md);
 day-by-day working notes in [notes/odometer.md](notes/odometer.md).
 
-**Authors:** Jacob Schwartz (direction, prediction-first protocol, the
-empirical campaign) and Claude (Anthropic) — joint work.
+**Authors:** Jacob Schwartz & Claude Fable 5, joint work.
 
 ## Reproducing the proof
 
