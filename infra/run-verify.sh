@@ -42,11 +42,18 @@ for _ in $(seq 1 40); do
 done
 [ "$PING" = "Online" ] || { echo "SSM agent never came online"; exit 1; }
 
+rm -f last-verify.log last-assumptions.txt last-status.txt
+rm -rf out
+
+# SSM's AWS-RunShellScript executes via dash; hand the bash script over
+# base64-encoded and run it with bash explicitly.
 PARAMS=$(BUCKET="$BUCKET" node -e '
   const fs = require("fs");
-  const script = "export BUCKET=" + process.env.BUCKET + "\n"
-    + fs.readFileSync("verify-remote.sh", "utf8");
-  console.log(JSON.stringify({ executionTimeout: ["21600"], commands: [script] }));
+  const b64 = fs.readFileSync("verify-remote.sh").toString("base64");
+  console.log(JSON.stringify({ executionTimeout: ["21600"], commands: [
+    `echo ${b64} | base64 -d > /tmp/verify-remote.sh`,
+    `BUCKET=${process.env.BUCKET} bash /tmp/verify-remote.sh`,
+  ]}));
 ')
 CMD_ID=$(aws ssm send-command \
   --instance-ids "$IID" \
