@@ -13,10 +13,11 @@ variable "region" {
 }
 
 # coqc is single-threaded and the build is -j1: single-core speed is all
-# that matters (m7a/r7a = AMD Genoa, fastest EC2 single-thread). The
-# build peaks ~7.2GB RSS; 16GB is sufficient, 32GB is insurance.
+# that matters (m7a/r7a = AMD Genoa, fastest EC2 single-thread).
+# OdometerOrbit.v was OOM-killed at 31.5GB on a 32GB box; 128GB (plus
+# the swapfile verify-remote.sh adds) is the measured-safe tier.
 variable "instance_type" {
-  default = "r7a.xlarge"
+  default = "r7a.4xlarge"
 }
 
 provider "aws" {
@@ -93,7 +94,7 @@ resource "aws_instance" "verify" {
   }
 
   root_block_device {
-    volume_size = 20
+    volume_size = 80
     volume_type = "gp3"
   }
 

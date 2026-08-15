@@ -14,6 +14,15 @@ upload() {
 trap upload EXIT
 
 systemctl stop unattended-upgrades 2>/dev/null || true
+
+# OdometerOrbit.v was OOM-killed at 31.5GB RSS on a 32GB box: swap is a
+# safety net, and a tighter OCaml GC trades CPU for peak memory.
+fallocate -l 48G /swapfile-coq
+chmod 600 /swapfile-coq
+mkswap /swapfile-coq > /dev/null
+swapon /swapfile-coq
+export OCAMLRUNPARAM="o=60"
+free -h
 apt-get -o DPkg::Lock::Timeout=600 update -qq
 apt-get -o DPkg::Lock::Timeout=600 install -y -qq \
   --no-install-recommends coq git make unzip curl > /dev/null
