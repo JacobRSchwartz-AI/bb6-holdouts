@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Odometer</title>
+<style>
+  :root {
+    --ground: #14100b;
+    --panel: #1e1811;
+    --panel-2: #241d14;
+    --line: #382e1f;
+    --bone: #e9dfcb;
+    --dim: #9a8c72;
+    --faint: #6b5f4c;
+    --brass: #e5a83c;
+    --brass-hi: #ffc961;
+    --ember: #e0642f;
+    --death: #c93b2b;
+    --ok: #8fae62;
+    --g-O: #4e5a66;
+    --g-e: #3fa8a0;
+    --g-a: #8b6fc7;
+    --g-f: #e0642f;
+    --serif: Georgia, Cambria, 'Times New Roman', serif;
+    --sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: Consolas, Menlo, 'Cascadia Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { background: var(--ground); }
+  body {
+    background:
+      radial-gradient(1200px 500px at 50% -100px, #241c10 0%, transparent 70%),
+      var(--ground);
+    color: var(--bone);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ---------- masthead ---------- */
+  .eyebrow {
+    font-family: var(--sans); font-size: 11px; letter-spacing: .32em;
+    text-transform: uppercase; color: var(--brass); text-align: center;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400; text-align: center;
+    font-size: clamp(40px, 7vw, 68px); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--bone); margin: 6px 0 2px;
+    text-wrap: balance;
+    text-shadow: 0 0 34px rgba(229,168,60,.18);
+  }
+  .subtitle { text-align: center; color: var(--dim); font-size: 14px; max-width: 62ch; margin: 0 auto; }
+  .subtitle b { color: var(--bone); font-weight: 600; }
+
+  .rules { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 22px 0 8px; }
+  .rule {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+    padding: 5px 9px 7px; text-align: center; min-width: 86px;
+  }
+  .rule .st { font-family: var(--serif); color: var(--brass); font-size: 13px; letter-spacing: .18em; }
+  .rule .tr { font-family: var(--mono); font-size: 12.5px; color: var(--bone); letter-spacing: .06em; }
+  .rule .tr .miss { color: var(--death); font-weight: 700; }
+  .rules-cap { text-align: center; color: var(--faint); font-size: 12px; }
+  .rules-cap .miss { color: var(--death); }
+
+  .plaques { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0 6px; }
+  .plaque {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line); border-top-color: #4a3c26; border-radius: 5px;
+    padding: 10px 18px 8px; text-align: center; min-width: 128px;
+  }
+  .plaque .v { font-family: var(--serif); font-size: 21px; color: var(--brass-hi); letter-spacing: .02em; white-space: nowrap; }
+  .plaque .v sup { font-size: 12px; }
+  .plaque .k { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-top: 2px; }
+
+  /* ---------- panels ---------- */
+  section { margin-top: 26px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px 18px 18px; position: relative;
+  }
+  .panel::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229,168,60,.35), transparent);
+  }
+  .panel h2 {
+    font-family: var(--serif); font-weight: 400; font-size: 15px;
+    letter-spacing: .26em; text-transform: uppercase; color: var(--brass);
+    margin-bottom: 10px;
+  }
+  .panel h2 small { color: var(--faint); letter-spacing: .08em; text-transform: none; font-family: var(--sans); font-size: 12px; margin-left: 10px; }
+  canvas { display: block; width: 100%; }
+
+  /* ---------- controls ---------- */
+  .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  button {
+    font-family: var(--sans); font-size: 13px; color: var(--bone);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px;
+    padding: 7px 14px; cursor: pointer; letter-spacing: .04em;
+  }
+  button:hover { border-color: var(--brass); color: var(--brass-hi); }
+  button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  button.primary {
+    font-family: var(--serif); font-size: 15px; letter-spacing: .14em; text-transform: uppercase;
+    color: #1a1305; background: linear-gradient(180deg, var(--brass-hi), var(--brass));
+    border-color: #8a6423; padding: 10px 22px; font-weight: 600;
+  }
+  button.primary:hover { filter: brightness(1.08); color: #1a1305; }
+  button:disabled { opacity: .45; cursor: default; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips button { padding: 5px 10px; font-size: 12px; color: var(--dim); }
+  .chips button:hover { color: var(--brass-hi); }
+  .speed { display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 12px; }
+  input[type=range] { accent-color: var(--brass); width: 130px; }
+
+  #caption {
+    margin-top: 12px; min-height: 24px; text-align: center;
+    font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--bone);
+    opacity: .92; transition: opacity .45s;
+  }
+  #caption.fade { opacity: 0; }
+
+  /* ---------- readouts ---------- */
+  .readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+  .ro { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 8px 12px; }
+  .ro .k { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); }
+  .ro .v { font-family: var(--mono); font-size: 15px; color: var(--brass-hi); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ro .v.small { font-size: 13px; }
+  .gauge { height: 8px; background: #171310; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; margin-top: 5px; }
+  .gauge i { display: block; height: 100%; background: linear-gradient(90deg, var(--g-a), var(--brass)); transition: width .3s; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; color: var(--dim); font-size: 12px; align-items: center; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+  .tape-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .note { color: var(--faint); font-size: 12px; }
+  .tabbar { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tabbar button.on { border-color: var(--brass); color: var(--brass-hi); }
+
+  /* ---------- verification ---------- */
+  .checks { display: grid; gap: 6px; margin-top: 12px; }
+  .checks div { font-size: 13px; color: var(--dim); }
+  .checks .yes::before { content: '✓  '; color: var(--ok); font-weight: 700; }
+  .checks .pend::before { content: '…  '; color: var(--faint); }
+  .checks b { color: var(--bone); font-weight: 600; }
+
+  /* ---------- death ---------- */
+  #flash {
+    position: fixed; inset: 0; background: var(--death); opacity: 0;
+    pointer-events: none; z-index: 50; transition: opacity .18s;
+  }
+  #deathplate { display: none; }
+  #deathplate.shown { display: block; }
+  .halt-stamp {
+    font-family: var(--serif); text-align: center; font-size: clamp(36px, 6vw, 56px);
+    letter-spacing: .3em; text-transform: uppercase; color: var(--death);
+    text-shadow: 0 0 30px rgba(201,59,43,.4); margin: 6px 0 10px;
+  }
+  .nhalt {
+    font-family: var(--mono); font-size: 14px; line-height: 1.9; letter-spacing: .08em;
+    color: var(--brass-hi); background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 6px; padding: 14px 18px; text-align: center; overflow-x: auto;
+    font-variant-numeric: tabular-nums;
+  }
+  .nhalt-cap { text-align: center; color: var(--dim); font-size: 13px; margin-top: 10px; max-width: 70ch; margin-left: auto; margin-right: auto; }
+
+  /* ---------- story ---------- */
+  .story { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .beat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
+  .beat h3 { font-family: var(--serif); font-weight: 400; letter-spacing: .18em; font-size: 12.5px; color: var(--brass); text-transform: uppercase; margin-bottom: 6px; }
+  .beat p { font-size: 13px; color: var(--dim); }
+  .beat p b { color: var(--bone); font-weight: 600; }
+
+  .proofline { font-family: var(--mono); font-size: 12.5px; color: var(--dim); text-align: center; margin-top: 18px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; }
+  .proofline b { color: var(--ok); font-weight: 600; }
+  footer { margin-top: 30px; text-align: center; color: var(--faint); font-size: 13px; }
+  footer a { color: var(--brass); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .att { margin-top: 8px; font-family: var(--serif); color: var(--dim); font-size: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #caption, .gauge i { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="flash"></div>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Busy Beaver · six states · holdout no more</div>
+  <h1>The Odometer</h1>
+  <p class="subtitle">A Turing machine that builds itself a base-16 counter, ticks it once per sweep
+    for <b>~6.79&times;10<sup>169</sup> steps</b>, then carries past its last wheel into a rule that
+    doesn't exist. Proven to halt in Coq, zero axioms. Every frame below is the <b>exact tape</b> —
+    computed live, not illustrated.</p>
+  <div class="rules" id="rules"></div>
+  <p class="rules-cap">the complete machine — six states, twelve rules, and <span class="miss">one deliberate hole (D reading 0)</span>. The whole story is the 10<sup>169</sup>-step journey into that hole.</p>
+  <div class="plaques">
+    <div class="plaque"><div class="v">3·2<sup>279</sup></div><div class="k">fatal sweep</div></div>
+    <div class="plaque"><div class="v">≈6.79×10<sup>169</sup></div><div class="k">total steps</div></div>
+    <div class="plaque"><div class="v">71</div><div class="k">wheels born</div></div>
+    <div class="plaque"><div class="v">549</div><div class="k">overflow events</div></div>
+    <div class="plaque"><div class="v">0</div><div class="k">axioms</div></div>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="controls">
+    <button class="primary" id="btnPlay">▶ Play its whole life</button>
+    <button id="btnPause" disabled>Pause</button>
+    <div class="speed"><span>pace</span><input type="range" id="pace" min="0" max="100" value="45"></div>
+    <div class="chips">
+      <button data-jump="base">base anchor</button>
+      <button data-jump="first">first wheel</button>
+      <button data-jump="mid">ν = 2¹⁴⁰</button>
+      <button data-jump="crisis">the crisis</button>
+      <button data-jump="last">final tick</button>
+      <button data-jump="death">☠ death</button>
+    </div>
+  </div>
+  <div id="caption">press play — or drag the timeline; every position renders the true configuration.</div>
+</section>
+
+<section class="panel">
+  <h2>Lifeline <small>logarithmic — 84 orders of magnitude of sweeps; ticks are the 549 counter overflows</small></h2>
+  <canvas id="cvTimeline" style="height:104px; cursor: crosshair;"></canvas>
+</section>
+
+<section class="panel">
+  <h2>The Counter <small>base-16 wheels the machine spells on its own tape — one tick per sweep</small></h2>
+  <canvas id="cvWheels" style="height:132px;"></canvas>
+  <div class="readouts">
+    <div class="ro"><div class="k">sweep ν (since base)</div><div class="v" id="roNu">0</div></div>
+    <div class="ro"><div class="k">raw machine steps</div><div class="v" id="roSteps">354,540</div></div>
+    <div class="ro"><div class="k">wheels · era</div><div class="v" id="roG">0 · warming up</div></div>
+    <div class="ro"><div class="k">commute tail (blocks)</div><div class="v" id="roTail">3</div></div>
+    <div class="ro" style="grid-column: span 2; min-width: 220px;">
+      <div class="k">fuel reservoir — <span id="roResN">206</span> spare blocks (funds all 71 wheels)</div>
+      <div class="gauge"><i id="roResBar" style="width:100%"></i></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>The Tape <small>216 glyphs, four letters — the counter lives left of the head, deepest digit farthest away</small></h2>
+  <canvas id="cvTape" style="height:150px;"></canvas>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--g-O)"></i>O — hollow (0101)</span>
+    <span><i class="sw" style="background:var(--g-e)"></i>e — tail block (0111)</span>
+    <span><i class="sw" style="background:var(--g-a)"></i>a — fuel (1101)</span>
+    <span><i class="sw" style="background:var(--g-f)"></i>f — full (1111)</span>
+    <span class="note">a sweep dips in from the right, carries, and toggles its way out (toggle = XOR 5)</span>
+  </div>
+  <div class="tape-tools">
+    <button id="btnSweep">Watch one sweep (the dip)</button>
+    <span class="note" id="sweepNote">the walk is the exact 6-state transducer proved in OdometerDip.v</span>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Raw Cells <small>drill-down: the actual Turing machine, cell by cell</small></h2>
+  <div class="tabbar">
+    <button id="tabGen" class="on">Genesis space-time</button>
+    <button id="tabRaw">Raw replay of this sweep</button>
+  </div>
+  <div id="genWrap">
+    <canvas id="cvGen" style="height:300px;"></canvas>
+    <p class="note" style="margin-top:8px">354,540 raw steps from a blank tape, top to bottom (one row ≈ 500 steps; teal = head).
+      The machine spends its entire childhood laying down the fuel reservoir — then settles into the anchor and never builds again.</p>
+  </div>
+  <div id="rawWrap" style="display:none">
+    <canvas id="cvRaw" style="height:190px;"></canvas>
+    <div class="tape-tools">
+      <button id="btnRawRun">Run this sweep raw</button>
+      <div class="speed"><span>steps/frame</span><input type="range" id="rawPace" min="0" max="100" value="35"></div>
+      <span class="note" id="rawNote">demo commute tail of 5 blocks stands in for the real ν+3 — the walk through the counter is identical</span>
+    </div>
+  </div>
+  <div class="checks" id="checks">
+    <div class="pend" id="ck0">enumerating the full orbit, base to death…</div>
+    <div class="pend" id="ck1">rebuilding genesis from a blank tape…</div>
+    <div class="pend" id="ck2">replaying a raw sweep at ν = 10⁴² against the abstract dip…</div>
+    <div class="pend" id="ck3">running the dying string raw…</div>
+  </div>
+</section>
+
+<section class="panel" id="deathplate">
+  <div class="halt-stamp">Halt</div>
+  <p class="subtitle" style="margin-bottom:14px">On tail-clock sweep <b>3·2<sup>279</sup> exactly</b>, the last carry walks the full
+    length of the counter, finds no fuel, falls off the deep end of the written tape in state C,
+    and the next cell puts <b>D over a blank — the rule that was never written</b>.</p>
+  <div class="nhalt" id="nhalt"></div>
+  <p class="nhalt-cap">The 170-digit step count is the <b>conjectured exact</b> value — an exact per-sweep cost law,
+    validated to the step on two miniature odometers. What the Coq proof certifies, with zero axioms,
+    is the halt itself: <span style="font-family:var(--mono)">Theorem odometer_halts : halts tm c0.</span></p>
+</section>
+
+<section class="panel">
+  <h2>The Story</h2>
+  <div class="story">
+    <div class="beat"><h3>I · Genesis</h3><p><b>354,540 steps</b> from blank tape: the machine writes its scaffolding — a fuel
+      reservoir of ~206 spare blocks — and parks at the base anchor.</p></div>
+    <div class="beat"><h3>II · The Count</h3><p>One sweep = <b>+1</b>. Walk out to the edge, commute home over the tail, dip
+      into the counter, carry, toggle out. The tail grows a block each sweep, so life costs ≈ <b>8ν²</b> steps.</p></div>
+    <div class="beat"><h3>III · The Eras</h3><p>When all wheels read F the counter overflows: it <b>eats a fuel block and grows
+      a new wheel</b>. 549 overflow events, 71 wheels — each era 16× longer than the last.</p></div>
+    <div class="beat"><h3>IV · The Crisis</h3><p>The reservoir runs dry. Deciders saw an immortal counting loop; the flaw only
+      fires <b>once per era, at a boundary no simulation ever reached</b>.</p></div>
+    <div class="beat"><h3>V · Death</h3><p>The final carry finds nothing to eat, walks off the written tape, and lands D on a
+      blank: <b>no rule</b>. Halts after ≈6.79×10<sup>169</sup> steps.</p></div>
+  </div>
+  <div class="proofline">Odometer.v → OdometerDip.v → OdometerOrbit.v → OdometerBase.v → OdometerLedger.v ⇒ <b>odometer_halts · Closed under the global context</b></div>
+</section>
+
+<footer>
+  <div>
+    <a href="https://github.com/JacobRSchwartz-AI/bb6-holdouts">proof &amp; tools</a> ·
+    <a href="https://github.com/ccz181078/busycoq/pull/2">busycoq PR #2 (TM1714)</a> ·
+    <a href="https://bbchallenge.org">bbchallenge.org</a>
+  </div>
+  <div class="att">Jacob Schwartz &amp; Claude Fable 5, joint work · MMXXVI</div>
+</footer>
+
+</div>
+<script>
+// The Odometer engine: exact raw simulator + exact abstract orbit.
+// Shared verbatim between viz/index.html and the Node test harness.
+// Ground truth mirrors tools/ledger.mjs and coq/OdometerDip.v.
+'use strict';
+(function () {
+
+const CODE = '1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA';
+const STATES = 'ABCDEF';
+
+function parseMachine(code) {
+  return code.split('_').map((row) => [row.slice(0, 3), row.slice(3, 6)].map((t) =>
+    t === '---' ? null : { w: +t[0], d: t[1] === 'R' ? 1 : -1, n: t.charCodeAt(2) - 65 }));
+}
+
+// ---- raw cell-level simulator ----
+function makeSim(code) {
+  const M = parseMachine(code);
+  let size = 1 << 16, off = size >> 1;
+  let tape = new Int8Array(size);
+  const sim = { head: off, q: 0, steps: 0, min: off, max: off, halted: false, off: () => off, tape: () => tape };
+  function grow() {
+    const nsize = size * 2, ntape = new Int8Array(nsize), shift = size >> 1;
+    ntape.set(tape, shift);
+    tape = ntape; sim.head += shift; sim.min += shift; sim.max += shift; off += shift; size = nsize;
+  }
+  sim.run = function (n, onStep) {
+    let { head, q, steps } = sim;
+    let min = sim.min, max = sim.max;
+    for (let i = 0; i < n; i++) {
+      const tr = M[q][tape[head]];
+      if (!tr) { sim.halted = true; break; }
+      tape[head] = tr.w;
+      if (head < min) min = head;
+      if (head > max) max = head;
+      head += tr.d; q = tr.n; steps++;
+      if (head < 8 || head >= size - 8) {
+        sim.head = head; sim.q = q; sim.steps = steps; sim.min = min; sim.max = max;
+        grow();
+        ({ head, q, steps, min, max } = sim);
+      }
+      if (onStep && onStep(head, q, steps, tape, min, max, off)) break;
+    }
+    sim.head = head; sim.q = q; sim.steps = steps; sim.min = min; sim.max = max;
+    return sim;
+  };
+  // cells left-to-right over the written extent, as 0/1, plus head offset within it
+  sim.snapshot = function () {
+    const lo = Math.min(sim.min, sim.head), hi = Math.max(sim.max, sim.head);
+    return { cells: Array.from(tape.slice(lo, hi + 1)), head: sim.head - lo, q: sim.q, steps: sim.steps };
+  };
+  return sim;
+}
+
+// ---- glyphs (coq/OdometerDip.v) ----
+// Raw spellings, left-to-right on the tape; value bits reversed.
+const GRAW = { O: [0, 1, 0, 1], e: [0, 1, 1, 1], a: [1, 1, 0, 1], f: [1, 1, 1, 1] };
+const TOGGLE = { O: 'f', f: 'O', e: 'a', a: 'e' };
+// The inward rule table (the census, sealed over 100M raw steps).
+const INSTEP = {
+  F: { e: ['e', 'F'], f: ['f', 'A'], O: ['e', 'E'], a: ['f', 'E'] },
+  A: { O: ['f', 'C'], f: ['f', 'C'], e: ['a', 'E'], a: ['a', 'E'] },
+  C: { a: ['a', 'C'], f: ['f', 'F'], O: ['f', 'E'], e: ['f', 'D'] },
+  D: { O: ['e', 'Cr'], a: ['f', 'Cr'], e: ['O', 'Cr'] },
+};
+const INWARD = (s) => s === 'F' || s === 'A' || s === 'C' || s === 'D';
+
+// One dip: enter at W[0] (the separator end) in state F.
+// W is a string over "Oeaf" in walk order (index 0 = rightmost on tape).
+// Returns {out} | {dies:true} | {fail}; with trace=true also returns the
+// exact walk as ops for animation:
+//   {t:'in', i, s, g, g2, s2}   head crosses cell i inward, rewriting it
+//   {t:'refl', i, s, g, g2}     head reflects at cell i, rewriting it
+//   {t:'bounce', i}             Cr bounce: turns back inward at cell i
+//   {t:'out', i, g, g2}         out-pass toggles cell i
+//   {t:'die', i, s}             walk falls off the deep end (i = W.length)
+function dip(Wstr, trace) {
+  const deep = Wstr.split('');
+  let s = 'F', di = 0;
+  const shallow = [];
+  const ops = trace ? [] : null;
+  let fuel = 12 * deep.length + 60;
+  while (fuel-- > 0) {
+    if (s === 'E') {
+      const out = deep.slice(di);
+      for (let k = 0; k < shallow.length; k++) {
+        const g = shallow[k];
+        out.unshift(TOGGLE[g]);
+        if (ops) ops.push({ t: 'out', i: shallow.length - 1 - k, g, g2: TOGGLE[g] });
+      }
+      return { out: out.join(''), ops };
+    }
+    if (s === 'Cr') {
+      if (shallow[0] === 'f') { if (ops) ops.push({ t: 'bounce', i: di - 1 }); s = 'F'; continue; }
+      return { fail: 'Cr without f', ops };
+    }
+    if (di >= deep.length) {
+      if (ops) ops.push({ t: 'die', i: di, s });
+      return s === 'C' ? { dies: true, ops } : { fail: 'falloff ' + s, ops };
+    }
+    const g = deep[di], tr = INSTEP[s] && INSTEP[s][g];
+    if (!tr) return { fail: 'no rule ' + s + '/' + g, ops };
+    const g2 = tr[0], s2 = tr[1];
+    if (INWARD(s2)) {
+      if (ops) ops.push({ t: 'in', i: di, s, g, g2, s2 });
+      shallow.unshift(g2); di++;
+    } else {
+      if (ops) ops.push({ t: 'refl', i: di, s, g, g2 });
+      deep[di] = g2;
+    }
+    s = s2;
+  }
+  return { fail: 'fuel', ops };
+}
+
+// ---- the counter encoding (tools/ledger.mjs) ----
+// gcells rows (index = 4-bit value), walk order [bit; winlo; winhi]
+const GCELLS = ['OOO', 'fOO', 'OeO', 'feO', 'Oae', 'fae', 'Ofe', 'ffe',
+  'OOa', 'fOa', 'Oea', 'fea', 'Oaf', 'faf', 'Off', 'fff'];
+const CELL_VAL = new Map(GCELLS.map((s, i) => [s, i]));
+
+// maximal-G parse of W = "fO" + G cells of 3 glyphs + T
+function parseSpell(W) {
+  if (W[0] !== 'f' || W[1] !== 'O') return null;
+  let G = 0, v = 0n;
+  while (2 + 3 * (G + 1) <= W.length) {
+    const b = CELL_VAL.get(W.slice(2 + 3 * G, 2 + 3 * G + 3));
+    if (b === undefined) break;
+    v += BigInt(b) << BigInt(4 * G);
+    G++;
+  }
+  return { G, v, T: W.slice(2 + 3 * G) };
+}
+
+function setSpell(W, G, v) {
+  let out = W.slice(0, 2);
+  for (let g = 0; g < G; g++) out += GCELLS[Number((v >> BigInt(4 * g)) & 15n)];
+  return out + W.slice(2 + 3 * G);
+}
+
+// ---- the ledger: fast-forward the whole orbit, base to death ----
+// Returns every carry-overflow event (the 549 vm_compute lemmas of
+// OdometerLedger.v) plus the death. Exact; runs in milliseconds.
+function enumerate(W_BASE, maxEvents) {
+  let W = W_BASE, nu = 0n;
+  const events = [];
+  let death = null;
+  while (!death && events.length < (maxEvents || 100000)) {
+    const p = parseSpell(W);
+    if (!p) return { fail: 'unparseable at nu=' + nu, events };
+    const cap = 1n << BigInt(4 * p.G);
+    const span = cap - 1n - p.v;
+    if (span > 0n) { W = setSpell(W, p.G, cap - 1n); nu += span; }
+    const before = W;
+    const r = dip(W);
+    if (r.dies) { death = { nu: nu + 1n, dying: before }; break; }
+    if (r.fail) return { fail: r.fail + ' at nu=' + nu, events };
+    if (r.out[0] !== 'O') return { fail: 'bad separator at nu=' + nu, events };
+    W = 'f' + r.out.slice(1);
+    nu += 1n;
+    events.push({ nuAfter: nu, G: p.G, before, after: W });
+  }
+  return { events, nuDeath: death && death.nu, dying: death && death.dying };
+}
+
+// Exact W after nu completed sweeps past the base anchor, for ANY
+// nu in [0, nuDeath-1]. O(log #events).
+function stateAt(nu, W_BASE, ledger) {
+  const ev = ledger.events;
+  if (nu <= 0n) return W_BASE;
+  if (ledger.nuDeath && nu >= ledger.nuDeath) nu = ledger.nuDeath - 1n;
+  let lo = 0, hi = ev.length - 1, k = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (ev[mid].nuAfter <= nu) { k = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  const W0 = k < 0 ? W_BASE : ev[k].after;
+  const nu0 = k < 0 ? 0n : ev[k].nuAfter;
+  if (nu === nu0) return W0;
+  const p = parseSpell(W0);
+  return setSpell(W0, p.G, p.v + (nu - nu0));
+}
+
+// ---- anchors at raw level (coq/OdometerDip.v `anchor`) ----
+// Tape left-to-right: deepest glyph first ... W[0] last, then n e's,
+// then the O edge, then the head (state C) on blank, facing right.
+function spellAnchor(Wstr, n) {
+  const cells = [];
+  for (let i = Wstr.length - 1; i >= 0; i--) cells.push(...GRAW[Wstr[i]]);
+  for (let k = 0; k < n; k++) cells.push(...GRAW.e);
+  cells.push(...GRAW.O);
+  return { cells, head: cells.length, q: 2 };
+}
+
+// Seed a raw simulator directly at anchor(W, n).
+function simFromAnchor(code, Wstr, n) {
+  const sim = makeSim(code);
+  const a = spellAnchor(Wstr, n);
+  const tape = sim.tape(), base = sim.off() - a.cells.length;
+  for (let i = 0; i < a.cells.length; i++) tape[base + i] = a.cells[i];
+  sim.head = sim.off(); sim.q = a.q; sim.min = base; sim.max = sim.off() - 1;
+  return sim;
+}
+
+// Parse a raw snapshot back into anchor form: W + tail length. Null if
+// the written tape is not currently an anchor.
+const GKEY = { '0101': 'O', '0111': 'e', '1101': 'a', '1111': 'f' };
+function tapeToW(snap) {
+  const cells = snap.cells.slice(0, snap.head);
+  if (snap.q !== 2 || cells.length % 4) return null;
+  const gs = [];
+  for (let i = 0; i < cells.length; i += 4) {
+    const g = GKEY[cells.slice(i, i + 4).join('')];
+    if (!g) return null;
+    gs.push(g);
+  }
+  if (gs[gs.length - 1] !== 'O') return null;
+  let n = 0, j = gs.length - 2;
+  while (j >= 0 && gs[j] === 'e') { n++; j--; }
+  return { W: gs.slice(0, j + 1).reverse().join(''), n };
+}
+
+// Run until the next true anchor (candidate frontier moments that don't
+// parse — edge staging — are skipped). Null on budget exhaustion or halt.
+function runToAnchor(sim, budget) {
+  let remaining = budget;
+  while (remaining > 0) {
+    let hit = false;
+    const before = sim.steps;
+    sim.run(remaining, (head, q, steps, tape, min, max) =>
+      (q === 2 && head > max && tape[head] === 0 && (hit = true)));
+    remaining -= sim.steps - before;
+    if (!hit || sim.halted) return null;
+    const p = tapeToW(sim.snapshot());
+    if (p) return p;
+  }
+  return null;
+}
+
+// ---- formatting ----
+function bigFmt(n) {
+  const s = n.toString();
+  if (s.length <= 15) return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return s[0] + '.' + s.slice(1, 4) + '×10^' + (s.length - 1);
+}
+function log2Big(n) {
+  if (n <= 0n) return 0;
+  const s = n.toString(2);
+  const k = Math.min(s.length, 53);
+  return s.length - k + Math.log2(parseInt(s.slice(0, k), 2));
+}
+// steps at sweep nu: exact from the early table while it lasts, then the
+// quadratic tail (fit against the exact table; see test harness).
+function makeStepLaw(earlyTable, fit) {
+  return function (nu) {
+    const i = Number(nu);
+    if (i < earlyTable.length) return { approx: false, value: earlyTable[i], log10: Math.log10(Math.max(1, earlyTable[i])) };
+    const l2 = log2Big(nu);
+    const log10 = (2 * l2 + Math.log2(fit.a + fit.b / Math.pow(2, l2))) * Math.LN2 / Math.LN10;
+    const mant = Math.pow(10, log10 - Math.floor(log10));
+    return { approx: true, log10, text: mant.toFixed(2) + '×10^' + Math.floor(log10) };
+  };
+}
+
+const OdoEngine = {
+  CODE, STATES, parseMachine, makeSim,
+  GRAW, TOGGLE, INSTEP, GCELLS, CELL_VAL,
+  dip, parseSpell, setSpell, enumerate, stateAt,
+  spellAnchor, simFromAnchor, tapeToW, runToAnchor,
+  bigFmt, log2Big, makeStepLaw,
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = OdoEngine;
+else globalThis.OdoEngine = OdoEngine;
+
+})();
+
+</script>
+<script>
+'use strict';
+const DATA = {"CODE":"1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA","W_BASE":"fOfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaeOOOOOOa","N_BASE":354540,"N_TAIL":3,"NU_DEATH":"2914003338338593606379192860235278359963610258578209281877718614608356427807812747259","DYING":"fOfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa","N_HALT":"67931323646787744340347982457788840036504581967495927710771713404421234923058679337612446457749081146015853531572101813208427542188314732066163813637433465912255788292934","EVENT_COUNT":549,"EARLY_STEPS":[354540,354660,354792,354960,355124,355308,355504,355728,355956,356204,356464,358404,358696,359008,359332,359684,360040,360416,360804,361224,361644,362084,362536,363016,363500,364004,364520,365084,365632,366200,366780,367388,368000,368632,369276,369952,370628,371324,372032,372768,373508,374268,375040,375852,376656,377480,378316,379180,380048,380936,381836,382768,383700,384652,385616,386608,387604,388620,389648,392336,393396,394476,395568,396688,397812,398956,400112,401300,402488,403696,404916,406164,407416,408688,409972,411296,412612,413948,415296,416672,418052,419452,420864,422308,423752,425216,426692,428196,429704,431232,432772,434356,435928,437520,439124,440756,442392,444048,445716,447416,449116,450836,452568,454328,456092,457876,459672,461508,463336,465184,467044,468932,470824,472736,474660,476616,478572,480548,482536,484552,486572,488612,490664,492776,494860,496964,499080,501224,503372,505540,507720,509932,512144,514376,516620,518892,521168,523464,525772,528120,530460,532820,535192,537592,539996,542420,544856,547324,549792,552280,554780,557308,559840,562392,564956,567564,570160,572776,575404,578060,580720,583400,586092,588816,591540,594284,597040,599824,602612,605420,608240,611100,613952,616824,619708,622620,625536,628472,631420,634400,637380,640380,643392,646432,649476,652540,655616,658744,661852,664980,668120,671288,674460,677652,680856,684092,687328,690584,693852,697148,700448,703768,707100,710472,713836,717220,720616,724040,727468,730916,734376,737868,741360,744872,748396,751948,755504,759080,762668,766300,769920,773560,777212,780892,784576,788280,791996,795744,799492,803260,807040,810848,814660,818492,822336,826220,830096,833992,837900,841836,845776,849736,853708,857712,861716,865740,869776,873840,877908,881996,886096,891880,896012,900164,904328,908520,912716,916932,921160,925420,929680,933960,938252,942572,946896,951240,955596,959992,964380,968788,973208,977656,982108,986580,991064,995580,1000096,1004632,1009180,1013756,1018336,1022936,1027548,1032204,1036848,1041512,1046188,1050892,1055600,1060328,1065068,1069840,1074612,1079404,1084208,1089040,1093876,1098732,1103600,1108508,1113408,1118328,1123260,1128220,1133184,1138168,1143164,1148192,1153220,1158268,1163328,1168416,1173508,1178620,1183744,1188920,1194076,1199252,1204440,1209656,1214876,1220116,1225368,1230652,1235936,1241240,1246556,1251900,1257248,1262616,1267996,1273416,1278828,1284260,1289704,1295176,1300652,1306148,1311656,1317196,1322736,1328296,1333868,1339468,1345072,1350696,1356332,1362012,1367680,1373368,1379068,1384796,1390528,1396280,1402044,1407840,1413636,1419452,1425280,1431136,1436996,1442876,1448768,1454700,1460624,1466568,1472524,1478508,1484496,1490504,1496524,1502576,1508628,1514700,1520784,1526896,1533012,1539148,1545296,1551500,1557680,1563880,1570092,1576332,1582576,1588840,1595116,1601424,1607732,1614060,1620400,1626768,1633140,1639532,1645936,1652380,1658816,1665272,1671740,1678236,1684736,1691256,1697788,1704352,1710916,1717500,1724096,1730720,1737348,1743996,1750656,1757360,1764052,1770764,1777488,1784240,1790996,1797772,1804560,1811380,1818200,1825040,1831892,1838772,1845656,1852560,1859476,1866432,1873380,1880348,1887328,1894336,1901348,1908380,1915424,1922500,1929576,1936672,1943780,1950916,1958056,1965216,1972388,1979612,1986816,1994040,2001276,2008540,2015808,2023096,2030396,2037728,2045060,2052412,2059776,2067168,2074564,2081980,2089408,2096876,2104336,2111816,2119308,2126828,2134352,2141896,2149452,2157040,2164628,2172236,2179856,2187504,2195156,2202828,2210512,2218240,2225956,2233692,2241440,2249216,2256996,2264796,2272608,2280452,2288296,2296160,2304036,2311940,2319848,2327776,2335716,2343696,2351668,2359660,2367664,2375696,2383732,2391788,2399856,2407956,2416056,2424176,2432308,2440468,2448632,2456816,2465012,2473280,2481508,2489756,2498016,2506304,2514596,2522908,2531232,2539588,2547944,2556320,2564708,2573124,2581544,2589984,2598436,2606928,2615412,2623916,2632432,2640976,2649524,2658092,2666672,2675284,2683896,2692528,2701172,2709844,2718520,2727216,2735924,2744676,2753416,2762176,2770948,2779748,2788552,2797376,2806212,2815080,2823948,2832836,2841736,2850664,2859596,2868548,2877512,2886516,2895512,2904528,2913556,2922612,2931672,2940752,2949844,2958968,2968092,2977236,2986392,2995576,3004764,3013972,3023192,3032464,3041716,3050988,3060272,3069584,3078900,3088236,3097584,3106964,3116344,3125744,3135156,3144596,3154040,3163504,3172980,3182496,3192004,3201532,3211072,3220640,3230212,3239804,3249408,3259044,3268680,3278336,3288004,3297700,3307400,3317120,3326852,3336628,3346392,3356176,3365972,3375796,3385624,3395472,3405332,3415224,3425116,3435028,3444952,3454904,3464860,3474836,3484824,3494852,3504872,3514912,3524964,3535044,3545128,3555232,3565348,3575496,3585644,3595812,3605992,3616200,3626412,3636644,3646888,3657188,3667464,3677760,3688068,3698404,3708744,3719104,3729476,3739880,3750284,3760708,3771144,3781608,3792076,3802564,3813064,3823604,3834136,3844688,3855252,3865844,3876440,3887056,3897684,3908344,3919004,3929684,3940376,3951096,3961820,3972564,3983320,3994120,4004908,4015716,4026536,4037384,4048236,4059108,4069992,4080908,4091824,4102760,4113708,4124684,4135664,4146664,4157676,4168728,4179772,4190836,4201912,4213016,4224124,4235252,4246392,4257564,4268736,4279928,4291132,4302364,4313600,4324856,4336124,4347444,4358744,4370064,4381396,4392756,4404120,4415504,4426900,4438328,4449756,4461204,4472664,4484152,4495644,4507156,4518680,4530244,4541800,4553376,4564964,4576580,4588200,4599840,4611492,4623176,4634860,4646564,4658280,4670024,4681772,4693540,4705320,4717144,4728956,4740788,4752632,4764504,4776380,4788276,4800184,4812124,4824064,4836024,4847996,4859996,4872000,4884024,4896060,4908136,4920204,4932292,4944392,4956520,4968652,4980804,4992968,5005164,5017360,5029576,5041804,5054060,5066320,5078600,5090892,5103248,5115572,5127916,5140272,5152656,5165044,5177452,5189872,5202324,5214776,5227248,5239732,5252244,5264760,5277296,5289844,5302432,5315012,5327612,5340224,5352864,5365508,5378172,5390848,5403556,5416264,5428992,5441732,5454500,5467272,5480064,5492868,5505716,5518552,5531408,5544276,5557172,5570072,5582992,5595924,5608888,5621852,5634836,5647832,5660856,5673884,5686932,5699992,5713092,5726184,5739296,5752420,5765572,5778728,5791904,5805092,5818312,5831532,5844772,5858024,5871304,5884588,5897892,5911208,5924576,5937924,5951292,5964672,5978080,5991492,6004924,6018368,6031844,6045320,6058816,6072324,6085860,6099400,6112960,6126532,6140144,6153748,6167372,6181008,6194672,6208340,6222028,6235728,6249460,6263192,6276944,6290708,6304500,6318296,6332112,6345940,6359812,6373672,6387552,6401444,6415364,6429288,6443232,6457188,6471176,6485164,6499172,6513192,6527240,6541292,6555364,6569448,6583572,6597688,6611824,6625972,6640148,6654328,6668528,6682740,6696984,6711228,6725492,6739768,6754072,6768380,6782708,6797048,6811444,6825816,6840208,6854612,6869044,6883480,6897936,6912404,6926904,6941404,6955924,6970456,6985016,6999580,7014164,7028760,7043396,7058024,7072672,7087332,7102020,7116712,7131424,7146148,7160904,7175660,7190436,7205224,7220040,7234860,7249700,7264552,7279448,7294332,7309236,7324152,7339096,7354044,7369012,7383992,7399004,7414016,7429048,7444092,7459164,7474240,7489336,7504444,7519592,7534732,7549892,7565064,7580264,7595468,7610692,7625928,7641196,7656464,7671752,7687052,7702380,7717712,7733064,7748428,7763844,7779240,7794656,7810084,7825540,7841000,7856480,7871972,7887496,7903020,7918564,7934120,7949704,7965292,7980900,7996520,8012180,8027832,8043504,8059188,8074900,8090616,8106352,8122100,8137880,8153660,8169460,8185272,8201112,8216956,8232820,8248696,8264616,8280524,8296452,8312392,8328360,8344332,8360324,8376328,8392364,8408400,8424456,8440524,8456620,8472720,8488840,8504972,8521144,8537308,8553492,8569688,8585912,8602140,8618388,8634648,8650940,8667232,8683544,8699868,8716220,8732576,8748952,8765340,8783388,8799808,8816248,8832700,8849180,8865664,8882168,8898684,8915232,8931780,8948348,8964928,8981536,8998148,9014780,9031424,9048108,9064784,9081480,9098188,9114924,9131664,9148424,9165196,9182000,9198804,9215628,9232464,9249328,9266196,9283084,9299984,9316928,9333860,9350812,9367776,9384768,9401764,9418780,9435808,9452868,9469928,9487008,9504100,9521220,9538344,9555488,9572644,9589840,9607028,9624236,9641456,9658704,9675956,9693228,9710512,9727828,9745144,9762480,9779828,9797204,9814584,9831984,9849396,9866860,9884304,9901768,9919244,9936748,9954256,9971784,9989324,10006896,10024468,10042060,10059664,10077296,10094932,10112588,10130256,10147964,10165664,10183384,10201116,10218876,10236640,10254424,10272220,10290048,10307876,10325724,10343584,10361472,10379364,10397276,10415200,10433168,10451124,10469100,10487088,10505104,10523124,10541164,10559216,10577300,10595384,10613488,10631604,10649748,10667896,10686064,10704244,10722464,10740676,10758908,10777152,10795424,10813700,10831996,10850304,10868644,10886984,10905344,10923716,10942116,10960520,10978944,10997380,11015872,11034340,11052828,11071328,11089856,11108388,11126940,11145504,11164100,11182696,11201312,11219940,11238596,11257256,11275936,11294628,11313360,11332084,11350828,11369584,11388368,11407156,11425964,11444784,11463636,11482488,11501360,11520244,11539156,11558072,11577008,11595956,11614948,11633928,11652928,11671940,11690980,11710024,11729088,11748164,11767272,11786380,11805508,11824648,11843816,11862988,11882180,11901384,11920628,11939864,11959120,11978388,11997684,12016984,12036304,12055636,12075000,12094364,12113748,12133144,12152568,12171996,12191444,12210904,12230416,12249908,12269420,12288944,12308496,12328052,12347628,12367216,12386836,12406456,12426096,12445748,12465428,12485112,12504816,12524532,12544288,12564036,12583804,12603584,12623392,12643204,12663036,12682880,12702756,12722632,12742528,12762436,12782372,12802312,12822272,12842244,12862260,12882264,12902288,12922324,12942388,12962456,12982544,13002644,13022776,13042908,13063060,13083224,13103416,13123612,13143828,13164056,13184324,13204584,13224864,13245156,13265476,13285800,13306144,13326500,13346888,13367276,13387684,13408104,13428552,13449004,13469476,13489960,13510508,13531024,13551560,13572108,13592684,13613264,13633864,13654476,13675120,13695764,13716428,13737104,13757808,13778516,13799244,13819984,13840764,13861536,13882328,13903132,13923964,13944800,13965656,13986524,14007424,14028324,14049244,14070176,14091136,14112100,14133084,14154080,14175120,14196148,14217196,14238256,14259344,14280436,14301548,14322672,14343828,14364984,14386160,14407348,14428564,14449784,14471024,14492276,14513568,14534852,14556156,14577472,14598816,14620164,14641532,14662912,14684324,14705736,14727168,14748612,14770084,14791560,14813056,14834564,14856124,14877664,14899224,14920796,14942396,14964000,14985624,15007260,15028928,15050596,15072284,15093984,15115712,15137444,15159196,15180960,15202764,15224560,15246376,15268204,15290060,15311920,15333800,15355692,15377616,15399540,15421484,15443440,15465424,15487412,15509420,15531440,15553504,15575556,15597628,15619712,15641824,15663940,15686076,15708224,15730404,15752584,15774784,15796996,15819236,15841480,15863744,15886020,15908336,15930644,15952972,15975312,15997680,16020052,16042444,16064848,16087284,16109720,16132176,16154644,16177140,16199640,16222160,16244692,16267280,16289844,16312428,16335024,16357648,16380276,16402924,16425584,16448276,16470968,16493680,16516404,16539156,16561912,16584688,16607476,16630304,16653124,16675964,16698816,16721696,16744580,16767484,16790400,16813348,16836296,16859264,16882244,16905252,16928264,16951296,16974340,16997428,17020504,17043600,17066708,17089844,17112984,17136144,17159316,17182520,17205724,17228948,17252184,17275448,17298716,17322004,17345304,17368644,17391976,17415328,17438692,17462084,17485480,17508896,17532324,17555784,17579244,17602724,17626216,17649736,17673260,17696804,17720360,17743968,17767556,17791164,17814784,17838432,17862084,17885756,17909440,17933156,17956872,17980608,18004356,18028132,18051912,18075712,18099524,18123376,18147220,18171084,18194960,18218864,18242772,18266700,18290640,18314612,18338584,18362576,18386580,18410612,18434648,18458704,18482772,18506884,18530984,18555104,18579236,18603396,18627560,18651744,18675940,18700168,18724396,18748644,18772904,18797192,18821484,18845796,18870120,18894484,18918840,18943216,18967604,18992020,19016440,19040880,19065332,19089816,19114300,19138804,19163320,19187864,19212412,19236980,19261560,19286208,19310820,19335452,19360096,19384768,19409444,19434140,19458848,19483588,19508328,19533088,19557860,19582660,19607464,19632288,19657124,19682000,19706868,19731756,19756656,19781584,19806516,19831468,19856432,19881428,19906424,19931440,19956468,19981524,20006584,20031664,20056756,20081892,20107016,20132160,20157316,20182500,20207688,20232896,20258116,20283368,20308620,20333892,20359176,20384488,20409804,20435140,20460488,20485876,20511256,20536656,20562068,20587508,20612952,20638416,20663892,20689400,20714908,20740436,20765976,20791544,20817116,20842708,20868312,20893968,20919604,20945260,20970928,20996624,21022324,21048044,21073776,21099540,21125304,21151088,21176884,21202708,21228536,21254384,21280244,21306144,21332036,21357948,21383872,21409824,21435780,21461756,21487744,21513764,21539784,21565824,21591876,21617956,21644040,21670144,21696260,21722420,21748568,21774736,21800916,21827124,21853336,21879568,21905812,21932088,21958364,21984660,22010968,22037304,22063644,22090004,22116376,22142788,22169192,22195616,22222052,22248516,22274984,22301472,22327972,22354504,22381036,22407588,22434152,22460744,22487340,22513956,22540584,22567268,22593928,22620608,22647300,22674020,22700744,22727488,22754244,22781032,22807820,22834628,22861448,22888296,22915148,22942020,22968904,22995828,23022744,23049680,23076628,23103604,23130584,23157584,23184596,23211640,23238684,23265748,23292824,23319928,23347036,23374164,23401304,23428488,23455660,23482852,23510056,23537288,23564524,23591780,23619048,23646348,23673648,23700968,23728300,23755660,23783024,23810408,23837804,23865240,23892668,23920116,23947576,23975064,24002556,24030068,24057592,24085148,24112704,24140280,24167868,24195484,24223104,24250744,24278396,24306100,24333784,24361488,24389204,24416948,24444696,24472464,24500244,24528056,24555868,24583700,24611544,24639416,24667292,24695188,24723096,24751044,24778984,24806944,24834916,24862916,24890920,24918944,24946980,24975048,25003116,25031204,25059304,25087432,25115564,25143716,25171880,25200088,25228284,25256500,25284728,25312984,25341244,25369524,25397816,25426140,25454464,25482808,25511164,25539548,25567936,25596344,25624764,25653224,25681676,25710148,25738632,25767144,25795660,25824196,25852744,25881324,25909904,25938504,25967116,25995756,26024400,26053064,26081740,26110480,26139188,26167916,26196656,26225424,26254196,26282988,26311792,26340628,26369464,26398320,26427188,26456084,26484984,26513904,26542836,26571808,26600772,26629756,26658752,26687776,26716804,26745852,26774912,26804004,26833096,26862208,26891332,26920484,26949640,26978816,27008004,27037236,27066456,27095696,27124948,27154228,27183512,27212816,27242132,27271480,27300828,27330196,27359576,27388984,27418396,27447828,27477272,27506756,27536232,27565728,27595236,27624772,27654312,27683872,27713444,27743048,27772652,27802276,27831912,27861576,27891244,27920932,27950632,27980384,28010116,28039868,28069632,28099424,28129220,28159036,28188864,28218724,28248584,28278464,28308356,28338276,28368200,28398144,28428100,28458096,28488084,28518092,28548112,28578160,28608212,28638284,28668368,28698484,28728600,28758736,28788884,28819060,28849240,28879440,28909652,28939908,28970152,29000416,29030692,29060996,29091304,29121632,29151972,29182344,29212716,29243108,29273512,29303944,29334380,29364836,29395304,29425812,29456312,29486832,29517364,29547924,29578488,29609072,29639668,29670296,29700924,29731572,29762232,29792920,29823612,29854324,29885048,29915828,29946584,29977360,30008148,30038964,30069784,30100624,30131476,30162360,30193244,30224148,30255064,30286008,30316956,30347924,30378904,30409924,30440936,30471968,30503012,30534084,30565160,30596256,30627364,30658504,30689644,30720804,30751976,30783176,30814380,30845604,30876840,30908120,30939388,30970676,31001976,31033304,31064636,31095988,31127352,31158748,31190144,31221560,31252988,31284444,31315904,31347384,31378876,31410408,31441932,31473476,31505032,31536616,31568204,31599812,31631432,31663084,31694736,31726408,31758092,31789804,31821520,31853256,31885004,31916804,31948584,31980384,32012196,32044036,32075880,32107744,32139620,32171528,32203436,32235364,32267304,32299272,32331244,32363236,32395240,32427284,32459320,32491376,32523444,32555540,32587640,32619760,32651892,32684056,32716220,32748404,32780600,32812824,32845052,32877300,32909560,32941864,32974156,33006468,33038792,33071144,33103500,33135876,33168264,33200684,33233104,33265544,33297996,33330476,33362960,33395464,33427980,33460536,33493084,33525652,33558232,33590840,33623452,33656084,33688728,33721404,33754080,33786776,33819484,33852220,33884960,33917720,33950492,33983348,34016152,34048976,34081812,34114676,34147544,34180432,34213332,34246264,34279196,34312148,34345112,34378104,34411100,34444116,34477144,34510212,34543272,34576352,34609444,34642564,34675688,34708832,34741988,34775176,34808364,34841572,34874792,34908040,34941292,34974564,35007848,35041176,35074492,35107828,35141176,35174552,35207932,35241332,35274744,35308188,35341632,35375096,35408572,35442076,35475584,35509112,35542652,35576232,35609804,35643396,35677000,35710632,35744268,35777924,35811592,35845292,35878992,35912712,35946444,35980204,36013968,36047752,36081548,36115396,36149224,36183072,36216932,36250820,36284712,36318624,36352548,36386504,36420460,36454436,36488424,36522440,36556460,36590500,36624552,36658644,36692728,36726832,36760948,36795092,36829240,36863408,36897588,36931800,36966012,37000244,37034488,37068760,37103036,37137332,37171640,37205992,37240332,37274692,37309064,37343464,37377868,37412292,37446728,37481196,37515664,37550152,37584652,37619180,37653712,37688264,37722828,37757432,37792028,37826644,37861272,37895928,37930588,37965268,37999960,38034684,38069408,38104152,38138908,38173692,38208480,38243288,38278108,38312984,38347836,38382708,38417592,38452504,38487420,38522356,38557304,38592284,38627264,38662264,38697276,38732316,38767360,38802424,38837500,38872616,38907724,38942852,38977992,39013160,39048332,39083524,39118728,39153964,39189200,39224456,39259724,39295020,39330320,39365640,39400972,39436348,39471712,39507096,39542492,39577916,39613344,39648792,39684252,39719744,39755236,39790748,39826272,39861824,39897380,39932956,39968544,40004172,40039792,40075432,40111084,40146764,40182448,40218152,40253868,40289616,40325364,40361132,40396912,40432720,40468532,40504364,40540208,40576104,40611980,40647876,40683784,40719720,40755660,40791620,40827592,40863596,40899600,40935624,40971660,41007724,41043792,41079880,41115980,41152120,41188252,41224404,41260568,41296760,41332956,41369172,41405400,41441660,41477920,41514200,41550492,41586812,41623136,41659480,41695836,41732236,41768624,41805032,41841452,41877900,41914352,41950824,41987308,42023824,42060340,42096876,42133424,42170000,42206580,42243180,42279792,42316444,42353088,42389752,42426428,42463132,42499840,42536568,42573308,42610080,42646852,42683644,42720448,42757280,42794116,42830972,42867840,42904772,42941672,42978592,43015524,43052484,43089448,43126432,43163428,43200456,43237484,43274532,43311592,43348680,43385772,43422884,43460008,43497172,43534328,43571504,43608692,43645908,43683128,43720368,43757620,43794904,43832188,43869492,43906808,43944152,43981500,44018868,44056248,44093672,44131084,44168516,44205960,44243432,44280908,44318404,44355912,44393452,44430992,44468552,44506124,44543724,44581328,44618952,44656588,44694264,44731932,44769620,44807320,44845048,44882780,44920532,44958296,44996092,45033888,45071704,45109532,45147388,45185248,45223128,45261020,45298964,45336888,45374832,45412788,45450772,45488760,45526768,45564788,45602840,45640892,45678964,45717048,45755160,45793276,45831412,45869560,45907748,45945928,45984128,46022340,46060580,46098824,46137088,46175364,46213672,46251980,46290308,46328648,46367016,46405388,46443780,46482184,46520632,46559068,46597524,46635992,46674488,46712988,46751508,46790040,46828604,46867168,46905752,46944348,46982972,47021600,47060248,47098908,47137608,47176300,47215012,47253736,47292488,47331244,47370020,47408808,47447628,47486448,47525288,47564140,47603020,47641904,47680808,47719724,47758696,47797644,47836612,47875592,47914600,47953612,47992644,48031688,48070764,48109840,48148936,48188044,48227180,48266320,48305480,48344652,48383864,48423068,48462292,48501528,48540792,48580060,48619348,48658648,48697980,48737312,48776664,48816028,48855420,48894816,48934232,48973660,49013132,49052592,49092072,49131564,49171084,49210608,49250152,49289708,49329296,49368884,49408492,49448112,49487760,49527412,49567084,49606768,49646492,49686208,49725944,49765692,49805468,49845248,49885048,49924860,49964704,50004548,50044412,50084288,50124192,50164100,50204028,50243968,50283960,50323932,50363924,50403928,50443960,50483996,50524052,50564120,50604220,50644320,50684440,50724572,50764732,50804896,50845080,50885276,50925512,50965740,51005988,51046248,51086536,51126828,51167140,51207464,51247820,51288176,51328552,51368940,51409356,51449776,51490216,51530668,51571164,51611648,51652152,51692668,51733212,51773760,51814328,51854908,51895520,51936132,51976764,52017408,52058080,52098756,52139452,52180160,52220908,52261648,52302408,52343180,52383980,52424784,52465608,52506444,52547312,52588180,52629068,52669968,52710896,52751828,52792780,52833744,52874776,52915772,52956788,52997816,53038872,53079932,53121012,53162104,53203228,53244352,53285496,53326652,53367836,53409024,53450232,53491452,53532712,53573964,53615236,53656520,53697832,53739148,53780484,53821832,53863212,53904592,53945992,53987404,54028844,54070288,54111752,54153228,54194748,54236256,54277784,54319324,54360892,54402464,54444056,54485660,54527296,54568932,54610588,54652256,54693952,54735652],"FIT":{"a":7.998992551638921,"b":117.2974468714373,"c":357240.78532395995}};
+const E = OdoEngine;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NU_DEATH = BigInt(DATA.NU_DEATH);
+const NU_LAST = NU_DEATH - 1n;
+const CLOCK_OFF = 5n;                     // tail clock = nu + 5; death at 3*2^279 exactly
+const L2MAX = E.log2Big(NU_DEATH + CLOCK_OFF);
+const law = E.makeStepLaw(DATA.EARLY_STEPS, DATA.FIT);
+const GCOL = { O: '#4e5a66', e: '#3fa8a0', a: '#8b6fc7', f: '#e0642f' };
+const QCOL = ['#e5a83c', '#3fa8a0', '#8b6fc7', '#c93b2b', '#8fae62', '#d9825f']; // A..F
+const FMONO = "Consolas, Menlo, 'Cascadia Mono', monospace";
+const FSANS = "'Segoe UI', system-ui, sans-serif";
+const FSERIF = 'Georgia, Cambria, serif';
+const $ = (id) => document.getElementById(id);
+
+// ---------- machine rule plates ----------
+{
+  const rows = DATA.CODE.split('_');
+  $('rules').innerHTML = rows.map((r, i) => {
+    const t0 = r.slice(0, 3), t1 = r.slice(3, 6);
+    const f = (t) => t === '---' ? '<span class="miss">---</span>' : t;
+    return `<div class="rule"><div class="st">${E.STATES[i]}</div><div class="tr">0→${f(t0)}<br>1→${f(t1)}</div></div>`;
+  }).join('');
+}
+
+// ---------- ledger (the full orbit, computed now) ----------
+const ledger = E.enumerate(DATA.W_BASE);
+const EVN = ledger.events.map((e) => e.nuAfter);
+{
+  const ok = !ledger.fail && ledger.events.length === DATA.EVENT_COUNT
+    && ledger.nuDeath === NU_DEATH && ledger.dying === DATA.DYING
+    && ledger.nuDeath + CLOCK_OFF === 3n * 2n ** 279n;
+  const el = $('ck0');
+  el.className = ok ? 'yes' : 'pend';
+  el.innerHTML = ok
+    ? `orbit enumerated in your browser just now: <b>${ledger.events.length} overflow events</b>, death on tail-clock sweep <b>3·2<sup>279</sup> exactly</b> — matching the Coq ledger`
+    : 'orbit enumeration mismatch (unexpected)';
+}
+const RES_MAX = (DATA.W_BASE.match(/a/g) || []).length;
+
+// ---------- global state ----------
+const S = {
+  nu: 0n, W: DATA.W_BASE, parse: E.parseSpell(DATA.W_BASE), evIdx: -1,
+  dirToken: 0, playing: false, dead: false,
+  sweep: null,           // running dip-walk animation
+  raw: null,             // running raw-cell replay
+  genReveal: REDUCED ? 1 : 1, // 0..1 wipe progress of genesis canvas
+  wheelFlash: 0, bornFlash: 0, spinBlur: 0, lastNuTime: 0, lastNuL2: 0,
+  hoverTape: -1, hoverTL: null,
+};
+
+function evIndexFor(nu) { // last event with nuAfter <= nu
+  let lo = 0, hi = EVN.length - 1, k = -1;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (EVN[m] <= nu) { k = m; lo = m + 1; } else hi = m - 1; }
+  return k;
+}
+
+function setNu(nu, opts) {
+  if (nu < 0n) nu = 0n;
+  if (nu > NU_LAST) nu = NU_LAST;
+  const prevG = S.parse.G, prevEv = S.evIdx;
+  S.nu = nu;
+  S.W = E.stateAt(nu, DATA.W_BASE, ledger);
+  S.parse = E.parseSpell(S.W);
+  S.evIdx = evIndexFor(nu);
+  if (!opts || !opts.quiet) {
+    if (S.evIdx !== prevEv && S.evIdx >= 0) S.wheelFlash = 1;
+    if (S.parse.G > prevG) S.bornFlash = 1;
+  }
+  // wheel-blur estimate: wheel indices below log16(sweeps per second) spin
+  const now = performance.now(), l2 = E.log2Big(nu + 1n);
+  const dt = Math.max(1, now - S.lastNuTime);
+  const dl2 = Math.abs(l2 - S.lastNuL2);
+  if (dl2 > 1e-9 && dt < 500) {
+    const lps2 = l2 + Math.log2(Math.max(1e-6, dl2 * 0.693 * (1000 / dt)));
+    S.spinBlur = Math.max(S.spinBlur, Math.max(0, lps2 / 4));
+  }
+  S.lastNuTime = now; S.lastNuL2 = l2;
+  updateReadouts();
+}
+
+function updateReadouts() {
+  $('roNu').textContent = E.bigFmt(S.nu);
+  const st = law(S.nu);
+  $('roSteps').textContent = st.approx ? '≈ ' + st.text : E.bigFmt(st.value);
+  const G = S.parse.G;
+  $('roG').textContent = G === 0 ? '0 · warming up'
+    : G + ' · era of 16^' + G + (S.evIdx >= 0 ? '  (event ' + (S.evIdx + 1) + '/549)' : '');
+  $('roTail').textContent = E.bigFmt(S.nu + 3n);
+  const res = (S.parse.T.match(/a/g) || []).length;
+  $('roResN').textContent = res;
+  $('roResBar').style.width = (100 * res / RES_MAX) + '%';
+}
+
+// ---------- canvas helpers ----------
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+function ctx2d(c) {
+  const r = c.getBoundingClientRect();
+  const w = Math.max(50, r.width), h = parseFloat(getComputedStyle(c).height);
+  if (c.width !== Math.round(w * DPR)) { c.width = Math.round(w * DPR); c.height = Math.round(h * DPR); }
+  const g = c.getContext('2d');
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  return { g, w, h };
+}
+
+// ---------- timeline ----------
+const cvTL = $('cvTimeline');
+function xOfNu(nu, w) { return E.log2Big(nu + CLOCK_OFF) / L2MAX * w; }
+function nuOfX(x, w) {
+  const l2 = Math.min(L2MAX, Math.max(0, x / w * L2MAX));
+  let nu;
+  if (l2 < 52) nu = BigInt(Math.round(Math.pow(2, l2)));
+  else { const ie = Math.floor(l2) - 40; nu = BigInt(Math.round(Math.pow(2, l2 - ie))) << BigInt(ie); }
+  nu -= CLOCK_OFF;
+  return nu < 0n ? 0n : nu > NU_LAST ? NU_LAST : nu;
+}
+function drawTimeline() {
+  const { g, w, h } = ctx2d(cvTL);
+  g.clearRect(0, 0, w, h);
+  const bandY = 18, bandH = h - 44;
+  // era shading by wheel count
+  g.fillStyle = '#171310';
+  g.fillRect(0, bandY, w, bandH);
+  for (let i = 0; i <= ledger.events.length; i++) {
+    const a = i === 0 ? 0n : EVN[i - 1];
+    const b = i === ledger.events.length ? NU_DEATH : EVN[i];
+    const G = i === ledger.events.length ? 71 : ledger.events[i].G;
+    const x1 = xOfNu(a, w), x2 = xOfNu(b, w);
+    g.fillStyle = 'rgba(229,168,60,' + (0.03 + 0.30 * G / 71) + ')';
+    g.fillRect(x1, bandY, Math.max(0.5, x2 - x1), bandH);
+  }
+  // gridlines at 2^k
+  g.font = '10px ' + FMONO;
+  for (let k = 0; k <= 280; k += 20) {
+    const x = k / L2MAX * w;
+    g.strokeStyle = 'rgba(233,223,203,.10)';
+    g.beginPath(); g.moveTo(x, bandY); g.lineTo(x, bandY + bandH); g.stroke();
+    if (k % 40 === 0) { g.fillStyle = '#6b5f4c'; g.fillText(k === 0 ? 'ν=1' : '2^' + k, x + 3, h - 18); }
+  }
+  // event ticks
+  for (let i = 0; i < EVN.length; i++) {
+    const x = xOfNu(EVN[i], w);
+    g.strokeStyle = i >= EVN.length - 8 ? 'rgba(201,59,43,.85)' : 'rgba(255,201,97,.5)';
+    g.beginPath(); g.moveTo(x, bandY + 2); g.lineTo(x, bandY + bandH - 2); g.stroke();
+  }
+  // death
+  g.fillStyle = '#c93b2b';
+  g.fillRect(w - 2, bandY - 4, 2, bandH + 8);
+  g.font = '10px ' + FSANS;
+  g.textAlign = 'right'; g.fillText('3·2²⁷⁹ ☠', w - 6, bandY - 6); g.textAlign = 'left';
+  // playhead
+  const px = xOfNu(S.nu, w);
+  g.strokeStyle = '#ffc961'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(px, bandY - 6); g.lineTo(px, bandY + bandH + 6); g.stroke();
+  g.lineWidth = 1;
+  g.fillStyle = '#ffc961';
+  g.beginPath(); g.moveTo(px - 5, bandY - 10); g.lineTo(px + 5, bandY - 10); g.lineTo(px, bandY - 3); g.closePath(); g.fill();
+  // hover
+  if (S.hoverTL != null) {
+    const hx = xOfNu(S.hoverTL, w);
+    g.strokeStyle = 'rgba(233,223,203,.4)';
+    g.beginPath(); g.moveTo(hx, bandY); g.lineTo(hx, bandY + bandH); g.stroke();
+    const hev = evIndexFor(S.hoverTL);
+    const txt = 'ν ≈ ' + E.bigFmt(S.hoverTL) + '   ·   ' + (hev + 1) + ' events   ·   wheels ' + (hev < 0 ? 0 : ledger.events[hev].G + 1);
+    g.fillStyle = '#e9dfcb'; g.font = '11px ' + FMONO;
+    g.fillText(txt, Math.min(Math.max(4, hx + 8), w - 300), 12);
+  }
+}
+{
+  let dragging = false;
+  const pick = (ev) => {
+    const r = cvTL.getBoundingClientRect();
+    return nuOfX(ev.clientX - r.left, r.width);
+  };
+  cvTL.addEventListener('pointerdown', (ev) => { dragging = true; cvTL.setPointerCapture(ev.pointerId); interrupt(); setNu(pick(ev)); });
+  cvTL.addEventListener('pointermove', (ev) => {
+    if (dragging) setNu(pick(ev)); else S.hoverTL = pick(ev);
+  });
+  cvTL.addEventListener('pointerup', () => { dragging = false; });
+  cvTL.addEventListener('pointerleave', () => { S.hoverTL = null; });
+}
+
+// ---------- wheels ----------
+const cvWheels = $('cvWheels');
+const wheels = { pos: [], vals: [] };
+function drawWheels(t) {
+  const { g, w, h } = ctx2d(cvWheels);
+  g.clearRect(0, 0, w, h);
+  const G = S.parse.G;
+  const hex = G ? S.parse.v.toString(16).toUpperCase().padStart(G, '0') : '';
+  // sync wheel arrays (index 0 = least significant = rightmost)
+  while (wheels.vals.length < G) { const d = parseInt(hex[G - 1 - wheels.vals.length], 16); wheels.vals.push(d); wheels.pos.push(d); }
+  wheels.vals.length = wheels.pos.length = Math.max(G, 0) || 0;
+  for (let i = 0; i < G; i++) wheels.vals[i] = parseInt(hex[G - 1 - i], 16);
+  const cy = h / 2 - 8;
+  if (G === 0) {
+    g.strokeStyle = 'rgba(154,140,114,.4)'; g.setLineDash([4, 4]);
+    g.strokeRect(w / 2 - 22, cy - 30, 44, 60); g.setLineDash([]);
+    g.fillStyle = '#6b5f4c'; g.font = 'italic 13px ' + FSERIF;
+    g.textAlign = 'center'; g.fillText('no wheels yet — the counter is being forged', w / 2, cy + 48); g.textAlign = 'left';
+    return;
+  }
+  const ww = Math.min(46, Math.max(11, Math.floor((w - 24) / G) - 2));
+  const wh = Math.min(64, ww * 1.5);
+  const total = G * (ww + 2) - 2;
+  const x0 = (w - total) / 2;
+  const spinning = S.spinBlur; // wheel indices below this blur
+  g.font = '600 ' + Math.floor(wh * 0.52) + 'px ' + FMONO;
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (let i = 0; i < G; i++) {
+    const x = x0 + (G - 1 - i) * (ww + 2); // MSD left
+    // roll toward target
+    let d = wheels.vals[i] - wheels.pos[i];
+    if (d > 8) d -= 16; if (d < -8) d += 16;
+    wheels.pos[i] += Math.abs(d) < 0.01 ? d : d * 0.25;
+    if (wheels.pos[i] < 0) wheels.pos[i] += 16; if (wheels.pos[i] >= 16) wheels.pos[i] -= 16;
+    // drum
+    const grad = g.createLinearGradient(0, cy - wh / 2, 0, cy + wh / 2);
+    grad.addColorStop(0, '#0f0c08'); grad.addColorStop(0.5, '#2e2517'); grad.addColorStop(1, '#0f0c08');
+    g.fillStyle = grad;
+    g.fillRect(x, cy - wh / 2, ww, wh);
+    g.strokeStyle = i === G - 1 && S.bornFlash > 0 ? 'rgba(255,201,97,' + S.bornFlash + ')' : '#4a3c26';
+    g.strokeRect(x + 0.5, cy - wh / 2 + 0.5, ww - 1, wh - 1);
+    // digits
+    g.save();
+    g.beginPath(); g.rect(x, cy - wh / 2 + 1, ww, wh - 2); g.clip();
+    const blur = i < spinning - 0.8 && !REDUCED;
+    if (blur) {
+      g.fillStyle = 'rgba(255,201,97,.28)';
+      for (let k = 0; k < 3; k++) g.fillText('0123456789ABCDEF'[(wheels.vals[i] + k * 5 + (t >> 5) % 16) % 16], x + ww / 2, cy - wh * 0.3 + k * wh * 0.3);
+    } else {
+      const p = wheels.pos[i];
+      const base = Math.floor(p), fr = p - base;
+      for (let k = -1; k <= 1; k++) {
+        const digit = ((base + k) % 16 + 16) % 16;
+        const y = cy + (k - fr) * wh * 0.78;
+        g.fillStyle = k === 0 || fr > 0.01 ? '#ffc961' : 'rgba(255,201,97,.25)';
+        if (Math.abs(k - fr) < 1.2) g.fillText('0123456789ABCDEF'[digit], x + ww / 2, y);
+      }
+    }
+    g.restore();
+    // window glass line
+    g.strokeStyle = 'rgba(229,168,60,.16)';
+    g.beginPath(); g.moveTo(x, cy); g.lineTo(x + ww, cy); g.stroke();
+  }
+  g.textBaseline = 'alphabetic';
+  // flash on overflow event
+  if (S.wheelFlash > 0.01) {
+    g.fillStyle = 'rgba(255,201,97,' + 0.12 * S.wheelFlash + ')';
+    g.fillRect(x0 - 8, cy - wh / 2 - 8, total + 16, wh + 16);
+  }
+  g.fillStyle = '#6b5f4c'; g.font = '10px ' + FSANS;
+  g.textAlign = 'right'; g.fillText('×1', x0 + total, cy + wh / 2 + 14);
+  g.textAlign = 'left'; g.fillText('×16^' + (G - 1), x0, cy + wh / 2 + 14);
+  g.textAlign = 'left';
+}
+
+// ---------- tape ----------
+const cvTape = $('cvTape');
+cvTape.addEventListener('pointermove', (ev) => {
+  const r = cvTape.getBoundingClientRect();
+  S.hoverTape = Math.floor((ev.clientX - r.left) / r.width * S.W.length);
+});
+cvTape.addEventListener('pointerleave', () => { S.hoverTape = -1; });
+function drawTape() {
+  const { g, w, h } = ctx2d(cvTape);
+  g.clearRect(0, 0, w, h);
+  const anim = S.sweep;
+  const arr = anim ? anim.arr : S.W;
+  const len = arr.length;
+  const tw = w / len;
+  const ty = 24, th = 42;
+  const mono = FMONO, sans = FSANS;
+  // region labels: counter cells are walk indices 2 .. 2+3G-1
+  const G = S.parse.G;
+  const mx = (i) => (len - 1 - i) * tw; // mirror: deep left, separator right
+  if (G > 0) {
+    const xa = mx(2 + 3 * G - 1), xb = mx(2) + tw;
+    g.fillStyle = 'rgba(229,168,60,.07)'; g.fillRect(xa, ty - 3, xb - xa, th + 6);
+    g.fillStyle = '#9a8c72'; g.font = '10px ' + sans;
+    g.fillText('counter — ' + G + ' wheels × 3 glyphs', Math.max(4, xa), ty - 8);
+  }
+  g.fillStyle = '#6b5f4c'; g.font = '10px ' + sans;
+  g.textAlign = 'left'; g.fillText('deep end (fuel)', 4, ty + th + 14);
+  g.textAlign = 'right'; g.fillText('head enters here →', w - 4, ty + th + 14);
+  g.textAlign = 'left';
+  for (let i = 0; i < len; i++) {
+    const gl = arr[len - 1 - i];
+    g.fillStyle = GCOL[gl];
+    g.fillRect(i * tw, ty, Math.max(1, tw - (tw > 3 ? 1 : 0)), th);
+  }
+  // dip head marker
+  if (anim) {
+    const hx = mx(anim.headI) + tw / 2;
+    const col = anim.state === 'E' ? '#8fae62' : '#ffc961';
+    g.fillStyle = col;
+    g.beginPath(); g.moveTo(hx - 6, ty - 12); g.lineTo(hx + 6, ty - 12); g.lineTo(hx, ty - 3); g.closePath(); g.fill();
+    g.font = '600 12px ' + mono; g.textAlign = 'center';
+    g.fillText(anim.state === 'E' ? 'E (out)' : anim.state, hx, ty - 16);
+    g.textAlign = 'left';
+  }
+  // magnifier: raw 4-bit spellings around focus
+  const focus = anim ? (len - 1 - anim.headI) : (S.hoverTape >= 0 ? S.hoverTape : len - 8);
+  const span = Math.min(14, len);
+  let f0 = Math.max(0, Math.min(len - span, focus - span / 2 | 0));
+  const my = ty + th + 24, cw = w / (span * 5);
+  g.font = '10px ' + mono;
+  for (let k = 0; k < span; k++) {
+    const gi = f0 + k;                    // display index
+    const gl = arr[len - 1 - gi];
+    const bits = E.GRAW[gl];
+    const bx = k * (w / span);
+    g.fillStyle = GCOL[gl]; g.fillText(gl, bx + 2, my + 8);
+    for (let b = 0; b < 4; b++) {
+      g.fillStyle = bits[b] ? GCOL[gl] : 'rgba(233,223,203,.14)';
+      const s = Math.min(9, cw);
+      g.fillRect(bx + 12 + b * (s + 2), my, s, s);
+    }
+  }
+  // connect magnifier to strip
+  g.strokeStyle = 'rgba(233,223,203,.15)';
+  g.strokeRect(f0 * tw, ty - 1, span * tw, th + 2);
+}
+
+// ---------- dip walk animation ----------
+function startSweep(onDone, fast) {
+  if (S.sweep || S.dead) return;
+  const r = E.dip(S.W, true);
+  if (r.dies) { deathSequence(++S.dirToken); return; }
+  S.sweep = {
+    ops: r.ops, idx: 0, arr: S.W.split(''), headI: 0, state: 'F',
+    out: r.out, onDone, perFrame: Math.max(1, Math.ceil(r.ops.length / (fast ? 60 : 220))),
+  };
+  $('btnSweep').disabled = true;
+}
+function stepSweep() {
+  const a = S.sweep;
+  if (!a || a.manual) return;
+  for (let k = 0; k < a.perFrame && a.idx < a.ops.length; k++, a.idx++) {
+    const op = a.ops[a.idx];
+    if (op.t === 'in') { a.arr[op.i] = op.g2; a.headI = op.i; a.state = op.s2; }
+    else if (op.t === 'refl') { a.arr[op.i] = op.g2; a.headI = op.i; a.state = 'E'; }
+    else if (op.t === 'bounce') { a.headI = op.i; a.state = 'F'; }
+    else if (op.t === 'out') { a.arr[op.i] = op.g2; a.headI = op.i; a.state = 'E'; }
+  }
+  if (a.idx >= a.ops.length) {
+    S.sweep = null;
+    $('btnSweep').disabled = false;
+    setNu(S.nu + 1n, { quiet: false });
+    if (a.onDone) a.onDone();
+  }
+}
+$('btnSweep').addEventListener('click', () => { interrupt(); startSweep(); });
+
+// ---------- genesis space-time ----------
+const cvGen = $('cvGen');
+let genImg = null, genRows = 0, genPromise = null;
+function computeGenesis() {
+  if (genPromise) return genPromise;
+  genPromise = new Promise((resolve) => {
+    const SAMPLE = 500;
+    const probe = E.makeSim(DATA.CODE);
+    probe.run(DATA.N_BASE);
+    const lo = probe.min, hi = probe.max, W = hi - lo + 2;
+    const rows = Math.ceil(DATA.N_BASE / SAMPLE) + 1;
+    const off = document.createElement('canvas');
+    off.width = W; off.height = rows;
+    const og = off.getContext('2d');
+    og.fillStyle = '#171310'; og.fillRect(0, 0, W, rows);
+    // sim and probe share coordinates: same start offset, deterministic growth
+    const sim = E.makeSim(DATA.CODE);
+    let row = 0;
+    const snapRow = () => {
+      const t = sim.tape();
+      og.fillStyle = 'rgba(229,168,60,.85)';
+      for (let x = sim.min; x <= sim.max; x++) if (t[x]) og.fillRect(x - lo, row, 1, 1);
+      og.fillStyle = '#3fa8a0';
+      og.fillRect(sim.head - lo, row, 2, 1);
+      row++;
+    };
+    const chunk = () => {
+      for (let k = 0; k < 48; k++) {
+        snapRow();
+        if (sim.steps >= DATA.N_BASE) {
+          genImg = off; genRows = row;
+          const snap = sim.snapshot();
+          const anchor = E.spellAnchor(DATA.W_BASE, DATA.N_TAIL);
+          const ok = snap.q === 2 && snap.cells.slice(0, snap.head).join('') === anchor.cells.join('');
+          const el = $('ck1');
+          el.className = ok ? 'yes' : 'pend';
+          el.innerHTML = ok
+            ? 'genesis rebuilt from a blank tape: <b>354,540 raw steps</b> land exactly on the proven base anchor (OdometerBase.v)'
+            : 'genesis mismatch (unexpected)';
+          resolve();
+          return;
+        }
+        sim.run(Math.min(SAMPLE, DATA.N_BASE - sim.steps));
+      }
+      setTimeout(chunk, 0);
+    };
+    chunk();
+  });
+  return genPromise;
+}
+function drawGenesis() {
+  const { g, w, h } = ctx2d(cvGen);
+  g.fillStyle = '#171310'; g.fillRect(0, 0, w, h);
+  if (!genImg) {
+    g.fillStyle = '#6b5f4c'; g.font = 'italic 13px ' + FSERIF;
+    g.fillText('running 354,540 raw steps…', 12, 24);
+    return;
+  }
+  g.imageSmoothingEnabled = false;
+  const rows = Math.max(1, Math.floor(genRows * S.genReveal));
+  g.drawImage(genImg, 0, 0, genImg.width, rows, 0, 0, w, h * (rows / genRows));
+  g.fillStyle = '#6b5f4c'; g.font = '10px ' + FSANS;
+  g.fillText('step 0', 6, 12);
+  if (S.genReveal >= 1) g.fillText('step 354,540 — the base anchor', 6, h - 8);
+}
+
+// ---------- raw sweep replay ----------
+const cvRaw = $('cvRaw');
+function startRaw() {
+  if (S.raw || S.dead) return;
+  const sim = E.simFromAnchor(DATA.CODE, S.W, 5);
+  const expected = 'f' + E.dip(S.W).out.slice(1);
+  S.raw = { sim, expected, done: false, manual: false, result: '', t0: performance.now() };
+  $('btnRawRun').disabled = true;
+}
+function stepRaw() {
+  const R = S.raw;
+  if (!R || R.done || R.manual) return;
+  const pace = Math.round(Math.pow(10, 0.04 * +$('rawPace').value)); // 1 .. 10^4 steps/frame
+  let hit = false;
+  const sim = R.sim;
+  sim.run(pace, (head, q, steps, tape, min, max) => (q === 2 && head > max && tape[head] === 0 && (hit = true)));
+  if (sim.halted) { R.done = true; R.result = 'HALT'; return; }
+  if (hit) {
+    const p = E.tapeToW(sim.snapshot());
+    if (p) {
+      R.done = true;
+      const ok = p.W === R.expected && p.n === 6;
+      R.result = ok ? '✓ anchor reached — raw tape equals the abstract dip, tail +1' : 'mismatch (unexpected)';
+      $('btnRawRun').disabled = false;
+      if (ok) setNu(S.nu + 1n);
+    }
+  }
+}
+function drawRaw() {
+  const { g, w, h } = ctx2d(cvRaw);
+  g.fillStyle = '#171310'; g.fillRect(0, 0, w, h);
+  const R = S.raw;
+  const mono = FMONO;
+  if (!R) {
+    g.fillStyle = '#6b5f4c'; g.font = 'italic 13px ' + FSERIF;
+    g.fillText('press “Run this sweep raw” — the same sweep, executed cell by cell by the actual machine', 12, 24);
+    return;
+  }
+  const sim = R.sim, t = sim.tape();
+  const view = 150, cw = w / view;
+  const c0 = Math.max(sim.min - 4, Math.min(sim.head - (view >> 1), sim.max + 8 - view));
+  const cy = h / 2 - 10, ch = Math.min(34, cw * 4);
+  for (let k = 0; k < view; k++) {
+    const pos = c0 + k;
+    const v = t[pos];
+    g.fillStyle = v ? 'rgba(229,168,60,.8)' : 'rgba(233,223,203,.07)';
+    g.fillRect(k * cw + 0.5, cy - ch / 2, Math.max(1, cw - 1), ch);
+    if ((pos - sim.min) % 4 === 0) {
+      g.strokeStyle = 'rgba(63,168,160,.25)';
+      g.beginPath(); g.moveTo(k * cw, cy - ch / 2 - 5); g.lineTo(k * cw, cy + ch / 2 + 5); g.stroke();
+    }
+  }
+  const hx = (sim.head - c0) * cw + cw / 2;
+  g.fillStyle = QCOL[sim.q];
+  g.beginPath(); g.moveTo(hx - 7, cy - ch / 2 - 16); g.lineTo(hx + 7, cy - ch / 2 - 16); g.lineTo(hx, cy - ch / 2 - 4); g.closePath(); g.fill();
+  g.font = '600 13px ' + mono; g.textAlign = 'center';
+  g.fillText(E.STATES[sim.q], hx, cy - ch / 2 - 22); g.textAlign = 'left';
+  g.fillStyle = '#9a8c72'; g.font = '11px ' + mono;
+  g.fillText('raw steps this sweep: ' + E.bigFmt(sim.steps), 8, h - 10);
+  if (R.done) {
+    g.fillStyle = R.result.startsWith('✓') ? '#8fae62' : '#c93b2b';
+    g.font = '600 13px ' + mono;
+    g.fillText(R.result, 8, 16);
+    if (R.result.startsWith('✓')) { S.raw = null; $('btnRawRun').disabled = false; }
+  }
+}
+$('btnRawRun').addEventListener('click', () => { interrupt(); startRaw(); });
+
+// tabs
+function showTab(raw) {
+  $('genWrap').style.display = raw ? 'none' : '';
+  $('rawWrap').style.display = raw ? '' : 'none';
+  $('tabGen').className = raw ? '' : 'on';
+  $('tabRaw').className = raw ? 'on' : '';
+}
+$('tabGen').addEventListener('click', () => showTab(false));
+$('tabRaw').addEventListener('click', () => showTab(true));
+
+// ---------- caption ----------
+let capTimer = 0;
+function caption(txt) {
+  const el = $('caption');
+  el.classList.add('fade');
+  clearTimeout(capTimer);
+  capTimer = setTimeout(() => { el.textContent = txt; el.classList.remove('fade'); }, REDUCED ? 0 : 300);
+}
+
+// ---------- the director ----------
+const sleep = (ms, tk) => new Promise((res) => setTimeout(() => res(tk === S.dirToken), REDUCED ? Math.min(ms, 60) : ms));
+function interrupt() {
+  S.dirToken++; S.playing = false;
+  S.sweep = null;
+  if (S.raw && !S.raw.done) S.raw = null;
+  $('btnSweep').disabled = false; $('btnRawRun').disabled = false;
+  $('btnPause').disabled = true; $('btnPlay').disabled = false;
+}
+function paceScale() { return Math.pow(2, (+$('pace').value - 45) / 18); } // 0.18x .. 8x
+
+async function playLife() {
+  interrupt();
+  const tk = ++S.dirToken;
+  S.playing = true; S.dead = false;
+  $('deathplate').classList.remove('shown');
+  $('btnPlay').disabled = true; $('btnPause').disabled = false;
+  setNu(0n, { quiet: true });
+
+  // I. genesis
+  caption('Act I — genesis: 354,540 raw steps from a blank tape. It is building its own fuel reservoir.');
+  showTab(false);
+  await computeGenesis();
+  if (tk !== S.dirToken) return;
+  if (!REDUCED) {
+    S.genReveal = 0;
+    const t0 = performance.now(), DUR = 3200 / paceScale();
+    while (S.genReveal < 1) {
+      S.genReveal = Math.min(1, (performance.now() - t0) / DUR);
+      if (!await sleep(16, tk)) return;
+    }
+  }
+  S.genReveal = 1;
+  if (!await sleep(700, tk)) return;
+
+  // II. the first sweeps, walked for real
+  caption('Act II — the count. One sweep = +1: dip in from the right, carry, toggle out. Watch the walk.');
+  for (let i = 0; i < 3; i++) {
+    if (tk !== S.dirToken) return;
+    await new Promise((res) => startSweep(res, i > 0));
+    if (!await sleep(i === 0 ? 500 : 250, tk)) return;
+  }
+
+  // III. tick up through the early eras
+  caption('Wheels are born at each overflow: the counter eats a fuel block to grow. Era after era, 16× longer each…');
+  {
+    const t0 = performance.now(), DUR = 6000 / paceScale(), from = Number(S.nu);
+    while (true) {
+      const p = Math.min(1, (performance.now() - t0) / DUR);
+      setNu(BigInt(Math.round(from + (4000 - from) * p * p)));
+      if (p >= 1) break;
+      if (!await sleep(16, tk)) return;
+    }
+  }
+  if (!await sleep(400, tk)) return;
+
+  // IV. the long cruise, logarithmic
+  caption('Act III — deep time. The lifeline is logarithmic: every pixel is exponentially longer than the last.');
+  {
+    const l2from = E.log2Big(S.nu + CLOCK_OFF), l2to = E.log2Big(NU_LAST + CLOCK_OFF) - 0.00001;
+    const DUR = 30000 / paceScale();
+    const t0 = performance.now();
+    let saidCrisis = false, saidDry = false;
+    while (true) {
+      const p = Math.min(1, (performance.now() - t0) / DUR);
+      const l2 = l2from + (l2to - l2from) * p;
+      let nu;
+      if (l2 < 52) nu = BigInt(Math.round(Math.pow(2, l2)));
+      else { const ie = Math.floor(l2) - 40; nu = BigInt(Math.round(Math.pow(2, l2 - ie))) << BigInt(ie); }
+      setNu(nu - CLOCK_OFF < 0n ? 0n : nu - CLOCK_OFF);
+      if (!saidCrisis && S.parse.G >= 60) { saidCrisis = true; caption('Act IV — the reservoir is thinning. 71 wheels will be all it can ever afford.'); }
+      if (!saidDry && S.evIdx >= EVN.length - 9) { saidDry = true; caption('The crisis: the last fuel blocks are gone. Every wheel is rolling toward F…'); }
+      if (p >= 1) break;
+      if (!await sleep(16, tk)) return;
+    }
+  }
+  setNu(NU_LAST);
+  caption('The final tick. The counter reads F on all 71 wheels. There is nothing left to eat.');
+  if (!await sleep(2000, tk)) return;
+
+  // V. death
+  await deathSequence(tk);
+}
+
+async function deathSequence(tk) {
+  if (tk !== S.dirToken) return;
+  S.playing = true;
+  setNu(NU_LAST, { quiet: true });
+  caption('Act V — the fatal sweep. The carry walks the whole counter looking for fuel…');
+  const r = E.dip(S.W, true);
+  // walk the dying string (it really is the fatal walk: ends with C off the deep end)
+  await new Promise((res) => {
+    S.sweep = { ops: r.ops, idx: 0, arr: S.W.split(''), headI: 0, state: 'F', out: null, manual: true, perFrame: Math.max(1, Math.ceil(r.ops.length / 200)), onDone: null };
+    const iv = setInterval(() => {
+      const a = S.sweep;
+      if (tk !== S.dirToken || !a) { clearInterval(iv); S.sweep = null; res(); return; }
+      for (let k = 0; k < a.perFrame && a.idx < a.ops.length; k++, a.idx++) {
+        const op = a.ops[a.idx];
+        if (op.t === 'in') { a.arr[op.i] = op.g2; a.headI = op.i; a.state = op.s2; }
+        else if (op.t === 'die') { a.headI = op.i - 1; a.state = 'C'; }
+        else { a.arr[op.i] = op.g2; a.headI = op.i; }
+      }
+      if (a.idx >= a.ops.length) { clearInterval(iv); res(); }
+    }, 16);
+  });
+  if (tk !== S.dirToken) return;
+  caption('…finds none, and falls off the deep end of the written tape. State C, blank cell.');
+  if (!await sleep(1400, tk)) return;
+
+  // raw finale
+  showTab(true);
+  const sim = E.simFromAnchor(DATA.CODE, ledger.dying, 5);
+  const probe = E.simFromAnchor(DATA.CODE, ledger.dying, 5);
+  probe.run(1e7);
+  const total = probe.steps;
+  sim.run(Math.max(0, total - 90));
+  S.raw = { sim, expected: null, done: false, manual: true, result: '', t0: 0 };
+  caption('The last 90 raw steps of a 10¹⁷⁰-step life.');
+  while (!sim.halted) {
+    sim.run(sim.steps < total - 3 ? 2 : 1);
+    if (!await sleep(sim.steps < total - 3 ? 40 : 900, tk)) { S.raw = null; return; }
+  }
+  S.raw.done = true; S.raw.result = 'D reads a blank. There is no rule.';
+  if (!await sleep(1200, tk)) return;
+
+  // flash + plate
+  S.sweep = null; S.dead = true; S.playing = false;
+  const fl = $('flash');
+  if (!REDUCED) {
+    fl.style.opacity = '0.5';
+    setTimeout(() => { fl.style.opacity = '0'; }, 220);
+  }
+  const nh = DATA.N_HALT.replace(/(\d{10})/g, '$1 ').trim();
+  $('nhalt').textContent = nh + '  steps';
+  $('deathplate').classList.add('shown');
+  $('deathplate').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' });
+  caption('HALT. Proven in Coq — zero axioms. The step count above is the validated conjecture.');
+  $('btnPause').disabled = true; $('btnPlay').disabled = false;
+}
+
+$('btnPlay').addEventListener('click', playLife);
+$('btnPause').addEventListener('click', interrupt);
+document.addEventListener('keydown', (ev) => {
+  if (ev.code === 'Space' && !ev.target.closest('button,input')) {
+    ev.preventDefault();
+    if (S.playing) interrupt(); else playLife();
+  } else if (ev.key === 'ArrowRight' && !S.playing) { interrupt(); startSweep(null, true); }
+  else if (ev.key === 'ArrowLeft' && !S.playing) { interrupt(); setNu(S.nu - 1n); }
+});
+
+// jumps
+const JUMPS = {
+  base: () => 0n,
+  first: () => EVN[3],
+  mid: () => (1n << 140n),
+  crisis: () => EVN[EVN.length - 8],
+  last: () => NU_LAST,
+  death: null,
+};
+document.querySelectorAll('[data-jump]').forEach((b) => {
+  b.addEventListener('click', () => {
+    interrupt();
+    const kind = b.dataset.jump;
+    if (kind === 'death') { const tk = ++S.dirToken; deathSequence(tk); return; }
+    S.dead = false;
+    setNu(JUMPS[kind]());
+    const capt = {
+      base: 'the base anchor — step 354,540, the moment the childhood ends and the counting begins.',
+      first: 'ν = ' + E.bigFmt(EVN[3]) + ' — the first true wheel is on the axle.',
+      mid: 'ν = 2¹⁴⁰ — halfway through deep time. Around ' + Math.round(S.parse.G) + ' wheels and counting.',
+      crisis: 'the crisis: 8 overflow events from the end. The reservoir is almost dry.',
+      last: 'the final tick: all wheels read F. The next sweep is the fatal one.',
+    }[kind];
+    if (capt) caption(capt);
+  });
+});
+
+// ---------- background verifications ----------
+setTimeout(() => {
+  const t0 = performance.now();
+  const nu = 10n ** 42n;
+  const Wnu = E.stateAt(nu, DATA.W_BASE, ledger);
+  const want = 'f' + E.dip(Wnu).out.slice(1);
+  const sim = E.simFromAnchor(DATA.CODE, Wnu, 5);
+  const got = E.runToAnchor(sim, 1e7);
+  const ok = got && got.W === want && got.n === 6;
+  const ms = Math.round(performance.now() - t0);
+  const el = $('ck2');
+  el.className = ok ? 'yes' : 'pend';
+  el.innerHTML = ok ? `raw sweep replayed at <b>ν = 10⁴²</b>: cell-level machine and abstract dip agree glyph-for-glyph (${ms} ms)` : 'raw replay mismatch (unexpected)';
+}, 400);
+setTimeout(() => {
+  const t0 = performance.now();
+  const sim = E.simFromAnchor(DATA.CODE, ledger.dying, 5);
+  sim.run(1e7);
+  const ok = sim.halted && sim.q === 3 && sim.tape()[sim.head] === 0;
+  const ms = Math.round(performance.now() - t0);
+  const el = $('ck3');
+  el.className = ok ? 'yes' : 'pend';
+  el.innerHTML = ok ? `the dying string, run raw: <b>halts in state D on a blank cell</b> — the missing rule (${ms} ms)` : 'death replay mismatch (unexpected)';
+}, 700);
+computeGenesis();
+
+// ---------- main loop ----------
+function frame(t) {
+  if (S.wheelFlash > 0) S.wheelFlash = Math.max(0, S.wheelFlash - 0.03);
+  if (S.bornFlash > 0) S.bornFlash = Math.max(0, S.bornFlash - 0.012);
+  if (S.spinBlur > 0) S.spinBlur = Math.max(0, S.spinBlur - 1.6);
+  stepSweep();
+  stepRaw();
+  drawTimeline();
+  drawWheels(t);
+  drawTape();
+  if ($('genWrap').style.display !== 'none') drawGenesis(); else drawRaw();
+  requestAnimationFrame(frame);
+}
+setNu(0n, { quiet: true });
+updateReadouts();
+requestAnimationFrame(frame);
+window.addEventListener('resize', () => { /* canvases refit on next frame */ });
+</script>
+</body>
+</html>
