@@ -69,8 +69,11 @@ empirical campaign) and Claude (Anthropic) — joint work.
 
 ## Reproducing the proof
 
-Requires Coq 8.18 and ~8GB of RAM (one file peaks ~7.2GB; give the
-machine swap headroom). This is exactly what CI runs:
+Requires Coq 8.18. The full chain compiles in a few minutes with peak
+memory under 1GB — any laptop works. (An earlier version of
+`OdometerOrbit.v` demanded >32GB until two monolithic reductions were
+restated as small-step lemmas; the git history tells that story.)
+This is exactly what CI runs:
 
 ```sh
 git clone https://github.com/meithecatte/busycoq

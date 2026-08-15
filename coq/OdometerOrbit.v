@@ -107,12 +107,233 @@ Proof.
   lia.
 Qed.
 
-(** * The increment walk.
+(** * The increment walk, small-step.
 
-    Entering the group region in state C with a carry: while a group is
-    all-ones ([f;f;f]) the walk crosses it (and the out-pass resets it);
-    the first non-full group absorbs the carry in one of 15 concrete
-    patterns. Fuel is written 60 + (...) so cbn can unfold steps. *)
+    Profiling (P-2026-08-15-t): the memory pathology was the carry
+    case asking cbn to bulldoze dip_go through symbolic fuel in one
+    reduction. Split: crossing a full group is a 3-step lemma
+    (zcross15); each non-full byte is its own lemma with its own Qed,
+    so the checker frees each case before the next. Statements and the
+    final zwalk interface are unchanged. *)
+
+(** Crossing an all-ones group from C: three inward steps, three
+    glyphs pushed, state C again. *)
+Lemma zcross15 : forall fuel rest sh,
+  dip_go (S (S (S fuel))) wC (gcells 15 ++ rest) sh
+  = dip_go fuel wC rest (gf :: gf :: gf :: sh).
+Proof.
+  intros. cbn [gcells app dip_go instep is_inward]. reflexivity.
+Qed.
+
+Lemma zwalk_byte_0 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 0 ->
+  (v + 1) mod 16 = 0 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_1 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 1 ->
+  (v + 1) mod 16 = 1 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_2 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 2 ->
+  (v + 1) mod 16 = 2 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_3 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 3 ->
+  (v + 1) mod 16 = 3 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_4 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 4 ->
+  (v + 1) mod 16 = 4 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_5 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 5 ->
+  (v + 1) mod 16 = 5 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_6 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 6 ->
+  (v + 1) mod 16 = 6 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_7 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 7 ->
+  (v + 1) mod 16 = 7 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_8 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 8 ->
+  (v + 1) mod 16 = 8 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_9 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 9 ->
+  (v + 1) mod 16 = 9 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_10 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 10 ->
+  (v + 1) mod 16 = 10 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_11 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 11 ->
+  (v + 1) mod 16 = 11 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_12 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 12 ->
+  (v + 1) mod 16 = 12 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_13 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 13 ->
+  (v + 1) mod 16 = 13 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
+
+Lemma zwalk_byte_14 : forall (G' : nat) (v : N) T sh,
+  v mod 16 = 14 ->
+  (v + 1) mod 16 = 14 + 1 ->
+  (v + 1) / 16 = v / 16 ->
+  dip_go (60 + (12 * S G' + length sh))%nat wC (zgroups (S G') v ++ T) sh
+  = Some (unwind sh (zgroups (S G') (v + 1) ++ T)).
+Proof.
+  intros G' v T sh Hb Hm Hd.
+  cbn [zgroups]. rewrite Hb, Hm, Hd.
+  cbn [dip_go instep is_inward unwind toggle app gcells
+       N.add Pos.add Pos.succ Nat.add Nat.mul length].
+  reflexivity.
+Qed.
 
 Lemma zwalk : forall G v T sh,
   v mod 16 ^ N.of_nat G <> 16 ^ N.of_nat G - 1 ->
@@ -130,21 +351,49 @@ Proof.
     by (pose proof (byte_lt v); lia).
   destruct Hc as
     [Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|[Hb|Hb]]]]]]]]]]]]]]].
-  1-15:
-    match type of Hb with _ = ?B =>
-      destruct (byte_S v B Hb ltac:(lia)) as [Hm Hd] end;
-    cbn [zgroups]; rewrite Hb, Hm, Hd;
-    cbn [dip_go instep is_inward unwind toggle app gcells
-         N.add Pos.add Pos.succ Nat.add Nat.mul length];
-    reflexivity.
-  (* the carry: byte 15, recurse on v/16 *)
-  destruct (byte_C v Hb) as [Hm Hd].
-  cbn [zgroups]. rewrite Hb, Hm, Hd.
-  cbn [dip_go instep is_inward unwind toggle app gcells
-       N.add Pos.add Pos.succ Nat.add Nat.mul length].
-  eapply dip_go_mono.
-  - apply IHG'. eapply carry_desc; eauto.
-  - cbn [length Nat.add Nat.mul]. lia.
+
+  - destruct (byte_S v 0 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_0 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 1 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_1 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 2 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_2 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 3 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_3 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 4 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_4 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 5 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_5 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 6 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_6 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 7 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_7 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 8 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_8 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 9 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_9 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 10 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_10 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 11 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_11 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 12 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_12 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 13 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_13 G' v T sh Hb Hm Hd).
+  - destruct (byte_S v 14 Hb ltac:(lia)) as [Hm Hd].
+    exact (zwalk_byte_14 G' v T sh Hb Hm Hd).
+  - (* the carry: byte 15, cross in three steps, recurse on v/16 *)
+    destruct (byte_C v Hb) as [Hm Hd].
+    cbn [zgroups]. rewrite Hb, Hm, Hd.
+    replace (60 + (12 * S G' + length sh))%nat
+      with (S (S (S (69 + (12 * G' + length sh)))))%nat by lia.
+    rewrite <- app_assoc.
+    rewrite zcross15.
+    cbn [gcells app].
+    eapply dip_go_mono.
+    + apply (IHG' (v / 16) T (gf :: gf :: gf :: sh)).
+      eapply carry_desc; eauto.
+    + cbn [length]. lia.
 Qed.
 
 (** * From walk to sweeps: the counting run. *)
@@ -169,6 +418,15 @@ Qed.
 Definition spellW (G : nat) (v : N) (T : list glyph) : list glyph :=
   gf :: gO :: zgroups G v ++ T.
 
+(** Entering the dip: F eats the separator, A eats the head cell,
+    hand off to the group walk in C. Two steps, stated small. *)
+Lemma dip_enter : forall fuel rest,
+  dip_go (S (S fuel)) wF (gf :: gO :: rest) []
+  = dip_go fuel wC rest [gf; gf].
+Proof.
+  intros. cbn [dip_go instep is_inward]. reflexivity.
+Qed.
+
 Lemma dip_spell : forall G v T,
   v mod 16 ^ N.of_nat G <> 16 ^ N.of_nat G - 1 ->
   dip (spellW G v T) = Some (gO :: gO :: zgroups G (v + 1) ++ T).
@@ -176,8 +434,8 @@ Proof.
   intros G v T Hne.
   unfold dip, spellW.
   eapply dip_go_mono.
-  - instantiate (1 := (62 + (12 * G + 2))%nat).
-    cbn [dip_go instep is_inward Nat.add].
+  - instantiate (1 := (S (S (60 + (12 * G + length [gf; gf]))))%nat).
+    rewrite dip_enter.
     rewrite (zwalk G v T [gf; gf] Hne).
     reflexivity.
   - cbn [length]. rewrite app_length, zgroups_len. lia.

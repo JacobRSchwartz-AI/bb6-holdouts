@@ -1697,3 +1697,43 @@ tools/nhalt.mjs output). Internal cross-checks: fatal sweep
 nu = 3*2^279 exactly; dying-walk crossings = 216 = sep + cell0 +
 213 f's + the last a. THE ODOMETER HALTS AFTER ~6.8*10^169 STEPS,
 on tail-clock sweep 3*2^279.
+
+## P-2026-08-15-t — where does OdometerOrbit's memory go? (registered before profiling)
+
+Fact established by SSM attempt 4: OdometerOrbit.vo OOM-killed at
+31,560,904 ko RSS on a 32GB box, 43 min in. Naive first-principles
+accounting says the file should be light (goal terms ~10^3-10^4 nodes,
+~10^2 tactic steps per lemma → MBs); observed is ~10^4× over naive, so
+the memory is a pathology of reduction/sharing, not intrinsic content.
+
+Prediction, before profiling (coqc -time + RSS sampling in WSL):
+1. The peak-RSS driver is `zwalk` — the 16-branch successor case (15
+   concrete byte cases + carry recursion), in its tactic block or Qed;
+   ≥70% of peak attributable to that one lemma.
+2. Splitting the 15 concrete cases into standalone per-byte lemmas will
+   cut peak memory by ≥5× (each Qed checked and freed separately).
+3. OdometerLedger.v, never yet compiled, will be LIGHT (<4GB peak):
+   549 vm_compute events on ~300-glyph concrete strings are KB-scale.
+Grade honestly after profiling + the split + the first full compile.
+
+### P-2026-08-15-t GRADED (after profiling + the split + first full verification)
+
+1. "Peak driver is zwalk, >=70%, tactic or Qed" — PARTIAL. The hog was
+   tactic-side cbn (not Qed), and there were TWO bulldozers, not one:
+   zwalk's carry case AND dip_spell's entry cbn. The 15 concrete byte
+   cases were milliseconds each — the "16 heavy cases" picture was
+   wrong; it was 15 feathers and one anvil, twice.
+2. "Split cuts peak >=5x" — PASS, understated: >31.5GB (OOM, never
+   completed) -> 827MB peak. ~40x, and 50s wall.
+3. "Ledger will be light (<4GB)" — PASS: 615MB, 60s, first compile ever.
+
+**VERIFICATION COMPLETE 2026-08-15: the full chain compiled in WSL
+(Orbit 50s/827MB, Base 3.5s, Crisis 2.3s, Ledger 60s/615MB) and
+`Print Assumptions odometer_halts` = "Closed under the global context".
+The theorem is machine-checked with zero axioms.**
+
+Method note for the writeup: the cure for both bulldozers was the same
+move — replace "cbn, symbolically re-derive the whole walk" with a
+small lemma stating the machine's actual step ("crossing a full group
+= 3 steps, 3 pushes"; "entering the dip = 2 steps"), then recurse.
+The proof got smaller, faster, and more readable simultaneously.
