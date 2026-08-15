@@ -16,7 +16,11 @@ trap upload EXIT
 systemctl stop unattended-upgrades 2>/dev/null || true
 apt-get -o DPkg::Lock::Timeout=600 update -qq
 apt-get -o DPkg::Lock::Timeout=600 install -y -qq \
-  --no-install-recommends coq git make awscli > /dev/null
+  --no-install-recommends coq git make unzip curl > /dev/null
+# noble has no awscli apt package; use the official installer
+curl -sS https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
+unzip -q /tmp/awscliv2.zip -d /tmp
+/tmp/aws/install > /dev/null
 coqc --version
 
 cd "$WORK"
