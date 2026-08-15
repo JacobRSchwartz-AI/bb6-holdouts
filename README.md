@@ -84,8 +84,8 @@ coq_makefile -Q . BusyCoq -o Makefile.port \
   Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v \
   OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v
 make -f Makefile.port -j1
-echo 'Require Import BusyCoq.OdometerLedger. Print Assumptions odometer_halts.' \
-  | coqtop -Q . BusyCoq -batch -l /dev/stdin
+echo 'Require Import BusyCoq.OdometerLedger. Print Assumptions odometer_halts.' > check.v
+coqtop -Q . BusyCoq -batch -l check.v
 ```
 
 Success looks like: `make` finishes with no errors, and the last command

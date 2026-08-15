@@ -306,9 +306,9 @@ Qed.
 Lemma death_blank : forall r, halts tm (const 0 <{{C}} r).
 Proof.
   introv.
-  eapply halted_evstep_halts.
-  - step. finish.
-  - reflexivity.
+  eapply halts_evstep.
+  2: { step. finish. }
+  apply halted_halts. reflexivity.
 Qed.
 
 (** Death detector: the walk falls off the left end inward in state C.
