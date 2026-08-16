@@ -46,7 +46,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cp "$GITHUB_WORKSPACE"/coq/*.v .
-          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v"
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v OdometerDeathCost.v OdometerHaltIn.v"
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
