@@ -46,7 +46,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cp "$GITHUB_WORKSPACE"/coq/*.v .
-          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v OdometerDeathCost.v OdometerHaltIn.v OdometerDispute.v"
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v OdometerDeathCost.v OdometerHaltIn.v OdometerDispute.v OdometerNHalt.v"
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
@@ -120,6 +120,21 @@ jobs:
           coqtop -Q . BusyCoq -batch -l check_disp.v 2>&1 | tee disp.txt
           test "$(grep -c 'Closed under the global context' disp.txt)" = 2
           echo 'EXACT: 1808 and 1800 real steps land on the next anchor.'
+
+      # THE STEP COUNT. 170 digits, indexed as N.to_nat of a binary N
+      # because Coq's nat is unary and no such literal can exist.
+      - name: N_halt is exact and axiom-free
+        run: |
+          cd ~/busycoq/verify
+          cat > check_nhalt.v <<'EOF'
+          Require Import BusyCoq.OdometerNHalt.
+          Print Assumptions odometer_halts_in.
+          Print Assumptions N_HALT_digits.
+          Print Assumptions TOTAL_val.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_nhalt.v 2>&1 | tee nhalt.txt
+          test "$(grep -c 'Closed under the global context' nhalt.txt)" = 3
+          echo 'EXACT: halts_in tm c0 (N.to_nat N_HALT), 170 digits, zero axioms.'
 
       - name: Also check toy6_halts and base_reach
         run: |

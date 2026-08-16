@@ -30,7 +30,8 @@ counting loop, and that sweep number is machine-checked:
 
     3 · 2^279 sweeps       (exact, proved in Coq, zero axioms)
 
-We also computed a conjectured exact step count:
+It also runs for an exact number of steps, and that number is
+machine-checked too:
 
     N_halt = 67931323646787744340347982457788840036504581967495927710
              77171340442123492305867933761244645774908114601585353157
@@ -41,7 +42,7 @@ That's a 170-digit number, about 6.8 × 10^169 — you could never
 run the machine to see this; the universe's ~10^80 atoms working since
 the Big Bang wouldn't scratch it. The only way to know is to *prove* it.
 
-Two independent artifacts back the claim:
+Both facts are machine-checked, from the blank tape, with zero axioms:
 
 1. **A machine-checked proof that it halts.** `coq/OdometerLedger.v`
    ends in `Theorem odometer_halts : halts tm c0` — checked by
@@ -61,12 +62,16 @@ Two independent artifacts back the claim:
    rebuilds the whole proof from a fresh busycoq clone on every push and
    on every pull request, and fails the build if either result picks up
    an axiom.
-2. **The conjectured step count.** The proof certifies that it halts and
-   on which sweep; it does **not** yet certify the raw step count. That
-   170-digit *count* comes from a per-transition cost model
-   (`tools/nhalt-coq.mjs`), whose every constant was measured inside the Coq
-   kernel and whose predictions are checked against `brun`, busycoq's
-   bare executor, running actual machine steps.
+2. **A machine-checked proof of the exact step count.**
+   `coq/OdometerNHalt.v` ends in
+   `Theorem odometer_halts_in : halts_in tm c0 (N.to_nat N_HALT)`, also
+   axiom-free. `halts_in` is busycoq's own predicate, so this is not a
+   new definition to be trusted: it says the machine reaches a halted
+   configuration in exactly N_HALT steps. Every per-transition constant
+   in the cost model was measured inside the kernel rather than assumed,
+   and the model is cross-checked against `brun`, busycoq's bare
+   executor, running actual machine steps
+   (`coq/OdometerCostCheck.v`).
 
    **This number was corrected on 2026-08-16.** The older model
    (`tools/nhalt.mjs`) gives a value 56 too small. It stores signed
@@ -130,9 +135,20 @@ Both must print `Closed under the global context`. `NSWEEPS` is the
 79-digit dip count and `odometer_sweeps_to_dying` reduces it to
 `3 * 2^279 - 6` inside the kernel.
 
-To check the step count: `node tools/nhalt-coq.mjs`. To see the
-discrepancy with the superseded model, `node tools/nhalt.mjs real` and
-compare the last two digits.
+For the exact step count, same clone:
+
+```sh
+echo 'Require Import BusyCoq.OdometerNHalt.
+Print Assumptions odometer_halts_in.' > check_nhalt.v
+coqtop -Q . BusyCoq -batch -l check_nhalt.v
+```
+
+`halts_in tm c0 (N.to_nat N_HALT)` is busycoq's own halting predicate:
+the machine reaches a halted configuration in exactly N_HALT steps.
+
+The tools reproduce the same number outside Coq: `node
+tools/nhalt-coq.mjs`. To see the discrepancy with the superseded model,
+`node tools/nhalt.mjs real` and compare the last two digits.
 
 ## What's in the repo
 
