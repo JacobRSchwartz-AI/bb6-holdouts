@@ -100,7 +100,7 @@ prints the exact known answer), then `node tools/nhalt.mjs real`.
 | Path | What it is |
 |---|---|
 | `coq/` | The proof. `Odometer*.v` are ours; they build on busycoq. |
-| `viz/index.html` | Interactive visualization — open it in a browser and press play to watch the machine's whole life, genesis to halt. Self-contained; every frame is the exact tape, recomputed live (the page re-derives the 549-event ledger and cross-checks raw simulation against the abstract dip machine on load). |
+| `viz/index.html` | Interactive visualization — one canvas, two controls: *when* (a log timeline over all 3·2^279 sweeps) and *zoom*, which steps through the four scales the machine lives on: raw cells → glyphs → counter wheels → whole life. Self-contained; every frame is the exact tape, recomputed live from the same ledger the Coq proof uses. Deep links: `viz/index.html#lv=wheel&l2=140`. |
 | `tools/ledger.mjs` | Enumerates the machine's true orbit from its proven starting anchor to its death — 549 carry-overflow events — with exact BigInt totals. `genledger.mjs` turns that into `OdometerLedger.v`. |
 | `tools/clock.mjs`, `toyclock.mjs`, `nhalt.mjs` | Derive, validate, and apply the exact step-cost formula → N_halt. |
 | `tools/census.mjs`, `dipwalk.mjs`, `rawrules.mjs`, `rungcheck.mjs` | Ground-truth testbenches: verify the abstract model against millions of raw machine steps. |
