@@ -60,3 +60,35 @@ Proof.
     + rewrite <- Hdip. unfold spellW. reflexivity.
     + rewrite <- Hk. unfold spellW. reflexivity.
 Qed.
+
+(** * Consuming the ledger's existing event lemmas directly.
+
+    OdometerLedger already proves 549 facts of the form
+      ev_k : dip_iter 1 (spellW G (16^G - 1) T) = Some (spellW G' v' T')
+    each carrying its own 216-glyph string. Restating [leg_c] to take
+    that shape means the counted chain needs no strings of its own: it
+    is 549 applications and one arithmetic total. *)
+
+Lemma dip_of_iter1 : forall W Y,
+  dip_iter 1 W = Some Y ->
+  exists Z', dip W = Some (gO :: Z') /\ Y = gf :: Z'.
+Proof.
+  intros W Y H. cbn [dip_iter] in H.
+  destruct (dip W) as [[| g Z1] |] eqn:E; try discriminate.
+  destruct g; try discriminate.
+  injection H as <-. exists Z1. split; reflexivity.
+Qed.
+
+Lemma leg_c' : forall G v T Gn vn Tn k m,
+  v < 16 ^ N.of_nat G ->
+  dip_iter 1 (spellW G (16 ^ N.of_nat G - 1) T) = Some (spellW Gn vn Tn) ->
+  dip_cost (spellW G (16 ^ N.of_nat G - 1) T) = Some (N.to_nat k) ->
+  anchor (spellW G v T) (N.to_nat m)
+  -[ tm ]->> (N.to_nat (legcost G v m k))
+  / anchor (spellW Gn vn Tn) (N.to_nat (m + (16 ^ N.of_nat G - v))).
+Proof.
+  intros G v T Gn vn Tn k m Hv Hit Hk.
+  destruct (dip_of_iter1 _ _ Hit) as (Z' & Hd & He).
+  rewrite He.
+  apply leg_c; assumption.
+Qed.

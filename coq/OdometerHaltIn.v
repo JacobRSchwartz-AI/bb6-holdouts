@@ -79,3 +79,30 @@ Definition N_BASE_N : N := N.of_nat N_BASE.
 
 Lemma base_reach_cN : c0 -[ tm ]->> (N.to_nat N_BASE_N) / anchor W_BASE N_TAIL.
 Proof. unfold N_BASE_N. rewrite Nat2N.id. exact base_reach_c. Qed.
+
+(** * The closer: the last span, then the sweep that dies. *)
+Lemma final_c : forall G v T m k,
+  v < 16 ^ N.of_nat G ->
+  dies_cost (spellW G (16 ^ N.of_nat G - 1) T) = Some (N.to_nat k) ->
+  halts_in tm (anchor (spellW G v T) (N.to_nat m))
+    (N.to_nat (spancost G v (16 ^ N.of_nat G - 1 - v) m
+               + (4 * (m + (16 ^ N.of_nat G - 1 - v)) + 9 + k))).
+Proof.
+  intros G v T m k Hv Hk.
+  pose proof (N.pow_nonzero 16 (N.of_nat G) ltac:(discriminate)) as Hnz.
+  set (n := 16 ^ N.of_nat G - 1 - v) in *.
+  assert (Hn : v + N.of_nat (N.to_nat n) <= 16 ^ N.of_nat G - 1)
+    by (rewrite N2Nat.id; unfold n; lia).
+  eapply halts_in_prefix.
+  - replace (spancost G v n m)
+      with (spancost G v (N.of_nat (N.to_nat n)) (N.of_nat (N.to_nat m)))
+      by (rewrite !N2Nat.id; reflexivity).
+    apply (sweep_span_c (N.to_nat n) G v T (N.to_nat m) Hn).
+  - rewrite N2Nat.id.
+    replace (v + n) with (16 ^ N.of_nat G - 1) by (unfold n; lia).
+    replace (N.to_nat m + N.to_nat n)%nat with (N.to_nat (m + n))
+      by (rewrite N2Nat.inj_add; reflexivity).
+    unfold spellW.
+    apply death_sweep_cN.
+    unfold spellW in Hk. exact Hk.
+Qed.
