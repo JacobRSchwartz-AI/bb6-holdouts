@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
     paths: ['coq/**', 'tools/coq-build.sh', '.github/workflows/coq-verify.yml']
+  pull_request:
+    paths: ['coq/**', 'tools/coq-build.sh', '.github/workflows/coq-verify.yml']
   workflow_dispatch:
 
 jobs:
@@ -58,6 +60,20 @@ jobs:
           coqtop -Q . BusyCoq -batch -l check_axioms.v 2>&1 | tee assumptions.txt
           grep -q 'Closed under the global context' assumptions.txt
           echo 'AXIOM-FREE: odometer_halts is closed under the global context.'
+
+      # The dip count is carried in binary N (no nat literal has 79 digits)
+      # and must reduce to 3*2^279 - 6 in the kernel, not just in the tools.
+      - name: Exact dip count (must be 3*2^279 - 6, axiom-free)
+        run: |
+          cd ~/busycoq/verify
+          cat > check_count.v <<'EOF'
+          Require Import BusyCoq.OdometerLedger.
+          Print Assumptions odometer_sweeps_to_dying.
+          Print Assumptions ledger_chain_exact.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_count.v 2>&1 | tee count.txt
+          test "$(grep -c 'Closed under the global context' count.txt)" = 2
+          echo 'EXACT: the dying string is reached in exactly 3*2^279 - 6 dips.'
 
       - name: Also check toy6_halts and base_reach
         run: |
