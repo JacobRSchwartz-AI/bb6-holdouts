@@ -46,7 +46,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cp "$GITHUB_WORKSPACE"/coq/*.v .
-          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v"
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v"
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
@@ -101,9 +101,11 @@ jobs:
           Print Assumptions dip_cost_spell.
           Print Assumptions spanBelow_succ.
           Print Assumptions sweep_span_c.
+          Require Import BusyCoq.OdometerLegCost.
+          Print Assumptions leg_c.
           EOF
           coqtop -Q . BusyCoq -batch -l check_span.v 2>&1 | tee span.txt
-          test "$(grep -c 'Closed under the global context' span.txt)" = 3
+          test "$(grep -c 'Closed under the global context' span.txt)" = 4
           echo 'EXACT: a whole counting era has a closed-form step count.'
 
       - name: Also check toy6_halts and base_reach
