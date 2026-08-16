@@ -81,6 +81,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cat > check_cost.v <<'EOF'
+          Require Import BusyCoq.OdometerCost.
           Require Import BusyCoq.OdometerCostCheck.
           Print Assumptions sweep_theorem_c.
           Print Assumptions sweep0_lands_on_next_anchor.
