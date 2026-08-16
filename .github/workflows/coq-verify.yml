@@ -46,7 +46,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cp "$GITHUB_WORKSPACE"/coq/*.v .
-          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v"
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v"
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
@@ -74,6 +74,20 @@ jobs:
           coqtop -Q . BusyCoq -batch -l check_count.v 2>&1 | tee count.txt
           test "$(grep -c 'Closed under the global context' count.txt)" = 2
           echo 'EXACT: the dying string is reached in exactly 3*2^279 - 6 dips.'
+
+      # The cost layer is validated against brun, the bare executor: the
+      # predicted sweep length must land on the next anchor exactly.
+      - name: Cost model vs raw machine (sweep_theorem_c)
+        run: |
+          cd ~/busycoq/verify
+          cat > check_cost.v <<'EOF'
+          Require Import BusyCoq.OdometerCostCheck.
+          Print Assumptions sweep_theorem_c.
+          Print Assumptions sweep0_lands_on_next_anchor.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_cost.v 2>&1 | tee cost.txt
+          test "$(grep -c 'Closed under the global context' cost.txt)" = 2
+          echo 'EXACT: every sweep carries a kernel-checked raw step count.'
 
       - name: Also check toy6_halts and base_reach
         run: |
