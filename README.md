@@ -25,8 +25,12 @@ tooling for attacking those holdouts — and one fully solved case.
 The holdout machine `1RB1LC_1RC1RE_1LD1LF_---0LE_1RB0RB_0LF1LA`
 (that string is its complete rule table; we nicknamed it **the
 Odometer** because its tape behaves like a mileage counter that ticks,
-carries, and rolls over) **halts**. We also computed a conjectured
-exact step count:
+carries, and rolls over) **halts**. It halts on a specific sweep of its
+counting loop, and that sweep number is machine-checked:
+
+    3 · 2^279 sweeps       (exact, proved in Coq, zero axioms)
+
+We also computed a conjectured exact step count:
 
     N_halt = 67931323646787744340347982457788840036504581967495927710
              77171340442123492305867933761244645774908114601585353157
@@ -45,10 +49,20 @@ Two independent artifacts back the claim:
    nothing but airtight logic, building on the community's
    [busycoq](https://github.com/meithecatte/busycoq) framework.
    `Print Assumptions` confirms the proof uses **zero axioms**: every
-   step reduces to Coq's core logic. A GitHub Actions workflow
+   step reduces to Coq's core logic. The same file also certifies *when*
+   it halts, at the sweep level: `odometer_sweeps_to_dying` proves the
+   orbit reaches its dying configuration in exactly `3 * 2^279 - 6`
+   sweeps, after which the next sweep is fatal. Sweep counts have 79
+   digits and Coq's `nat` is unary, so no literal can be written; every
+   count is carried as a binary `N` and the step relation is indexed by
+   `N.to_nat` of it, which the kernel never normalizes. A GitHub Actions
+   workflow
    ([.github/workflows/coq-verify.yml](.github/workflows/coq-verify.yml))
-   rebuilds the whole proof from a fresh busycoq clone on every push.
-2. **The conjectured step count.** The proof certifies *that* it halts; the
+   rebuilds the whole proof from a fresh busycoq clone on every push and
+   on every pull request, and fails the build if either result picks up
+   an axiom.
+2. **The conjectured step count.** The proof certifies that it halts and
+   on which sweep; it does **not** certify the raw step count. That
    170-digit *count* comes from an exact per-step cost formula
    (`tools/nhalt.mjs`), derived from instrumented runs (residual zero
    over 3000 measured sweeps) and validated by reproducing — to the
@@ -92,6 +106,19 @@ Success looks like: `make` finishes with no errors, and the last command
 prints `Closed under the global context` — Coq's way of saying "proved,
 no assumptions."
 
+For the exact sweep count, same clone:
+
+```sh
+echo 'Require Import BusyCoq.OdometerLedger.
+Print Assumptions odometer_sweeps_to_dying.
+Print Assumptions ledger_chain_exact.' > check_count.v
+coqtop -Q . BusyCoq -batch -l check_count.v
+```
+
+Both must print `Closed under the global context`. `NSWEEPS` is the
+79-digit dip count and `odometer_sweeps_to_dying` reduces it to
+`3 * 2^279 - 6` inside the kernel.
+
 To check the step count: `node tools/nhalt.mjs toy6`, `toy9` (each
 prints the exact known answer), then `node tools/nhalt.mjs real`.
 
@@ -102,7 +129,7 @@ prints the exact known answer), then `node tools/nhalt.mjs real`.
 | `coq/` | The proof. `Odometer*.v` are ours; they build on busycoq. |
 | `viz/index.html` | Interactive visualization — one canvas, two controls: *when* (a log timeline over all 3·2^279 sweeps) and *zoom*, which steps through the four scales the machine lives on: raw cells → glyphs → counter wheels → whole life. Self-contained; every frame is the exact tape, recomputed live from the same ledger the Coq proof uses. Deep links: `viz/index.html#lv=wheel&l2=140`. |
 | `tools/ledger.mjs` | Enumerates the machine's true orbit from its proven starting anchor to its death — 549 carry-overflow events — with exact BigInt totals. `genledger.mjs` turns that into `OdometerLedger.v`. |
-| `tools/clock.mjs`, `toyclock.mjs`, `nhalt.mjs` | Derive, validate, and apply the exact step-cost formula → N_halt. |
+| `tools/clock.mjs`, `toyclock.mjs`, `nhalt.mjs` | Derive, validate, and apply the exact step-cost formula → N_halt. Not certified; see artifact 2 above. |
 | `tools/census.mjs`, `dipwalk.mjs`, `rawrules.mjs`, `rungcheck.mjs` | Ground-truth testbenches: verify the abstract model against millions of raw machine steps. |
 | `notes/odometer.md` | The lab notebook: every prediction registered before its test, graded honestly after — including the failures that redirected the work. |
 | `docs/submission.md` | The claim, evidence table, and submission checklist. |

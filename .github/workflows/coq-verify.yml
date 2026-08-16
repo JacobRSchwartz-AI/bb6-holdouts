@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Private-repo runners have 7GB RAM; OdometerOrbit.v peaks ~7.2GB RSS.
+      # Runners have 7GB usable RAM; OdometerOrbit.v peaks ~7.2GB RSS.
       # Disk swap alone thrashed the runner agent into a job cancellation;
       # zram keeps the paging at RAM speed (Coq heaps compress ~3x).
       - name: Add zram + disk swap
