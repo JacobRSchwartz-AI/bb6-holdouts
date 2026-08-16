@@ -35,7 +35,7 @@ We also computed a conjectured exact step count:
     N_halt = 67931323646787744340347982457788840036504581967495927710
              77171340442123492305867933761244645774908114601585353157
              21018132084275421883147320661638136374334659122557882929
-             34
+             90
 
 That's a 170-digit number, about 6.8 × 10^169 — you could never
 run the machine to see this; the universe's ~10^80 atoms working since
@@ -62,12 +62,23 @@ Two independent artifacts back the claim:
    on every pull request, and fails the build if either result picks up
    an axiom.
 2. **The conjectured step count.** The proof certifies that it halts and
-   on which sweep; it does **not** certify the raw step count. That
-   170-digit *count* comes from an exact per-step cost formula
-   (`tools/nhalt.mjs`), derived from instrumented runs (residual zero
-   over 3000 measured sweeps) and validated by reproducing — to the
-   exact step — the halting times of two miniature odometers small
-   enough to run raw (154,134 and 33,925,642 steps).
+   on which sweep; it does **not** yet certify the raw step count. That
+   170-digit *count* comes from a per-transition cost model
+   (`tools/nhalt-coq.mjs`), whose every constant was measured inside the Coq
+   kernel and whose predictions are checked against `brun`, busycoq's
+   bare executor, running actual machine steps.
+
+   **This number was corrected on 2026-08-16.** The older model
+   (`tools/nhalt.mjs`) gives a value 56 too small. It stores signed
+   deltas against a fixed per-sweep constant of 56 and assigns no weight
+   to the `Ff`, `AO` and `Cf` transitions. In exactly two of the 549
+   legs, both at G = 69, those counts deviate from the norm (`AO` fires
+   twice rather than once) and the constant stops covering them, losing
+   28 steps each. `coq/OdometerDispute.v` settles it: it puts those two
+   strings on a short tail and runs the predicted number of real machine
+   steps, and only the new model lands on the next anchor. The two toy
+   odometers that validated the old model never exceed G ≈ 2, so they
+   cannot reach a G = 69 configuration and could not have caught this.
 
 Why it was a holdout: the machine spends almost its whole life in an
 extremely regular counting loop — it *looks* immortal, and an earlier
@@ -119,8 +130,9 @@ Both must print `Closed under the global context`. `NSWEEPS` is the
 79-digit dip count and `odometer_sweeps_to_dying` reduces it to
 `3 * 2^279 - 6` inside the kernel.
 
-To check the step count: `node tools/nhalt.mjs toy6`, `toy9` (each
-prints the exact known answer), then `node tools/nhalt.mjs real`.
+To check the step count: `node tools/nhalt-coq.mjs`. To see the
+discrepancy with the superseded model, `node tools/nhalt.mjs real` and
+compare the last two digits.
 
 ## What's in the repo
 
@@ -129,7 +141,8 @@ prints the exact known answer), then `node tools/nhalt.mjs real`.
 | `coq/` | The proof. `Odometer*.v` are ours; they build on busycoq. |
 | `viz/index.html` | Interactive visualization — one canvas, two controls: *when* (a log timeline over all 3·2^279 sweeps) and *zoom*, which steps through the four scales the machine lives on: raw cells → glyphs → counter wheels → whole life. Self-contained; every frame is the exact tape, recomputed live from the same ledger the Coq proof uses. Deep links: `viz/index.html#lv=wheel&l2=140`. |
 | `tools/ledger.mjs` | Enumerates the machine's true orbit from its proven starting anchor to its death — 549 carry-overflow events — with exact BigInt totals. `genledger.mjs` turns that into `OdometerLedger.v`. |
-| `tools/clock.mjs`, `toyclock.mjs`, `nhalt.mjs` | Derive, validate, and apply the exact step-cost formula → N_halt. Not certified; see artifact 2 above. |
+| `tools/nhalt-coq.mjs` | N_halt from the Coq cost model: absolute per-transition costs, every one measured inside the kernel. This is the current number. |
+| `tools/clock.mjs`, `toyclock.mjs`, `nhalt.mjs` | The earlier signed-delta model. **Superseded**: it is 56 too small, for the reason given in artifact 2. Kept because its toy validation and derivation are part of the record. |
 | `tools/census.mjs`, `dipwalk.mjs`, `rawrules.mjs`, `rungcheck.mjs` | Ground-truth testbenches: verify the abstract model against millions of raw machine steps. |
 | `notes/odometer.md` | The lab notebook: every prediction registered before its test, graded honestly after — including the failures that redirected the work. |
 | `docs/submission.md` | The claim, evidence table, and submission checklist. |
