@@ -43,13 +43,28 @@ Proof.
     eapply IHm; eassumption.
 Qed.
 
-(** span + event, one leg of the chain. *)
-Lemma leg : forall G v T W',
+(** Composition with the count carried in binary. [multistep] and
+    [dip_iter] are nat-indexed, but the totals here have 79 and 170
+    digits: no nat literal can be written. Every count is an N; the
+    index is [N.to_nat] of it and the kernel never normalises it. *)
+Lemma dip_iter_addN : forall a b W W' W'',
+  dip_iter (N.to_nat a) W = Some W' ->
+  dip_iter (N.to_nat b) W' = Some W'' ->
+  dip_iter (N.to_nat (a + b)) W = Some W''.
+Proof.
+  introv Ha Hb. rewrite N2Nat.inj_add. eapply dip_iter_add'; eassumption.
+Qed.
+
+(** span + event, one leg of the chain: exactly 16^G - v dips. *)
+Lemma legN : forall G v T W',
   (v <? 16 ^ N.of_nat G) = true ->
   dip_iter 1 (spellW G (16 ^ N.of_nat G - 1) T) = Some W' ->
-  dip_iter (N.to_nat (16 ^ N.of_nat G - 1 - v) + 1)%nat (spellW G v T) = Some W'.
+  dip_iter (N.to_nat (16 ^ N.of_nat G - v)) (spellW G v T) = Some W'.
 Proof.
   introv Hv Hev.
+  pose proof Hv as Hv'. apply N.ltb_lt in Hv'.
+  replace (16 ^ N.of_nat G - v) with ((16 ^ N.of_nat G - 1 - v) + 1) by lia.
+  rewrite N2Nat.inj_add.
   eapply dip_iter_add'.
   - apply span_any. exact Hv.
   - exact Hev.
@@ -2255,2210 +2270,2785 @@ Proof. vm_compute. reflexivity. Qed.
 Lemma dies_final : dip_dies (spellW 71 (16 ^ N.of_nat 71 - 1) [ga]) = true.
 Proof. vm_compute. reflexivity. Qed.
 
-(** The full chain: W_BASE reaches the dying string. *)
-Lemma ledger_chain : exists n,
-  dip_iter n W_BASE = Some (spellW 71 (16 ^ N.of_nat 71 - 1) [ga]).
+(** The chain's length, leg by leg: 16^G - v dips per span+event, and
+    16^G - 1 - v for the final span, which ends ON the dying string. *)
+Definition NSUM : N :=
+  (16 ^ N.of_nat 0 - 0)
+  + ((16 ^ N.of_nat 0 - 0)
+  + ((16 ^ N.of_nat 0 - 0)
+  + ((16 ^ N.of_nat 1 - 8)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 1 - 0)
+  + ((16 ^ N.of_nat 2 - 128)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 2 - 0)
+  + ((16 ^ N.of_nat 3 - 2048)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 3 - 0)
+  + ((16 ^ N.of_nat 4 - 32768)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 4 - 0)
+  + ((16 ^ N.of_nat 5 - 524288)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 5 - 0)
+  + ((16 ^ N.of_nat 6 - 8388608)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 6 - 0)
+  + ((16 ^ N.of_nat 7 - 134217728)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 7 - 0)
+  + ((16 ^ N.of_nat 8 - 2147483648)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 8 - 0)
+  + ((16 ^ N.of_nat 9 - 34359738368)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 9 - 0)
+  + ((16 ^ N.of_nat 10 - 549755813888)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 10 - 0)
+  + ((16 ^ N.of_nat 11 - 8796093022208)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 11 - 0)
+  + ((16 ^ N.of_nat 12 - 140737488355328)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 12 - 0)
+  + ((16 ^ N.of_nat 13 - 2251799813685248)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 13 - 0)
+  + ((16 ^ N.of_nat 14 - 36028797018963968)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 14 - 0)
+  + ((16 ^ N.of_nat 15 - 576460752303423488)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 15 - 0)
+  + ((16 ^ N.of_nat 16 - 9223372036854775808)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 16 - 0)
+  + ((16 ^ N.of_nat 17 - 147573952589676412928)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 17 - 0)
+  + ((16 ^ N.of_nat 18 - 2361183241434822606848)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 18 - 0)
+  + ((16 ^ N.of_nat 19 - 37778931862957161709568)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 19 - 0)
+  + ((16 ^ N.of_nat 20 - 604462909807314587353088)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 20 - 0)
+  + ((16 ^ N.of_nat 21 - 9671406556917033397649408)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 21 - 0)
+  + ((16 ^ N.of_nat 22 - 154742504910672534362390528)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 22 - 0)
+  + ((16 ^ N.of_nat 23 - 2475880078570760549798248448)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 23 - 0)
+  + ((16 ^ N.of_nat 24 - 39614081257132168796771975168)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 24 - 0)
+  + ((16 ^ N.of_nat 25 - 633825300114114700748351602688)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 25 - 0)
+  + ((16 ^ N.of_nat 26 - 10141204801825835211973625643008)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 26 - 0)
+  + ((16 ^ N.of_nat 27 - 162259276829213363391578010288128)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 27 - 0)
+  + ((16 ^ N.of_nat 28 - 2596148429267413814265248164610048)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 28 - 0)
+  + ((16 ^ N.of_nat 29 - 41538374868278621028243970633760768)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 29 - 0)
+  + ((16 ^ N.of_nat 30 - 664613997892457936451903530140172288)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 30 - 0)
+  + ((16 ^ N.of_nat 31 - 10633823966279326983230456482242756608)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 31 - 0)
+  + ((16 ^ N.of_nat 32 - 170141183460469231731687303715884105728)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 32 - 0)
+  + ((16 ^ N.of_nat 33 - 2722258935367507707706996859454145691648)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 33 - 0)
+  + ((16 ^ N.of_nat 34 - 43556142965880123323311949751266331066368)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 34 - 0)
+  + ((16 ^ N.of_nat 35 - 696898287454081973172991196020261297061888)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 35 - 0)
+  + ((16 ^ N.of_nat 36 - 11150372599265311570767859136324180752990208)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 36 - 0)
+  + ((16 ^ N.of_nat 37 - 178405961588244985132285746181186892047843328)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 37 - 0)
+  + ((16 ^ N.of_nat 38 - 2854495385411919762116571938898990272765493248)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 38 - 0)
+  + ((16 ^ N.of_nat 39 - 45671926166590716193865151022383844364247891968)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 39 - 0)
+  + ((16 ^ N.of_nat 40 - 730750818665451459101842416358141509827966271488)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 40 - 0)
+  + ((16 ^ N.of_nat 41 - 11692013098647223345629478661730264157247460343808)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 41 - 0)
+  + ((16 ^ N.of_nat 42 - 187072209578355573530071658587684226515959365500928)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 42 - 0)
+  + ((16 ^ N.of_nat 43 - 2993155353253689176481146537402947624255349848014848)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 43 - 0)
+  + ((16 ^ N.of_nat 44 - 47890485652059026823698344598447161988085597568237568)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 44 - 0)
+  + ((16 ^ N.of_nat 45 - 766247770432944429179173513575154591809369561091801088)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 45 - 0)
+  + ((16 ^ N.of_nat 46 - 12259964326927110866866776217202473468949912977468817408)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 46 - 0)
+  + ((16 ^ N.of_nat 47 - 196159429230833773869868419475239575503198607639501078528)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 47 - 0)
+  + ((16 ^ N.of_nat 48 - 3138550867693340381917894711603833208051177722232017256448)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 48 - 0)
+  + ((16 ^ N.of_nat 49 - 50216813883093446110686315385661331328818843555712276103168)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 49 - 0)
+  + ((16 ^ N.of_nat 50 - 803469022129495137770981046170581301261101496891396417650688)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 50 - 0)
+  + ((16 ^ N.of_nat 51 - 12855504354071922204335696738729300820177623950262342682411008)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 51 - 0)
+  + ((16 ^ N.of_nat 52 - 205688069665150755269371147819668813122841983204197482918576128)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 52 - 0)
+  + ((16 ^ N.of_nat 53 - 3291009114642412084309938365114701009965471731267159726697218048)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 53 - 0)
+  + ((16 ^ N.of_nat 54 - 52656145834278593348959013841835216159447547700274555627155488768)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 54 - 0)
+  + ((16 ^ N.of_nat 55 - 842498333348457493583344221469363458551160763204392890034487820288)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 55 - 0)
+  + ((16 ^ N.of_nat 56 - 13479973333575319897333507543509815336818572211270286240551805124608)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 56 - 0)
+  + ((16 ^ N.of_nat 57 - 215679573337205118357336120696157045389097155380324579848828881993728)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 57 - 0)
+  + ((16 ^ N.of_nat 58 - 3450873173395281893717377931138512726225554486085193277581262111899648)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 58 - 0)
+  + ((16 ^ N.of_nat 59 - 55213970774324510299478046898216203619608871777363092441300193790394368)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 59 - 0)
+  + ((16 ^ N.of_nat 60 - 883423532389192164791648750371459257913741948437809479060803100646309888)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 60 - 0)
+  + ((16 ^ N.of_nat 61 - 14134776518227074636666380005943348126619871175004951664972849610340958208)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 61 - 0)
+  + ((16 ^ N.of_nat 62 - 226156424291633194186662080095093570025917938800079226639565593765455331328)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 62 - 0)
+  + ((16 ^ N.of_nat 63 - 3618502788666131106986593281521497120414687020801267626233049500247285301248)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 63 - 0)
+  + ((16 ^ N.of_nat 64 - 57896044618658097711785492504343953926634992332820282019728792003956564819968)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 64 - 0)
+  + ((16 ^ N.of_nat 65 - 926336713898529563388567880069503262826159877325124512315660672063305037119488)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 65 - 0)
+  + ((16 ^ N.of_nat 66 - 14821387422376473014217086081112052205218558037201992197050570753012880593911808)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 66 - 0)
+  + ((16 ^ N.of_nat 67 - 237142198758023568227473377297792835283496928595231875152809132048206089502588928)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 67 - 0)
+  + ((16 ^ N.of_nat 68 - 3794275180128377091639574036764685364535950857523710002444946112771297432041422848)
+  + ((16 ^ N.of_nat 68 - 0)
+  + ((16 ^ N.of_nat 69 - 15177100720513508366558296147058741458143803430094840009779784451085189728165691392)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 69 - 0)
+  + ((16 ^ N.of_nat 71 - 1 - 29140033383385936063791928602352783599636102585782092818777186146083564278078127472640)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))).
+
+Definition NSWEEPS : N := 2914003338338593606379192860235278359963610258578209281877718614608356427807812747258.
+
+Lemma NSUM_val : NSUM = NSWEEPS.
+Proof. vm_compute. reflexivity. Qed.
+
+(** The full chain, with the dip count carried: W_BASE reaches the
+    dying string in exactly NSWEEPS dips. *)
+Lemma ledger_chain_exact :
+  dip_iter (N.to_nat NSUM) W_BASE
+  = Some (spellW 71 (16 ^ N.of_nat 71 - 1) [ga]).
 Proof.
-  eexists.
   change W_BASE with (spellW 0 0 [gf; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ga; ge; gO; gO; gO; gO; gO; gO; ga]).
-  eapply dip_iter_add'.
-  { eapply leg.
+  unfold NSUM.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_0. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_1. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_2. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_3. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_4. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_5. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_6. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_7. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_8. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_9. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_10. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_11. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_12. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_13. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_14. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_15. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_16. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_17. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_18. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_19. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_20. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_21. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_22. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_23. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_24. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_25. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_26. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_27. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_28. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_29. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_30. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_31. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_32. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_33. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_34. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_35. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_36. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_37. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_38. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_39. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_40. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_41. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_42. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_43. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_44. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_45. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_46. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_47. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_48. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_49. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_50. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_51. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_52. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_53. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_54. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_55. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_56. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_57. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_58. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_59. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_60. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_61. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_62. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_63. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_64. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_65. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_66. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_67. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_68. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_69. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_70. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_71. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_72. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_73. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_74. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_75. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_76. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_77. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_78. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_79. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_80. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_81. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_82. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_83. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_84. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_85. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_86. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_87. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_88. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_89. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_90. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_91. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_92. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_93. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_94. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_95. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_96. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_97. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_98. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_99. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_100. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_101. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_102. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_103. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_104. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_105. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_106. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_107. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_108. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_109. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_110. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_111. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_112. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_113. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_114. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_115. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_116. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_117. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_118. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_119. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_120. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_121. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_122. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_123. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_124. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_125. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_126. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_127. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_128. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_129. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_130. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_131. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_132. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_133. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_134. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_135. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_136. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_137. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_138. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_139. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_140. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_141. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_142. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_143. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_144. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_145. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_146. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_147. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_148. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_149. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_150. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_151. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_152. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_153. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_154. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_155. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_156. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_157. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_158. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_159. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_160. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_161. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_162. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_163. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_164. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_165. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_166. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_167. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_168. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_169. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_170. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_171. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_172. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_173. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_174. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_175. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_176. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_177. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_178. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_179. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_180. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_181. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_182. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_183. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_184. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_185. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_186. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_187. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_188. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_189. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_190. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_191. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_192. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_193. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_194. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_195. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_196. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_197. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_198. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_199. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_200. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_201. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_202. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_203. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_204. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_205. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_206. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_207. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_208. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_209. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_210. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_211. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_212. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_213. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_214. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_215. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_216. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_217. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_218. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_219. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_220. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_221. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_222. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_223. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_224. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_225. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_226. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_227. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_228. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_229. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_230. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_231. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_232. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_233. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_234. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_235. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_236. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_237. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_238. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_239. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_240. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_241. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_242. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_243. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_244. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_245. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_246. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_247. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_248. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_249. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_250. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_251. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_252. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_253. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_254. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_255. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_256. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_257. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_258. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_259. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_260. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_261. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_262. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_263. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_264. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_265. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_266. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_267. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_268. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_269. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_270. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_271. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_272. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_273. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_274. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_275. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_276. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_277. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_278. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_279. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_280. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_281. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_282. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_283. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_284. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_285. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_286. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_287. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_288. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_289. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_290. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_291. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_292. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_293. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_294. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_295. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_296. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_297. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_298. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_299. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_300. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_301. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_302. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_303. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_304. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_305. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_306. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_307. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_308. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_309. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_310. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_311. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_312. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_313. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_314. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_315. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_316. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_317. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_318. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_319. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_320. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_321. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_322. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_323. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_324. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_325. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_326. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_327. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_328. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_329. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_330. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_331. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_332. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_333. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_334. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_335. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_336. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_337. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_338. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_339. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_340. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_341. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_342. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_343. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_344. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_345. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_346. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_347. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_348. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_349. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_350. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_351. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_352. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_353. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_354. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_355. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_356. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_357. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_358. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_359. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_360. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_361. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_362. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_363. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_364. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_365. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_366. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_367. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_368. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_369. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_370. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_371. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_372. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_373. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_374. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_375. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_376. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_377. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_378. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_379. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_380. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_381. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_382. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_383. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_384. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_385. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_386. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_387. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_388. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_389. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_390. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_391. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_392. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_393. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_394. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_395. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_396. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_397. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_398. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_399. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_400. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_401. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_402. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_403. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_404. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_405. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_406. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_407. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_408. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_409. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_410. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_411. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_412. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_413. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_414. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_415. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_416. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_417. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_418. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_419. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_420. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_421. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_422. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_423. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_424. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_425. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_426. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_427. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_428. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_429. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_430. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_431. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_432. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_433. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_434. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_435. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_436. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_437. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_438. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_439. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_440. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_441. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_442. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_443. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_444. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_445. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_446. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_447. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_448. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_449. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_450. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_451. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_452. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_453. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_454. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_455. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_456. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_457. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_458. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_459. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_460. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_461. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_462. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_463. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_464. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_465. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_466. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_467. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_468. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_469. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_470. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_471. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_472. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_473. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_474. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_475. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_476. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_477. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_478. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_479. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_480. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_481. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_482. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_483. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_484. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_485. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_486. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_487. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_488. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_489. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_490. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_491. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_492. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_493. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_494. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_495. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_496. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_497. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_498. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_499. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_500. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_501. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_502. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_503. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_504. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_505. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_506. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_507. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_508. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_509. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_510. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_511. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_512. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_513. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_514. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_515. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_516. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_517. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_518. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_519. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_520. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_521. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_522. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_523. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_524. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_525. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_526. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_527. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_528. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_529. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_530. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_531. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_532. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_533. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_534. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_535. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_536. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_537. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_538. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_539. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_540. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_541. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_542. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_543. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_544. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_545. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_546. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_547. }
-  eapply dip_iter_add'.
-  { eapply leg.
+  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_548. }
   apply span_any. vm_compute. reflexivity.
 Qed.
+
+(** * The exact dip count.
+
+    NSWEEPS dips carry the base anchor to the dying string; the next
+    dip is the fatal one, so death falls on dip #(NSWEEPS + 1) counted
+    from base. tools/ledger.mjs places the base anchor at tail-clock 5,
+    putting absolute death at sweep 3*2^279 — that last offset is the
+    tool's bookkeeping, not certified here. What IS certified: *)
+Theorem odometer_sweeps_to_dying : NSWEEPS = 3 * 2 ^ 279 - 6.
+Proof. vm_compute. reflexivity. Qed.
+
+Lemma ledger_chain : exists n,
+  dip_iter n W_BASE = Some (spellW 71 (16 ^ N.of_nat 71 - 1) [ga]).
+Proof. exists (N.to_nat NSUM). exact ledger_chain_exact. Qed.
 
 (** * THE THEOREM. *)
 Theorem odometer_halts : halts tm c0.

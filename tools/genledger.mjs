@@ -49,6 +49,21 @@ for (let k = 0; k < events.length; k++) {
   }
 }
 
+// Leg lengths in N, right-nested to match dip_iter_addN's (a + b).
+// Coq's + is left-associative, so every level is parenthesised.
+const legTerms = [];
+let sumLegs = 0n;
+for (let k = 0; k < events.length; k++) {
+  const s = starts[k];
+  legTerms.push(`(16 ^ N.of_nat ${s.G} - ${s.v})`);
+  sumLegs += 16n ** BigInt(s.G) - s.v;
+}
+legTerms.push(`(16 ^ N.of_nat ${fin.G} - 1 - ${fin.v})`);
+sumLegs += 16n ** BigInt(fin.G) - 1n - fin.v;
+let nested = legTerms[legTerms.length - 1];
+for (let i = legTerms.length - 2; i >= 0; i--) nested = `${legTerms[i]}\n  + (${nested})`;
+if (sumLegs + 6n !== 3n * 2n ** 279n) throw new Error(`leg sum is not 3*2^279 - 6: ${sumLegs}`);
+
 const L = [];
 L.push(`(** * The ledger: the complete dip orbit from W_BASE to death.
 
@@ -95,13 +110,28 @@ Proof.
     eapply IHm; eassumption.
 Qed.
 
-(** span + event, one leg of the chain. *)
-Lemma leg : forall G v T W',
+(** Composition with the count carried in binary. [multistep] and
+    [dip_iter] are nat-indexed, but the totals here have 79 and 170
+    digits: no nat literal can be written. Every count is an N; the
+    index is [N.to_nat] of it and the kernel never normalises it. *)
+Lemma dip_iter_addN : forall a b W W' W'',
+  dip_iter (N.to_nat a) W = Some W' ->
+  dip_iter (N.to_nat b) W' = Some W'' ->
+  dip_iter (N.to_nat (a + b)) W = Some W''.
+Proof.
+  introv Ha Hb. rewrite N2Nat.inj_add. eapply dip_iter_add'; eassumption.
+Qed.
+
+(** span + event, one leg of the chain: exactly 16^G - v dips. *)
+Lemma legN : forall G v T W',
   (v <? 16 ^ N.of_nat G) = true ->
   dip_iter 1 (spellW G (16 ^ N.of_nat G - 1) T) = Some W' ->
-  dip_iter (N.to_nat (16 ^ N.of_nat G - 1 - v) + 1)%nat (spellW G v T) = Some W'.
+  dip_iter (N.to_nat (16 ^ N.of_nat G - v)) (spellW G v T) = Some W'.
 Proof.
   introv Hv Hev.
+  pose proof Hv as Hv'. apply N.ltb_lt in Hv'.
+  replace (16 ^ N.of_nat G - v) with ((16 ^ N.of_nat G - 1 - v) + 1) by lia.
+  rewrite N2Nat.inj_add.
   eapply dip_iter_add'.
   - apply span_any. exact Hv.
   - exact Hev.
@@ -120,20 +150,46 @@ L.push(`(** The dying string: the walk crosses everything and falls off in C. *)
 Lemma dies_final : dip_dies (spellW ${fin.G} (16 ^ N.of_nat ${fin.G} - 1) ${glist(fin.T)}) = true.
 Proof. vm_compute. reflexivity. Qed.
 
-(** The full chain: W_BASE reaches the dying string. *)
-Lemma ledger_chain : exists n,
-  dip_iter n W_BASE = Some (spellW ${fin.G} (16 ^ N.of_nat ${fin.G} - 1) ${glist(fin.T)}).
+(** The chain's length, leg by leg: 16^G - v dips per span+event, and
+    16^G - 1 - v for the final span, which ends ON the dying string. *)
+Definition NSUM : N :=
+  ${nested}.
+
+Definition NSWEEPS : N := ${sumLegs}.
+
+Lemma NSUM_val : NSUM = NSWEEPS.
+Proof. vm_compute. reflexivity. Qed.
+
+(** The full chain, with the dip count carried: W_BASE reaches the
+    dying string in exactly NSWEEPS dips. *)
+Lemma ledger_chain_exact :
+  dip_iter (N.to_nat NSUM) W_BASE
+  = Some (spellW ${fin.G} (16 ^ N.of_nat ${fin.G} - 1) ${glist(fin.T)}).
 Proof.
-  eexists.
-  change W_BASE with (spellW ${starts[0].G} ${starts[0].v} ${glist(starts[0].T)}).`);
+  change W_BASE with (spellW ${starts[0].G} ${starts[0].v} ${glist(starts[0].T)}).
+  unfold NSUM.`);
 for (let k = 0; k < events.length; k++) {
-  L.push(`  eapply dip_iter_add'.
-  { eapply leg.
+  L.push(`  eapply dip_iter_addN.
+  { eapply legN.
     - vm_compute. reflexivity.
     - exact ev_${k}. }`);
 }
 L.push(`  apply span_any. vm_compute. reflexivity.
 Qed.
+
+(** * The exact dip count.
+
+    NSWEEPS dips carry the base anchor to the dying string; the next
+    dip is the fatal one, so death falls on dip #(NSWEEPS + 1) counted
+    from base. tools/ledger.mjs places the base anchor at tail-clock 5,
+    putting absolute death at sweep 3*2^279 — that last offset is the
+    tool's bookkeeping, not certified here. What IS certified: *)
+Theorem odometer_sweeps_to_dying : NSWEEPS = 3 * 2 ^ 279 - 6.
+Proof. vm_compute. reflexivity. Qed.
+
+Lemma ledger_chain : exists n,
+  dip_iter n W_BASE = Some (spellW ${fin.G} (16 ^ N.of_nat ${fin.G} - 1) ${glist(fin.T)}).
+Proof. exists (N.to_nat NSUM). exact ledger_chain_exact. Qed.
 
 (** * THE THEOREM. *)
 Theorem odometer_halts : halts tm c0.

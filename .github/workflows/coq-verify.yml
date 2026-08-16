@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
     paths: ['coq/**', 'tools/coq-build.sh', '.github/workflows/coq-verify.yml']
+  pull_request:
+    paths: ['coq/**', 'tools/coq-build.sh', '.github/workflows/coq-verify.yml']
   workflow_dispatch:
 
 jobs:
@@ -13,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Private-repo runners have 7GB RAM; OdometerOrbit.v peaks ~7.2GB RSS.
+      # Runners have 7GB usable RAM; OdometerOrbit.v peaks ~7.2GB RSS.
       # Disk swap alone thrashed the runner agent into a job cancellation;
       # zram keeps the paging at RAM speed (Coq heaps compress ~3x).
       - name: Add zram + disk swap
@@ -44,7 +46,7 @@ jobs:
         run: |
           cd ~/busycoq/verify
           cp "$GITHUB_WORKSPACE"/coq/*.v .
-          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v"
+          FILES="LibTactics.v Helper.v Pigeonhole.v TM.v Compute.v Flip.v Permute.v Individual.v BB62.v Individual62.v Odometer.v OdometerDip.v OdometerOrbit.v OdometerCrisis.v OdometerBase.v OdometerLedger.v OdometerCost.v OdometerCostCheck.v OdometerSpan.v OdometerSpanSum.v OdometerSpanRun.v OdometerLegCost.v OdometerDeathCost.v OdometerHaltIn.v OdometerDispute.v OdometerNHalt.v"
           coq_makefile -Q . BusyCoq -o Makefile.port $FILES
           # -j1: parallel make once raced Orbit against Dip's rebuild,
           # producing checksum-inconsistent .vo despite exit 0.
@@ -58,6 +60,81 @@ jobs:
           coqtop -Q . BusyCoq -batch -l check_axioms.v 2>&1 | tee assumptions.txt
           grep -q 'Closed under the global context' assumptions.txt
           echo 'AXIOM-FREE: odometer_halts is closed under the global context.'
+
+      # The dip count is carried in binary N (no nat literal has 79 digits)
+      # and must reduce to 3*2^279 - 6 in the kernel, not just in the tools.
+      - name: Exact dip count (must be 3*2^279 - 6, axiom-free)
+        run: |
+          cd ~/busycoq/verify
+          cat > check_count.v <<'EOF'
+          Require Import BusyCoq.OdometerLedger.
+          Print Assumptions odometer_sweeps_to_dying.
+          Print Assumptions ledger_chain_exact.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_count.v 2>&1 | tee count.txt
+          test "$(grep -c 'Closed under the global context' count.txt)" = 2
+          echo 'EXACT: the dying string is reached in exactly 3*2^279 - 6 dips.'
+
+      # The cost layer is validated against brun, the bare executor: the
+      # predicted sweep length must land on the next anchor exactly.
+      - name: Cost model vs raw machine (sweep_theorem_c)
+        run: |
+          cd ~/busycoq/verify
+          cat > check_cost.v <<'EOF'
+          Require Import BusyCoq.OdometerCost.
+          Require Import BusyCoq.OdometerCostCheck.
+          Print Assumptions sweep_theorem_c.
+          Print Assumptions sweep0_lands_on_next_anchor.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_cost.v 2>&1 | tee cost.txt
+          test "$(grep -c 'Closed under the global context' cost.txt)" = 2
+          echo 'EXACT: every sweep carries a kernel-checked raw step count.'
+
+      # A whole counting era, up to 16^71 sweeps, with a closed-form count.
+      - name: Span cost (closed form over a whole era)
+        run: |
+          cd ~/busycoq/verify
+          cat > check_span.v <<'EOF'
+          Require Import BusyCoq.OdometerSpan.
+          Require Import BusyCoq.OdometerSpanSum.
+          Require Import BusyCoq.OdometerSpanRun.
+          Print Assumptions dip_cost_spell.
+          Print Assumptions spanBelow_succ.
+          Print Assumptions sweep_span_c.
+          Require Import BusyCoq.OdometerLegCost.
+          Print Assumptions leg_c.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_span.v 2>&1 | tee span.txt
+          test "$(grep -c 'Closed under the global context' span.txt)" = 4
+          echo 'EXACT: a whole counting era has a closed-form step count.'
+
+      # The two legs where the old signed-delta model undercounts.
+      - name: N_halt correction, settled on the machine
+        run: |
+          cd ~/busycoq/verify
+          cat > check_disp.v <<'EOF'
+          Require Import BusyCoq.OdometerDispute.
+          Print Assumptions dispute_544.
+          Print Assumptions dispute_548.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_disp.v 2>&1 | tee disp.txt
+          test "$(grep -c 'Closed under the global context' disp.txt)" = 2
+          echo 'EXACT: 1808 and 1800 real steps land on the next anchor.'
+
+      # THE STEP COUNT. 170 digits, indexed as N.to_nat of a binary N
+      # because Coq's nat is unary and no such literal can exist.
+      - name: N_halt is exact and axiom-free
+        run: |
+          cd ~/busycoq/verify
+          cat > check_nhalt.v <<'EOF'
+          Require Import BusyCoq.OdometerNHalt.
+          Print Assumptions odometer_halts_in.
+          Print Assumptions N_HALT_digits.
+          Print Assumptions TOTAL_val.
+          EOF
+          coqtop -Q . BusyCoq -batch -l check_nhalt.v 2>&1 | tee nhalt.txt
+          test "$(grep -c 'Closed under the global context' nhalt.txt)" = 3
+          echo 'EXACT: halts_in tm c0 (N.to_nat N_HALT), 170 digits, zero axioms.'
 
       - name: Also check toy6_halts and base_reach
         run: |

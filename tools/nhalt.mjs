@@ -1,3 +1,9 @@
+// SUPERSEDED by tools/nhalt-coq.mjs, which is 56 larger and is the
+// correct value. The weights below give Ff, AO and Cf no weight and fold
+// them into the fixed per-sweep 56; in two of the 549 legs, both at
+// G = 69, those counts deviate (AO fires twice, not once) and 28 steps
+// are lost each time. coq/OdometerDispute.v settles it on the machine.
+// Kept for the record: its derivation and toy validation still stand.
 // Exact N_halt (P-2026-08-15-s): BigInt summation of the exact clock law
 // over the full orbit, using the ledger's span/event alternation.
 //   plain sweep at value v: cost = 56 + 16n + 24*c(v) + wterm(term(v))
