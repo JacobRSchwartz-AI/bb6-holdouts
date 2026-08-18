@@ -4,7 +4,7 @@ const rows=CODE.split('_').map(s=>[0,1].map(b=>{const e=s.slice(b*3,b*3+3);retur
 const MAX=+process.argv[2];
 const N=1<<24; const tape=new Uint8Array(N);
 let pos=N>>1,q=0,lo=pos,hi=pos,scan=0;
-const tally={}, gaps=[];
+const tally={}, gaps=[]; const fill={gap0:0,even:0,ODD:0}; let fillStart=-1;
 function W(h,n){let s='';for(let i=0;i<n;i++){const c=h-i; s+= (c<lo||c>hi)?0:tape[c];}return s;}
 function rightParse(start){
   let last=hi; while(last>=start&&tape[last]===0)last--;
@@ -50,10 +50,23 @@ for(let s=0;s<MAX;s++){
     tally[tag]=(tally[tag]??0)+1;
     if(tag.includes('UNCOVERED')||tag.startsWith('A:')||tag.startsWith('F:')) if(gaps.length<8) gaps.push(`s${s} ${tag} P=${r?r.P:'?'} L=${r?r.L:'?'}`);
   }
+  // halt-guard coverage: every D/E fill scan, classified by the lemma that
+  // discharges it. macro_gap0 (gap 0) and macro_fill (even gap) are proved
+  // for arbitrary context on both sides, so these two exhaust the safe cases.
+  if(q===3&&sym===0&&fillStart<0) fillStart=pos;
+  if((q===3||q===4)&&sym===1){
+    if(fillStart<0) fill.gap0++;
+    else { const g=fillStart-pos; fill[g%2===0?'even':'ODD']++; }
+    fillStart=-1;
+  }
   if((q===5&&sym===1)||(q===0&&sym===1))scan++; else if(!((q===5&&sym===0)||(q===0&&sym===0)))scan=0;
   tape[pos]=t.w; pos+=t.d==='R'?1:-1; q=t.q;
   if(pos<lo)lo=pos; if(pos>hi)hi=pos;
 }
 console.log('deep-turn coverage over '+MAX+' steps:');
 for(const k of Object.keys(tally).sort()) console.log('  '+String(tally[k]).padStart(6)+'  '+k);
+console.log('\nhalt-guard coverage (every fill scan the machine performs):');
+console.log('  '+String(fill.gap0).padStart(6)+'  macro_gap0   gap 0, safe for any run length');
+console.log('  '+String(fill.even).padStart(6)+'  macro_fill   even gap, safe');
+console.log('  '+String(fill.ODD).padStart(6)+'  ODD GAP      this is the halt; must stay 0');
 if(gaps.length){console.log('\nfirst gaps:'); gaps.forEach(g=>console.log('  '+g));} else console.log('\nNO GAPS.');
