@@ -371,3 +371,50 @@ these shapes. The observed wall cycle is
   0110011 -> 110011 -> 011 -> 11 -> (blank) -> regrow,
 which is the odometer counting up while the halvings eat it back down.
 This is a `slots`-style induction over the counter, not new machine analysis.
+
+## COVERAGE TEST (tools/parity-cover.mjs) -- what is actually still missing
+
+At every deep turn, decide which PROVEN lemma applies by pattern-matching
+the wall and the right side. Over 2e7 steps:
+
+  1087  half_period            390  f_to_a(d=0)        5  f_to_a_era
+     8  half_period_2            4  f_to_a(d=1)        4  era_boundary_d(d=0)
+     7  half_period_4            2  f_to_a(d=2,3)
+   ~730  F-UNCOVERED (30 distinct wall prefixes)
+    288  RIGHT-UNPARSED
+      4  BOUNDARY-UNCOVERED
+
+So roughly two thirds of deep turns ARE covered by proven lemmas and one
+third is not. The uncovered walls are exactly the restructure family, and
+the reason is visible in the prefixes:
+
+  001100011000   00 | 1100 | 0 | 11 | 000      <- an EXTRA zero before the
+  000110000000   000 | 11 | 0000000               next slot; pitch is not 4
+  001111000000   00 | 1111 | 000000             <- a FOUR-one run, not a slot
+
+My `slots` model assumes a uniform 4-cell pitch with slots [1;1;0;0]. That
+is exactly right in the ordinary regime (it reproduces the tape at v=0,1,2
+and classA_step/classB_step are proven against it), but restructures shift
+a run one cell left and merge runs, so the pitch drifts and runs of four
+ones appear. This is precisely what B1 flagged: "the fixed-slot decode
+breaks in the last ~6% of each era, exactly at the restructures", and
+"those shift a run 1 cell left, turning its gap 0^3 -> 0^2 -> 0^1".
+
+I previously wrote that the restructure sub-cases were NOT needed for
+closure. **That was wrong.** They are needed, they are about a third of all
+deep turns, and B1's step-exact transcripts for both (odd base s15804,
+even base s19916) are in this file waiting to be turned into lemmas.
+
+REMAINING, now precisely scoped and measurable:
+1. odd-base restructure lemma (base 1^n, n odd: exits A0, base +1 cell,
+   3 refill B0 writes) -- transcript above.
+2. even-base restructure lemma (n even: exits F0, base +4 cells, 5 refills)
+   -- transcript above.
+3. generalise `slots` to a variable-pitch wall admitting the shifted runs
+   (or carry an explicit per-slot offset).
+4. the RIGHT-UNPARSED turns (288) -- inspect; likely mid-restructure
+   anchors where the right side is not yet the clean [0;1]^^P form.
+5. then the P descent induction and progress_nonhalt_cond.
+
+Run `node tools/parity-cover.mjs 20000000` after each new lemma; the
+uncovered count is the honest progress metric.

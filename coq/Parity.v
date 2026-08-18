@@ -857,6 +857,51 @@ Proof.
   finish.
 Qed.
 
+(** ** The era boundary in odometer terms.
+
+    At P = 1 the reset fires and the wall comes back in the ODD alignment
+    -- one zero before the counter instead of two -- carrying the bumped
+    counter. That shift is real (B1 saw it as the fixed-slot decode
+    drifting) and it is what class B below is for. *)
+Lemma era_boundary_slots : forall bs M,
+  ([0; 0] *> slots bs *> const 0) <{{F}}
+    0 >> [1; 0] *> [1]^^(2 * M + 2) *> const 0 -->*
+  ([0] *> slots (bump bs) *> const 0) {{A}}>
+    [0; 1]^^(M + 3) *> [0] *> [1]^^4 *> const 0.
+Proof.
+  introv.
+  destruct (slots_incr bs) as [d [bs' [E1 E2]]].
+  rewrite E1.
+  change ([0; 0] *> ([1; 1] ++ [0; 0])^^d *> [0; 0] *>
+          ([0; 0] *> slots bs' *> const 0))
+    with (([0; 0] *> slots bs' *> const 0)
+          <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0]).
+  follow era_boundary_d.
+  rewrite E2.
+  replace (4 * d + 1) with (1 + 4 * d) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  finish.
+Qed.
+
+(** ** CLASS B IS CLOSED.
+
+    In the odd alignment the halving eats the counter from the bottom:
+    each deep turn consumes one set bit and the pair count goes UP. *)
+Lemma classB_step : forall bs2 k m,
+  ([0] *> slots (cons true bs2) *> const 0) <{{F}}
+    [0; 1]^^(k + 3) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  ([0] *> slots bs2 *> const 0) {{A}}>
+    [0; 1]^^(k + 4) *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  change (slots (cons true bs2)) with ([1; 1; 0; 0] +> slots bs2).
+  rewrite Str_app_assoc.
+  change ([0] *> [1; 1; 0; 0] *> slots bs2 *> const 0)
+    with ((slots bs2 *> const 0) <* <[0; 0] <* <[1; 1] <* <[0]).
+  follow f_to_a_era.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
