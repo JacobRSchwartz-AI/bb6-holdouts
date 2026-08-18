@@ -1,4 +1,4 @@
-# The Parity machine — formal nonhalt campaign
+# The Parity machine â€” formal nonhalt campaign
 
 Machine: `1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA` (BB(6) holdout, frontier
 rank #201 by compression, flagged `halt-reached` by the symbolic sieve).
@@ -14,7 +14,7 @@ frontier hunt (B1's tier-2 pick; clean arithmetic invariant).
 | B | 1RC | 1RB | right scan, preserves 1s, turns at 0 (writes 1) |
 | C | 0RD | 0RC | right scan, ERASES 1s, turns at 0 (writes 0) |
 | D | 1LE | 1LF | left fill scan (with E), D1 = safe exit |
-| E | 1LD | --- | left fill scan; **E1 = HALT — the only halt rule** |
+| E | 1LD | --- | left fill scan; **E1 = HALT â€” the only halt rule** |
 | F | 0LB | 1LA | left halving scan (with A: F keeps 1, A erases to 0); F0 exits to B |
 
 Scan primitives:
@@ -29,15 +29,15 @@ Scan primitives:
 
 ## Empirical facts (2026-08-18, parity-inv.mjs raw simulation)
 
-- 2×10^8 steps, width 14,759: gaps crossed by fill scan: 23,020,834 of length 0
-  (D reads 1 immediately), 12,874 positive — **all even, zero odd**. Max 13,442.
-- Positive gap sizes: 2 (5,570×), then exactly the ladder 6, 10, 14, 18, …
-  (≡ 2 mod 4), each appearing once per era that reaches it (counts 9,8,7,…
-  decreasing with rung height — eras walk the ladder from 6 up to their cap,
+- 2Ã—10^8 steps, width 14,759: gaps crossed by fill scan: 23,020,834 of length 0
+  (D reads 1 immediately), 12,874 positive â€” **all even, zero odd**. Max 13,442.
+- Positive gap sizes: 2 (5,570Ã—), then exactly the ladder 6, 10, 14, 18, â€¦
+  (â‰¡ 2 mod 4), each appearing once per era that reaches it (counts 9,8,7,â€¦
+  decreasing with rung height â€” eras walk the ladder from 6 up to their cap,
   cap grows per era).
-- Record fill-scan depth grows +2 per record; no exceptions in 2×10^8 steps
-  (nor in B1's independent 2×10^8-step probe).
-- C-erase run lengths: overwhelmingly 1 (micro-cycle), then 4,5,8,9,12,16,20,…
+- Record fill-scan depth grows +2 per record; no exceptions in 2Ã—10^8 steps
+  (nor in B1's independent 2Ã—10^8-step probe).
+- C-erase run lengths: overwhelmingly 1 (micro-cycle), then 4,5,8,9,12,16,20,â€¦
 
 ## Proof architecture (mirrors the Odometer M4 invariant-closure plan)
 
@@ -45,14 +45,14 @@ Scan primitives:
 2. Anchor: right-edge configuration entering the fill scan (after C0 at fresh 0).
 3. Invariant L: regular grammar over glyphs for the BODY between wall and edge,
    strong enough that every fill-scan gap encountered in one sweep is even.
-4. Sweep theorem: anchor(Z∈L) -->+ anchor(Z'∈L) by composed scan lemmas
+4. Sweep theorem: anchor(ZâˆˆL) -->+ anchor(Z'âˆˆL) by composed scan lemmas
    (each scan lemma by induction over its glyph run, like Odometer's dip).
 5. Close with `progress_nonhalt_cond` (TM.v). Zero axioms; CI job added.
 
 ## Predictions registered BEFORE the era-transcript run (protocol)
 
 - P-2026-08-18-a: one era = the fill/halve interplay consumes the `(10)^j`
-  region left by halving at rate 4 cells/cycle, gap ladder 6,10,14,… stepping
+  region left by halving at rate 4 cells/cycle, gap ladder 6,10,14,â€¦ stepping
   +4 per successive deep scan within the era; era ends when the region is
   exhausted, whole 1-block is rebuilt solid and 2 longer, new era's cap +4.
 - P-2026-08-18-b: the anchor BODY grammar needs at most 3 glyph letters
@@ -61,7 +61,7 @@ Scan primitives:
   coupling) will be needed.
 - P-2026-08-18-c: no exception events at any scale (unlike the Odometer):
   the machine is genuinely immortal and the era structure is exactly periodic
-  in the abstraction — the deep-scan census closes with era index as the only
+  in the abstraction â€” the deep-scan census closes with era index as the only
   unbounded parameter.
 
 ## Grades (2026-08-18, after transcript + census runs)
@@ -70,7 +70,7 @@ Scan primitives:
   cycle into e (fill gap 2 each). The deep event is richer than predicted:
   at a-exhaustion the B/C scan punches through to the right e-block, C erases
   the junction 1 + solid 1s (even total), the fill scan refills the whole
-  span (gap = erased + 2, even — the observed deep ladder), and THEN the F/A
+  span (gap = erased + 2, even â€” the observed deep ladder), and THEN the F/A
   halving converts the left part of the refilled run to a^p and deposits a
   b-marker leftward. Era cap growth mechanics still to be pinned.
 - P-b: **FAIL (importantly).** Run-collapse census does NOT close: 19,306
@@ -83,7 +83,7 @@ Scan primitives:
   inductive segment grammar (M4-plan style), not a finite pattern union.
 - P-c: no exceptions seen yet (consistent); definitive grade deferred.
 
-## THE WALL LAW (B1, 2026-08-18 — the whole invariant)
+## THE WALL LAW (B1, 2026-08-18 â€” the whole invariant)
 
 The wall is a **binary odometer, 4-cell period**: bit k of counter v lives at
 single cell r(4k+3) counting from the wall's right edge. Increment (one per
@@ -93,7 +93,7 @@ Wall grows one 4-cell slot per restructure -> Theta(log T) wall length.
 
 Anchor grammar (cell level): `0^w . W . BLK . 1^L . 0^w`, head on W's last
 cell, state A or F reading 0; W = `1 (0+ 1+)* 0^z`; BLK = (10)^p [phase 0] or
-(01)^p [phase 1] — phase flips each era, genuine state bit; p>=1, L>=4,
+(01)^p [phase 1] â€” phase flips each era, genuine state bit; p>=1, L>=4,
 **L = 0 (mod 4)** <- THE invariant; z>=1 (z>=3 except restructure turns).
 
 Exactly THREE fill-scan contexts (2e9 steps, 228,334,570 scans, ZERO odd):
@@ -119,12 +119,12 @@ B1's instruments (scratchpad): phases.mjs (per-phase transcript; `node
 phases.mjs 14535 14790` = one whole punch/halve cycle), parity1e9.mjs,
 scanctx.mjs, restr.mjs, anchors.mjs, rewrite.mjs, odo3.mjs, eras.mjs.
 
-## BOUNDARY TRANSCRIPTS (B1 second pass, 2026-08-18) � CORRECTIONS + exact anatomy
+## BOUNDARY TRANSCRIPTS (B1 second pass, 2026-08-18) — CORRECTIONS + exact anatomy
 
 CORRECTIONS to the wall-law section above (B1 second pass supersedes):
 1. **No phase bit.** BLK = (1;0)^p uniformly at every deep turn; A-turn head
    = blk-1, F-turn head = blk-2. (In my [0;1]-framed Coq lemmas the r0 cell
-   absorbs into the pairs: A faces `0 (10)^p 1^L` = `(01)^p 0 1^L` � same.)
+   absorbs into the pairs: A faces `0 (10)^p 1^L` = `(01)^p 0 1^L` — same.)
 2. **Odometer frame:** r0 = the A-turn cell (fixed within an era), slot k =
    cells (r(4k+3), r(4k+4)); +1 per A->A period, carry depth = ruler fn.
 3. **z=4 unreachable.** z=3 <=> slot0 occupied (carry); z>=5(obs >=7) <=> R1.
@@ -206,20 +206,20 @@ punch_refill (C erase 2m + fill: `l <* <[1] {{C}}> [1]^^(2m) *> const 0
 -->* l <{{F}} 1 >> 1 >> [1;1]^^m *> 1 >> const 0`), ones_comm, lpow_pair.
 Startup: c0 --> first structured config (8 steps).
 
-**incr_full (GREEN) � the odometer increment at ANY carry depth, one lemma:**
+**incr_full (GREEN) — the odometer increment at ANY carry depth, one lemma:**
 `l <* <[0;0] <* ([1;1] ++ [0;0])^^d <* <[0;0] <{{F}} 0 >> [1;0] *> [1;0] *> [1] *> r
  -->* l <* <[1;1] <* [0]^^(4*d+4) {{F}}> [0;1;0;1] *> r`
 d occupied lattice slots cleared, slot d set, zero field ends 4d+4 wide.
 Built from cs_body (9 steps, the CTX-2 fill), carry_step (= FA_halve 1),
-excursion_chain (induction on d � this is where the 4-cell pitch is
+excursion_chain (induction on d — this is where the 4-cell pitch is
 DERIVED), bitset, C_phase. Verified vs simulator: d=0 -> s8031, d=1 -> s9199.
 The hypothesis shape (lattice-aligned [0;0] gaps) is exactly what excludes
 B1's degenerate case, so this lemma is sound as stated.
 
-**sweep_F (GREEN)** � the F-half period from the micro anchor the increment
+**sweep_F (GREEN)** — the F-half period from the micro anchor the increment
 hands over, through micros/junction/punch/refill/halve to the wall face.
 
-**half_period (GREEN) � THE INVARIANT STEP:**
+**half_period (GREEN) — THE INVARIANT STEP:**
 `l {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0 -->*
  l <{{F}} [0;1]^^(k+4) *> [0] *> [1]^^(2*m+6) *> const 0`
 One half period consumes exactly ONE pair and grows the block by exactly
@@ -228,16 +228,16 @@ precisely punch_refill's hypothesis (the fill scan crosses an even gap and
 exits in D, never in E). `p -> p-1, L -> L+4` is now a theorem, not a
 census. Helper: tail_regroup (refold the solid block).
 
-**half_period_4 / half_period_2 (GREEN)** � the last turns of an era have
+**half_period_4 / half_period_2 (GREEN)** — the last turns of an era have
 fewer than five pairs. p=4: launch hands straight to the junction, no
 micro train. p=2: launch runs into the block; p2_glue (7 steps) puts C on
 its face. Both land the same recurrence (one pair consumed, block +4).
 
-**era_incr (GREEN)** � at p=1 the increment's terminal erase runs out of
+**era_incr (GREEN)** — at p=1 the increment's terminal erase runs out of
 pairs, so C ends on the face of the block, not at a micro anchor. 26
 concrete steps, read off the raw trace at s778.
 
-**era_boundary (GREEN) � THE UNBOUNDEDNESS:**
+**era_boundary (GREEN) — THE UNBOUNDEDNESS:**
 `l <* <[0;0] <* <[0;0] <{{F}} 0 >> [1;0] *> [1]^^(2*M+2) *> const 0 -->*
  l <* <[1;1] <* <[0] {{A}}> [0;1]^^(M+3) *> [0] *> [1]^^4 *> const 0`
 Block consumed whole, tape becomes one solid run, halving it back rebuilds
@@ -263,12 +263,12 @@ junction/punch lemmas; B1's phase map + transcripts pin the F-half.
 `l {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0 -->*
  l <{{F}} [0;1]^^(k+5) *> [1] *> [1] *> [1;1]^^(m+1) *> [1] *> const 0`
 i.e. from a deep A-turn: launch (2 pairs net), micro_all, junction, punch,
-even refill, halving — F arrives at the wall face; pair count preserved
+even refill, halving â€” F arrives at the wall face; pair count preserved
 at this granularity (the p-decrease happens in the wall phase), block grown.
 Proof pattern that works: peel literal pairs with lpow_add/Str_app_assoc +
-lpow_shift', let `follow` unify up to conversion (no bare-list `change` —
+lpow_shift', let `follow` unify up to conversion (no bare-list `change` â€”
 list literals outside a `*>` context fail scope resolution), and note that
-each `follow X.` runs finish's autorewrite which JOINS all-ones runs —
+each `follow X.` runs finish's autorewrite which JOINS all-ones runs â€”
 probe goals with coqtop `Show` before writing normalization steps.
 Debug loop: `awk "NR<=N" Parity.v > ParityDbg.v; echo "Show. Abort." >>;
 coqtop -batch -load-vernac-source` prints the exact goal at line N.
@@ -285,7 +285,7 @@ Compile: `wsl cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`
    `A0R` turn at the left; halved region becomes the new a-block, b-marker
    deposited, one dot of the left gap consumed.
 4. Wall cascade: when the dot-gap exhausts, the wall's own e-segment gets
-   halved and restructured (`ba.ee` -> `babee`), dots replenished — the same
+   halved and restructured (`ba.ee` -> `babee`), dots replenished â€” the same
    dynamic one level up, self-similar.
 
 ## STATE 2026-08-18 (47 lemmas, all `Closed under the global context`)
@@ -505,46 +505,123 @@ finite list, NOT new machine analysis and NOT a wall grammar.
 This is the single most useful thing this session produced for finishing
 the proof, and it only became visible by measuring instead of assuming.
 
+## THE HALT CRITERION, AT RUN LEVEL (this is the reduction that matters)
+
+Stripped of all context the machine is a four-phase cycle and nothing else:
+
+  B  scan right over 1s to the first 0, write it, hand to C
+  C  scan right over the NEXT 1-run, erasing, to the following 0, hand to D
+  D/E fill that zero field LEFTWARD, alternating D,E,D,E starting in D
+  F/A halve leftward over 1s (`11` -> `01`), exit at a 0
+
+Only the fill can halt, and only by reading a 1 in state E. Count its
+alternation. Let the tape from B's entry read `1^a 0^b 1^c 0^d ..`. The
+fill starts one cell past the 0 that C stopped on, so:
+
+  d = 1  -> it meets a 1 immediately. SAFE whatever c is.
+  d >= 2 -> it crosses c + 2 cells before reaching the 1 that B wrote.
+            SAFE iff c is EVEN.
+
+  ==> THE MACHINE HALTS IFF SOME C-SCAN ERASES AN ODD RUN OF 1s THAT IS
+      FOLLOWED BY A ZERO-RUN OF LENGTH TWO OR MORE.
+
+Both branches are now theorems: `macro_gap0` and `macro_fill`, for
+arbitrary a, c, n and arbitrary context on BOTH sides. `macro_fill`
+generalises `punch_refill`, which needed blank tape past the block, so the
+criterion applies to right sides carrying more than one block -- exactly
+the family the standard parse had been rejecting.
+
+MEASURED (parity-cover.mjs, 2e7 steps): of the 2,498,993 fill scans the
+machine performs, 2,495,023 are gap 0 (`macro_gap0`) and 3,970 are even
+gap (`macro_fill`). ODD gaps: ZERO. Every fill the machine has ever
+performed is discharged by one of two general proven lemmas.
+
+Also measured (parity-fill.mjs): every one of those even gaps is not just
+even but 2 mod 4, i.e. every erased block has length divisible by four --
+consistent with `half_period`'s L -> L+4 and the era boundary's L' = 4.
+
+### The shortcut that does NOT work (negative result, tools/parity-inv.mjs)
+
+The obvious hope is that "odd 1-run followed by two or more 0s" is simply
+absent from the tape, giving a local invariant provable by case analysis
+on the twelve transitions. It is not. Over 2e6 steps the tape carries such
+a run at essentially every configuration -- 324,895 of them at or right of
+the head. The runs exist; what never happens is that C *enters* one in the
+erasing phase. So the invariant has to be about reachable configurations,
+not about the tape alone. That kills the cheap route, and it was worth one
+tool to find out rather than several sessions.
+
+## THE GENERAL EXCURSION IS DONE (was "the one remaining piece")
+
+The wall-language census had ruled out enumerating the reachable walls.
+`excursion_gen` proves the leftward walk instead for an ARBITRARY finite
+wall, by induction on a bound for its length. Two right-hand phases (the
+head faces `0 1 ..` or `1 ..`) times four (head cell, next cell) shapes is
+eight branches, and every one is an atom that was already proved:
+
+  phase  head,next   atom          effect
+  P0     0,0         cs_body       -> P1, two wall cells consumed
+  P0     0,1         degen_cs      terminates, F facing right
+  P0     1,0         f1_to_A       terminates, A-turn
+  P0     1,1         carry_step    -> P0, two wall cells consumed
+  P1     0,0         bitset        terminates, C facing right
+  P1     0,1         bitset_odd    terminates, C facing right  (NEW, 3 steps)
+  P1     1,0         f1_to_A       terminates, A-turn
+  P1     1,1         carry_step    -> P0, two wall cells consumed
+
+Only the carry and the CS body continue leftward and each eats two cells,
+so the walk terminates; past the wall the tape is blank, where it is
+cs_body then the bit write. The excursion therefore NEVER HALTS, whatever
+the wall -- the left half of the machine is unconditionally safe.
+
 ## NEXT SESSION STARTS HERE (state at end of 2026-08-18)
 
-63 results in coq/Parity.v, every one `Closed under the global context`.
-File compiles clean: `cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`.
+68 results in coq/Parity.v, every one `Closed under the global context`.
+Compiles clean: `cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`.
 
-DONE AND UNCONDITIONAL -- the parity core:
-  half_period / _4 / _2   one half period consumes a pair, grows the block
-                          by four, PRESERVES BLOCK EVENNESS. No side
-                          conditions. Evenness is exactly what makes the
-                          D/E fill scan exit in D; E-reads-1 is the only
-                          halt rule. This is the whole safety argument.
-  punch_refill            the fill crosses an even gap, by construction.
+DONE AND UNCONDITIONAL:
+  half_period / _4 / _2   one half period consumes a pair and grows the
+                          block by four, PRESERVING BLOCK EVENNESS, with
+                          no side conditions.
+  macro_fill / macro_gap0 the halt criterion, both branches, arbitrary
+                          context on both sides.
+  excursion / excursion_gen   the left walk, ANY finite wall.
 
 DONE -- the wall machinery:
-  slots / bump / slots_incr      odometer + increment law, in the kernel
-  classA_step / classB_step      both alignments closed
-  full_period                    A-turn to A-turn, counter bumped
-  era_boundary_d / _slots        p' = L/2+2, L' = 4
-  f_to_a / f_to_a_era            both F-half cases
-  degen_cs / restructure_odd / restructure_even
-  exc_blank / exc_carry          general-excursion ends
+  slots / bump / slots_incr, classA_step / classB_step, full_period,
+  era_boundary_d / _slots, f_to_a / f_to_a_era, degen_cs,
+  restructure_odd / restructure_even.
 
-THE ONE REMAINING PIECE, precisely:
-A 4-way dispatcher over the finite wall prefix ws, by well-founded
-induction on |ws|, with a DISJUNCTIVE conclusion. Cases on the first two
-cells of the left stream (all four branch lemmas already proven):
-  0,0 and right starts 0  -> cs_body,     recurse on ws minus 2
-  1,1                     -> carry_step,  recurse on ws minus 2
-  0,0 and right starts 1  -> bitset,      TERMINATE (C-facing)
-  0,1                     -> degen_cs,    TERMINATE (micro anchor)
-  1,0                     -> F1 then A0,  TERMINATE (A-turn)
-Then: the descent induction on P (half_period* + the F-half lemmas down to
-P=1, then era_boundary), and progress_nonhalt_cond with C = the deep-turn
-anchor. Base case from `startup`.
+WHAT IS LEFT, precisely. The proof now needs one thing only: an invariant
+on CONFIGURATIONS, closed under one macro cycle, in which every C-scan
+that faces two or more zeros erases an even run. Two halves:
+
+  1. The right side. Measured shape (parity-right.mjs): the 288 deep turns
+     the standard parse rejects are ONE family -- the standard right side
+     with a single embedded odd 1-run inside the pair region, the residue
+     of a restructure. So the right-side invariant is
+        every internal 0-run has length 1, and the FINAL 1-run is even
+     which covers the standard shape and the defect shape at once. Internal
+     runs are then safe by macro_gap0 regardless of parity, and the final
+     run is the only one macro_fill has to guard. This wants a generalised
+     sweep over an arbitrary such word -- an induction the same size as
+     excursion_gen, and the same shape.
+
+  2. Joining the two. excursion_gen currently concludes with an
+     EXISTENTIAL configuration, which proves termination but is not yet
+     composable: to close the loop its conclusion has to track the written
+     prefix, not just its existence. Strengthen it to
+        exists pre l, .. -->* l {{q}}> pre *> r0
+     with r0 the untouched tail, then feed each of the three exits into the
+     generalised sweep.
+
+  Then progress_nonhalt with the deep-turn anchor, base case from
+  `startup`, and a CI job.
 
 MEASURE PROGRESS WITH: node tools/parity-cover.mjs 20000000
-Currently 1851/2492 deep turns (74.3%) discharged by a proven lemma. That
-number is the honest metric; it should reach 2492 before the assembly is
-attempted.
+Deep-turn coverage is still the honest structural metric; the halt-guard
+section below it is now at 100% by general lemmas.
 
 CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA is
-still an OPEN BB(6) holdout. Nothing here has been submitted anywhere, and
-nothing should be until `~ halts tm c0` compiles.
+still an OPEN BB(6) holdout. `~ halts tm c0` is NOT proven. Nothing here
+has been submitted anywhere, and nothing should be until it compiles.
