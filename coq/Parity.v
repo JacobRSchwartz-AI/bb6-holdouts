@@ -1087,6 +1087,58 @@ Proof.
   introv. apply (excursion_gen (length ws) ws r). lia.
 Qed.
 
+(** ** THE RUN-LEVEL MACRO STEP.
+
+    Stripped of all context the machine is a four-phase cycle: B scans right
+    over 1s to the first 0 and writes it, C scans right over the NEXT 1-run
+    and erases it, D/E fill that zero field leftward, F/A halve leftward
+    over 1s. Only the fill can halt, and only by reading a 1 in state E.
+
+    Counting the fill's alternation gives the halt criterion outright. Let
+    the tape from B's entry read `1^a 0^b 1^c 0^d ..`. The fill starts one
+    cell past the 0 that C stopped on, so it reads a 1 immediately when
+    d = 1 (safe, whatever c is), and otherwise crosses c + 2 cells before
+    meeting the 1 that B wrote -- safe iff c is EVEN. So:
+
+      the machine halts iff some C-scan erases an ODD run of 1s that is
+      followed by a zero-run of length two or more.
+
+    Both branches are proved below, for arbitrary a, c, n and arbitrary
+    context on both sides. macro_fill generalises punch_refill, which
+    needed blank tape past the block. *)
+
+Lemma macro_fill : forall a n l r,
+  l {{B}}> [1]^^a *> [0] *> [1]^^(2 * n) *> [0; 0] *> r -->*
+  l <* <[1]^^a <{{F}} [1]^^(2 * n + 3) *> r.
+Proof.
+  introv.
+  follow B_phase.
+  follow C_phase.
+  execute.
+  rewrite <- Str_app_assoc, <- lpow_add.
+  replace (n + n) with (2 * n) by lia.
+  rewrite <- lpow_pair.
+  follow DE_fill.
+  execute.
+  rewrite <- ones_comm, lpow_pair.
+  rewrite <- Str_app_assoc, <- lpow_add.
+  replace (n + n) with (2 * n) by lia.
+  finish.
+Qed.
+
+(** The gap-zero branch: a single 0 after the erased run, so the fill reads
+    its 1 at once and the run's parity is irrelevant. This is why the pair
+    region is safe at every length -- its zero-runs are all singletons. *)
+Lemma macro_gap0 : forall a c l r,
+  l {{B}}> [1]^^a *> [0] *> [1]^^c *> [0] *> 1 >> r -->*
+  l <* <[1]^^(a + 1) <* <[0]^^(c + 1) <{{F}} 1 >> r.
+Proof.
+  introv.
+  follow B_phase.
+  follow C_phase.
+  execute.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
