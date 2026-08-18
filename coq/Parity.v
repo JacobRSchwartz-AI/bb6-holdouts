@@ -275,6 +275,23 @@ Proof.
   finish.
 Qed.
 
+(** ** The full half-period, odd-exit form: when the wall face under the
+    halving run is `.. 0 1` (the low bit-pair's top), the run is odd, the
+    scan swallows the 1, and the A0 turn writes its partner: the odometer
+    bit write IS the F_exit_odd ending. The machine relaunches in B over
+    the freshly halved pair region. *)
+Lemma sweep_A_odd : forall k m l,
+  l <* <[0] <* <[1] {{A}}> [0; 1]^^(k + 5) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <* <[1] {{B}}> 1 >> [0; 1]^^(k + 5) *> [1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0.
+Proof.
+  introv.
+  follow sweep_core.
+  (* the halved pairs were emitted by FA_halve inside sweep_core; re-split
+     them is not needed: F now faces the wall top `.. 0 1`. One F1 step
+     and the A0 turn close it. *)
+  execute.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.

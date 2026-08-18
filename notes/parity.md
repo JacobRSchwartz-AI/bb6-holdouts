@@ -130,6 +130,18 @@ punch_refill (C erase 2m + fill: `l <* <[1] {{C}}> [1]^^(2m) *> const 0
 -->* l <{{F}} 1 >> 1 >> [1;1]^^m *> 1 >> const 0`), ones_comm, lpow_pair.
 Startup: c0 --> first structured config (8 steps).
 
+**sweep_A_odd (GREEN, the full A-type half-period):**
+`l <* <[0] <* <[1] {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0
+ -->* l <* <[1] {{B}}> 1 >> [0;1]^^(k+5) *> [1] *> [1] *> [1;1]^^(m+1) *> [1] *> const 0`
+The wall-top `0 1` under the anchor is the low bit-pair: the halving run
+swallows its top 1 (making the run odd) and the A0-write of F_exit_odd IS
+the odometer bit write. KEY INSIGHT from composing forward: the RHS block
+is FUSED to the pairs (no 0 separator), so the NEXT half-period (F-type)
+has a different junction anatomy: micros run pairs directly against 1s,
+the B0-filled junction makes the C-erase even, refill re-creates the
+separator, p drops there. A-half and F-half alternate and need separate
+junction/punch lemmas; B1's phase map + transcripts pin the F-half.
+
 **sweep_core (GREEN, the half-period workhorse):**
 `l {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0 -->*
  l <{{F}} [0;1]^^(k+5) *> [1] *> [1] *> [1;1]^^(m+1) *> [1] *> const 0`
