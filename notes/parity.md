@@ -329,66 +329,45 @@ what keeps the counter's own representation finite over very long runs, and
 the invariant in (2) admits them as further `slots` values. Their exact
 transcripts are above if they turn out to be needed.
 
-## FINDING 2026-08-18 (late): why the wall/pair split is not invariant
+## RETRACTION + CORRECTED FINDING (2026-08-18, settled by exact parse)
 
-Composing degen_cs forward exposed a real structural fact, not a proof bug.
+I earlier called the era-start case an "obstacle" and said a clean
+(wall | pairs) split "cannot close". **That was wrong, and it is retracted.**
 
-At an ORDINARY F-turn (f_to_a, PROVEN) the left carries exactly one 1 when
-the halving starts, so the halve emits no extra pairs and p goes k+3 -> k+2:
-a clean decrease.
+What settled it: `anchor2.mjs` parses each deep turn by locating the BLOCK
+first (maximal 1-run at the right end) and then requiring the cells between
+head and block to be exactly `[0;1]^^P ++ [0]`. No RLE eyeballing, no
+heuristic. It parses every deep turn exactly. Results:
 
-At the ERA-START F-turn the two preceding steps (degen_cs, then the
-degenerate micro step) DEPOSIT ones into the wall, so when sweep_F's halving
-runs it finds FIVE ones, not one. It halves four of them into two fresh
-`[0;1]` pairs and leaves one for the A-turn. Those two pairs are wall
-material converted into pair-region material.
+  s952  A P=18 L=4    left=0110011
+  s1173 F P=17 L=8    left=110011
+  s1408 A P=18 L=12   left=011
+  s1645 F P=17 L=16   left=11
+  s1896 A P=18 L=20   left=(blank)
 
-So the boundary between "wall" and "pair region" is not preserved by the
-dynamics -- the halving eats into the wall. This is the same phenomenon B1
-reported from the other side ("restructures shift a run one cell left",
-"the fixed-slot decode drifts"), and it is why the naive parameterization
-(wall on the left, [0;1]^^p on the right, disjoint) cannot close.
+  s129 A P=6 L=4 | s206 F P=5 L=8 | s297 A P=6 L=12 | s390 F P=5 L=16
+  s501 A P=4 L=20 | s586 F P=3 L=24 | s701 A P=2 L=28 | s778 F P=1 L=32
 
-Consequences for the remaining plan:
-- f_to_a_era CANNOT be stated as p -> p-1 with the same split. Attempting
-  it gives p -> p+1, which contradicts the census, because the extra pairs
-  are miscounted wall cells.
-- The right move is to stop tracking p and the wall separately. For NONHALT
-  the arithmetic is not needed at all: progress_nonhalt_cond only needs an
-  invariant closed under -->+, and the ONLY safety obligation is that every
-  D/E fill crosses an even gap. That obligation is discharged by
-  punch_refill's hypothesis (block = 2*M) plus the CTX-0/CTX-2 cases, none
-  of which mention p.
-- So the promising reformulation is an invariant on the RIGHT side alone
-  ("head at a deep turn, block length even") with the entire left stream
-  existentially quantified and only required to be eventually-blank. Every
-  lemma already proven is left-generic in exactly this sense (l is a free
-  variable in all of them), which is why they compose so freely.
-  The open question is whether the left can be left fully abstract at the
-  halving step, where the number of leading ones decides A-turn vs F-turn.
-  That is the next thing to try, and it is a re-statement job, not new
-  machine analysis.
+So P genuinely oscillates and L grows by exactly 4 at EVERY deep turn.
+**L, not P, is the monotone quantity**, and the halt guard only ever needs
+L even. My derivation of P -> P+1 for the era start was correct; my
+expectation that P must decrease was the error.
 
-### CAVEAT on the finding above (same session, checked afterwards)
+`f_to_a_era` is now PROVEN with exactly that statement (P -> P+1,
+L -> L+4), matching s1173 -> s1408 (17 -> 18, 8 -> 12) on the nose.
 
-The p figures I used to diagnose this come from `dturns.mjs`, a heuristic
-that counts trailing (1,0) pairs on the right. It is NOT reliable: over
-s952..s1896 it reports p = 18,17,18,17 while L grows 4,8,12,16,20 with
-perfect regularity, so p cannot really be oscillating -- the counter is
-mis-parsing the wall/pair boundary at A-turns, which is precisely the
-boundary under dispute. Therefore:
+WHICH F-HALF LEMMA APPLIES, keyed on the left string (nearest head first),
+checked against every deep turn above:
+  left starts 0,0,0,0.....  -> f_to_a, d=0        (s390, blank left)
+  left starts 0,0,(1100)^d  -> f_to_a, depth d    (s586: 0,0,1,1,0,0)
+  left starts 0,1,1,0,0     -> f_to_a_era         (s206, s1173, s1645)
+  p = 1                     -> era_boundary_d     (s778)
+All four are proven. The A-half (half_period / _4 / _2) is left-generic and
+covers every even P.
 
-- The claim "f_to_a_era gives p -> p+1" rests on my hand-derivation AND on
-  this unreliable measurement agreeing. They may both be wrong in the same
-  way (I identified the split by eye from the same ambiguous RLE).
-- What IS solid: at the era-start F-turn the halving finds five ones on the
-  left rather than one (read directly off the raw step trace s1173-s1187,
-  no heuristic involved), so the left-hand accounting genuinely differs
-  from the ordinary case that f_to_a covers.
-- Before building on this, rebuild the p measurement from the r0-anchored
-  frame B1 specified (r0 = the A-turn cell, fixed within an era) rather
-  than by RLE eyeballing. B1's `dt2.mjs`/`walldiff.mjs` already do this.
-
-Stated plainly: I do not currently know whether the obstacle is in the
-mathematics or in my bookkeeping, and the next session should settle that
-before writing more lemmas.
+WHAT REMAINS is only the wall induction: showing the four cases above are
+jointly closed, i.e. that the left string after each step is again one of
+these shapes. The observed wall cycle is
+  0110011 -> 110011 -> 011 -> 11 -> (blank) -> regrow,
+which is the odometer counting up while the halvings eat it back down.
+This is a `slots`-style induction over the counter, not new machine analysis.

@@ -213,6 +213,13 @@ Proof.
   introv. rewrite lpow_add, Str_app_assoc, lpow_shift'. reflexivity.
 Qed.
 
+Lemma pow_succ : forall (xs : list Sym) n (r : Stream Sym),
+  xs *> xs^^n *> r = xs^^(n + 1) *> r.
+Proof.
+  introv. replace (n + 1) with (S n) by lia.
+  rewrite lpow_S, Str_app_assoc. reflexivity.
+Qed.
+
 Lemma ones_comm : forall m (r : Stream Sym),
   [1; 1]^^m *> 1 >> r = 1 >> [1; 1]^^m *> r.
 Proof.
@@ -693,6 +700,55 @@ Lemma degen_cs : forall l r,
   l <* <[1] <* <[0] <{{F}} 0 >> [1] *> r -->*
   l <* <[1; 1] {{F}}> [0; 1] *> r.
 Proof. execute. Qed.
+
+(** The degenerate micro step: with a 1 rather than a 0 left of the
+    anchor the shuffle takes six steps, not ten, and leaves the standard
+    micro anchor behind it. Raw trace s1178-s1183. *)
+Lemma degen_micro : forall l r,
+  l <* <[1; 1] {{F}}> [0; 1] *> [0; 1] *> r -->*
+  l <* <[1; 1; 1] <* <[0] {{F}}> [0; 1] *> r.
+Proof. execute. Qed.
+
+(** THE ERA-START F-HALF PERIOD.
+
+    Here the wall's set bit sits against the turn cell, so degen_cs and
+    degen_micro deposit ones into the wall and the halving finds FIVE of
+    them rather than one. Four are halved into two fresh pairs, so the
+    pair count goes UP by one instead of down. That is not an anomaly:
+    the exact anchor parse shows P running 17, 18, 17, 18 across deep
+    turns while L grows by four every time. L, not P, is the monotone
+    quantity, and L stays even, which is all the halt guard needs. *)
+Lemma f_to_a_era : forall k m l,
+  l <* <[0; 0] <* <[1; 1] <* <[0] <{{F}}
+    [0; 1]^^(k + 3) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <* <[0] {{A}}>
+    [0; 1]^^(k + 4) *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  replace (k + 3) with (1 + (k + 2)) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  follow degen_cs.
+  replace (k + 2) with (1 + (k + 1)) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  follow degen_micro.
+  rewrite pow_succ.
+  replace (k + 1 + 1) with (k + 2) by lia.
+  follow sweep_F.
+  (* five ones on the left: halve four, keep one for the A-turn *)
+  follow (FA_halve 2 (l <* <[0; 0] <* <[1])
+    ([0; 1]^^(k + 2) *> [1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0)).
+  follow f1_to_A.
+  change ([0] *> [1] *> [0; 1]^^2 *> [0; 1]^^(k + 2) *> [1] *> [1] *>
+          [1; 1]^^(m + 1) *> [1] *> const 0)
+    with ([0; 1] *> [0; 1]^^2 *> [0; 1]^^(k + 2) *>
+          ([1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0)).
+  rewrite tail_regroup.
+  rewrite <- (Str_app_assoc ([0; 1]^^2) ([0; 1]^^(k + 2))), <- lpow_add.
+  replace (2 + (k + 2)) with (k + 4) by lia.
+  rewrite <- (lpow_shift' _ (k + 4) [0; 1]).
+  replace (2 * m + 6) with (S (2 * m + 5)) by lia.
+  finish.
+Qed.
 
 (** ** Startup: c0 to the first structured configuration. *)
 
