@@ -368,3 +368,27 @@ Consequences for the remaining plan:
   halving step, where the number of leading ones decides A-turn vs F-turn.
   That is the next thing to try, and it is a re-statement job, not new
   machine analysis.
+
+### CAVEAT on the finding above (same session, checked afterwards)
+
+The p figures I used to diagnose this come from `dturns.mjs`, a heuristic
+that counts trailing (1,0) pairs on the right. It is NOT reliable: over
+s952..s1896 it reports p = 18,17,18,17 while L grows 4,8,12,16,20 with
+perfect regularity, so p cannot really be oscillating -- the counter is
+mis-parsing the wall/pair boundary at A-turns, which is precisely the
+boundary under dispute. Therefore:
+
+- The claim "f_to_a_era gives p -> p+1" rests on my hand-derivation AND on
+  this unreliable measurement agreeing. They may both be wrong in the same
+  way (I identified the split by eye from the same ambiguous RLE).
+- What IS solid: at the era-start F-turn the halving finds five ones on the
+  left rather than one (read directly off the raw step trace s1173-s1187,
+  no heuristic involved), so the left-hand accounting genuinely differs
+  from the ordinary case that f_to_a covers.
+- Before building on this, rebuild the p measurement from the r0-anchored
+  frame B1 specified (r0 = the A-turn cell, fixed within an era) rather
+  than by RLE eyeballing. B1's `dt2.mjs`/`walldiff.mjs` already do this.
+
+Stated plainly: I do not currently know whether the obstacle is in the
+mathematics or in my bookkeeping, and the next session should settle that
+before writing more lemmas.
