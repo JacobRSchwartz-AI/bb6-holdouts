@@ -228,6 +228,25 @@ precisely punch_refill's hypothesis (the fill scan crosses an even gap and
 exits in D, never in E). `p -> p-1, L -> L+4` is now a theorem, not a
 census. Helper: tail_regroup (refold the solid block).
 
+**half_period_4 / half_period_2 (GREEN)** — the last turns of an era have
+fewer than five pairs. p=4: launch hands straight to the junction, no
+micro train. p=2: launch runs into the block; p2_glue (7 steps) puts C on
+its face. Both land the same recurrence (one pair consumed, block +4).
+
+**era_incr (GREEN)** — at p=1 the increment's terminal erase runs out of
+pairs, so C ends on the face of the block, not at a micro anchor. 26
+concrete steps, read off the raw trace at s778.
+
+**era_boundary (GREEN) — THE UNBOUNDEDNESS:**
+`l <* <[0;0] <* <[0;0] <{{F}} 0 >> [1;0] *> [1]^^(2*M+2) *> const 0 -->*
+ l <* <[1;1] <* <[0] {{A}}> [0;1]^^(M+3) *> [0] *> [1]^^4 *> const 0`
+Block consumed whole, tape becomes one solid run, halving it back rebuilds
+the pair region. **p' = M+3 = L/2+2 and L' = 4 are DERIVED**, not fitted:
+the run is 2M+7 (odd), so the halve yields M+3 pairs and the leftover 1
+feeds the A-turn. Helpers: shallow_A, right_edge (the right-edge CTX-2),
+f1_to_A, ones_succ'. This is what stops p running down -- without it the
+invariant is not closed and the orbit is only finitely long.
+
 **sweep_A_odd (GREEN, the full A-type half-period):**
 `l <* <[0] <* <[1] {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0
  -->* l <* <[1] {{B}}> 1 >> [0;1]^^(k+5) *> [1] *> [1] *> [1;1]^^(m+1) *> [1] *> const 0`
@@ -268,3 +287,24 @@ Compile: `wsl cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`
 4. Wall cascade: when the dot-gap exhausts, the wall's own e-segment gets
    halved and restructured (`ba.ee` -> `babee`), dots replenished â€” the same
    dynamic one level up, self-similar.
+
+## REMAINING WORK (as of 2026-08-18, 42 lemmas green, all axiom-free)
+
+The mathematical core is done: the recurrence (half_period), the increment
+at all carry depths (incr_full), and the era reset (era_boundary). What is
+left is the WALL BOOKKEEPING and the final assembly:
+
+1. F-turn -> A-turn for p >= 2: compose incr_full + sweep_F + the ending.
+   Blocked only on knowing the wall is lattice-aligned, i.e. on (3).
+2. The three wall sub-cases B1 isolated: degenerate CS (leaf, C-erase
+   4d+1), odd restructure (base +1 cell, 3 refills), even restructure
+   (base +4 cells, 5 refills). All have exact transcripts in this file;
+   all exit to the SAME normal form, so the glue above them is shared.
+3. `wall_ok : list Sym -> Prop` as an inductive predicate over the binary
+   odometer (slot k at 4-cell pitch), plus closure under (1)-(2). This is
+   the real remaining design work; incr_full's hypothesis shape is already
+   the right interface (it demands lattice-aligned [0;0] gaps, which is
+   exactly what excludes the degenerate case).
+4. `Inv (w, p, L) := wall_ok w /\ p >= 1 /\ 4 | L`, then
+   progress_nonhalt_cond with C = the A-turn anchor, base case from
+   startup, giving `Theorem nonhalt : ~ halts tm c0`. Then the CI job.
