@@ -461,3 +461,46 @@ scan in every proven lemma crosses an even gap, and the only halt rule is
 E reading 1. `half_period` shows one half period preserves block evenness
 with no side conditions at all. If the wall induction is completed, the
 non-halt theorem follows from what is already proven.
+
+## THE RESEARCH STEP: characterising the wall language (tools/parity-walllang.mjs)
+
+Census over 2e7 steps, at every deep F-turn, of the wall as a run sequence:
+
+  deep F-turns sampled: 1306
+  DISTINCT WALL SHAPES: 1244            <- essentially all different
+  leading 0-run:  1:10  2:645  3:188  5:1  6:227  7:223  9:1  10:2  14:1
+  all 0-runs:     1,2,3,4,5,6,7,8,9,10,11,14
+  all 1-runs:     2,3,4,5,6,7,8,9,10,11,12,20,21,22
+
+READ THIS CAREFULLY, IT REDIRECTS THE PROOF.
+
+1. The wall shape almost never repeats (1244/1306). There is NO finite set
+   of wall shapes to enumerate, so the plan of "characterise the reachable
+   wall language and case-split on it" is a dead end. My uniform 4-cell
+   odometer was a special case that happens to hold in the clean regime.
+2. But the RUN LENGTHS are small and slow-growing: gaps 1..14, slot runs
+   2..12 plus a growing base run (20,21,22 are the base). So the wall is a
+   long word over a small run alphabet, not an arbitrary string.
+3. Crucially, the wall is always a FINITE prefix followed by blank tape.
+
+=> THE RIGHT FORMULATION IS A GENERAL EXCURSION LEMMA, NOT A WALL GRAMMAR.
+
+Do not try to say which walls occur. Prove instead: for ANY left stream of
+the form `ws *> const 0` (ws finite), the increment excursion terminates
+and reaches the next deep turn. This is true for a structural reason that
+needs no census at all -- the excursion walks LEFT, and beyond ws the tape
+is all zeros, so the R1 no-carry branch (which needs only two adjacent
+zeros with a zero beyond) must eventually fire. Termination is a
+well-founded induction on ws.
+
+The pieces are already proven and left-generic in exactly the needed way:
+  cs_body      consumes two wall zeros, head 2 cells left
+  carry_step   consumes an occupied slot (erases a 1), head 4 cells left
+  degen_cs     the tape[c-1]=1 branch
+  bitset       the terminating write
+What is missing is only the dispatcher: a fixpoint over ws choosing among
+these four, plus its termination measure. That is ordinary Coq work over a
+finite list, NOT new machine analysis and NOT a wall grammar.
+
+This is the single most useful thing this session produced for finishing
+the proof, and it only became visible by measuring instead of assuming.
