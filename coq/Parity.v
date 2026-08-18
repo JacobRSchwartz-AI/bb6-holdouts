@@ -750,6 +750,91 @@ Proof.
   finish.
 Qed.
 
+(** ** The wall as a binary odometer.
+
+    Slot k of the counter occupies four cells at offset 4k+2 from the
+    deep-turn head: [1;1;0;0] when the bit is set, [0;0;0;0] when clear.
+    Checked against the tape: v=0 gives the blank wall (s390), v=1 gives
+    0,0,1,1 (s586), v=2 gives 0^6,1,1 (s778). *)
+Fixpoint slots (bs : list bool) : list Sym :=
+  match bs with
+  | nil => nil
+  | cons true bs' => [1; 1; 0; 0] ++ slots bs'
+  | cons false bs' => [0; 0; 0; 0] ++ slots bs'
+  end.
+
+Fixpoint bump (bs : list bool) : list bool :=
+  match bs with
+  | nil => cons true nil
+  | cons false bs' => cons true bs'
+  | cons true bs' => cons false (bump bs')
+  end.
+
+Lemma blank_app : forall n, (const 0 : Stream Sym) = [0]^^n *> const 0.
+Proof.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite <- IHn. apply const_unfold.
+Qed.
+
+(** The increment law: a counter has d trailing set bits above a clear one,
+    and bumping it clears those d and sets the next. The blank tape
+    supplies the clear bit when the stored bits are all set, which is why
+    the wall can always grow. *)
+Lemma slots_incr : forall bs, exists d bs',
+  slots bs *> const 0
+    = ([1; 1] ++ [0; 0])^^d *> [0; 0] *> [0; 0] *> slots bs' *> const 0
+  /\ slots (bump bs) *> const 0
+    = [0]^^(4 * d) *> [1; 1] *> [0; 0] *> slots bs' *> const 0.
+Proof.
+  induction bs as [| b bs IH].
+  - exists O, (@nil bool). simpl. split.
+    + exact (blank_app 4).
+    + reflexivity.
+  - destruct b.
+    + destruct IH as [d [bs' [E1 E2]]].
+      exists (S d), bs'. split.
+      * change (slots (true :: bs)) with ([1; 1; 0; 0] +> slots bs).
+        rewrite Str_app_assoc, E1. reflexivity.
+      * change (bump (true :: bs)) with (cons false (bump bs)).
+        change (slots (false :: bump bs))
+          with ([0; 0; 0; 0] +> slots (bump bs)).
+        rewrite Str_app_assoc, E2.
+        replace (4 * S d) with (4 + 4 * d) by lia.
+        rewrite lpow_add, Str_app_assoc. reflexivity.
+    + exists O, bs. split.
+      * change (slots (false :: bs)) with ([0; 0; 0; 0] +> slots bs).
+        rewrite Str_app_assoc. reflexivity.
+      * change (bump (false :: bs)) with (cons true bs).
+        change (slots (true :: bs)) with ([1; 1; 0; 0] +> slots bs).
+        rewrite Str_app_assoc. reflexivity.
+Qed.
+
+(** ** CLASS A IS CLOSED.
+
+    From a deep F-turn whose wall is the counter bs in the even alignment,
+    the machine reaches the next deep F-turn with the wall the counter
+    bumped, one pair fewer on each half, and the block four longer. *)
+Lemma classA_step : forall bs k m,
+  ([0; 0] *> slots bs *> const 0) <{{F}}
+    [0; 1]^^(k + 3) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  ([0; 0] *> slots (bump bs) *> const 0) {{A}}>
+    [0; 1]^^(k + 2) *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  destruct (slots_incr bs) as [d [bs' [E1 E2]]].
+  rewrite E1.
+  change ([0; 0] *> ([1; 1] ++ [0; 0])^^d *> [0; 0] *>
+          ([0; 0] *> slots bs' *> const 0))
+    with (([0; 0] *> slots bs' *> const 0)
+          <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0]).
+  follow f_to_a.
+  rewrite E2.
+  replace (4 * d + 2) with (2 + 4 * d) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
