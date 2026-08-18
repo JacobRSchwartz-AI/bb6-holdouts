@@ -943,6 +943,35 @@ Proof.
   finish.
 Qed.
 
+(** ** The general excursion.
+
+    The census (tools/parity-walllang.mjs) shows 1244 distinct wall shapes
+    in 1306 deep turns, so there is no wall grammar to enumerate. What is
+    true of EVERY wall is that it is a finite prefix over blank tape, and
+    the excursion walks left. Beyond the prefix everything is zero, so the
+    no-carry branch must fire: the excursion cannot run forever.
+
+    Base case: over blank tape the excursion is exactly cs_body then the
+    bit write. *)
+Lemma exc_blank : forall r,
+  (const 0) <{{F}} 0 >> r -->*
+  ([1; 1] *> const 0) {{C}}> 1 >> 1 >> 1 >> r.
+Proof.
+  introv.
+  rewrite (blank_app 2) at 1.
+  follow cs_body.
+  rewrite (blank_app 2) at 1.
+  follow bitset.
+  finish.
+Qed.
+
+(** Inductive step: an occupied slot is consumed by the carry and the
+    excursion continues two cells deeper, so the finite prefix strictly
+    shrinks. This is the termination measure. *)
+Lemma exc_carry : forall ws r,
+  ((ws *> const 0) <* <[1; 1]) <{{F}} r -->* (ws *> const 0) <{{F}} [0; 1] *> r.
+Proof. introv. apply carry_step. Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
