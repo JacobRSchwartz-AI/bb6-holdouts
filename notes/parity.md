@@ -119,6 +119,59 @@ B1's instruments (scratchpad): phases.mjs (per-phase transcript; `node
 phases.mjs 14535 14790` = one whole punch/halve cycle), parity1e9.mjs,
 scanctx.mjs, restr.mjs, anchors.mjs, rewrite.mjs, odo3.mjs, eras.mjs.
 
+## BOUNDARY TRANSCRIPTS (B1 second pass, 2026-08-18) — CORRECTIONS + exact anatomy
+
+CORRECTIONS to the wall-law section above (B1 second pass supersedes):
+1. **No phase bit.** BLK = (1;0)^p uniformly at every deep turn; A-turn head
+   = blk-1, F-turn head = blk-2. (In my [0;1]-framed Coq lemmas the r0 cell
+   absorbs into the pairs: A faces `0 (10)^p 1^L` = `(01)^p 0 1^L` — same.)
+2. **Odometer frame:** r0 = the A-turn cell (fixed within an era), slot k =
+   cells (r(4k+3), r(4k+4)); +1 per A->A period, carry depth = ruler fn.
+3. **z=4 unreachable.** z=3 <=> slot0 occupied (carry); z>=5(obs >=7) <=> R1.
+
+PHASE MAP (one A->A period): A0 does NOT touch the wall. A-half = launch,
+micro train, punch (C-erase L, CTX-L g=L+2), deep halve -> F0 @ r0-1.
+**The increment is a single 18-42 step excursion opened by the F0 turn**,
+then the F-half runs its own micro train, punch with L'=L+4, halve -> A0.
+
+THE INCREMENT EXCURSION (Coq-ready):
+- CS body (9 steps): F0@c, B0@c-1(w1), C0@c(w0), FILL g=2 (D0@c+1, E0@c,
+  D1@c-1) -> head F@c-2, cells c-1,c,c+1 all 1. As a stream lemma:
+  `l <* <[0;0] <{{F}} 0 >> r -->* l <{{F}} 1 >> 1 >> 1 >> r`  (execute).
+- Dispatch on tape[c-2]: 0 => R1 tail (B0 sets r4, micro-ish shuffle, B0
+  sets r3, C-erase(4) over the 3 CS-ones + first pair 1, C0 at pair 0,
+  D1 safe) -> micro train. 1 with run exactly 2 => carry: HALVE(2) =
+  FA_halve n=1 (3 steps), recurse at c-4. 1 with run >=3 => RESTRUCTURE.
+- R2 depth-1 verified step-exact (s9168-9197): clear of r4 = the A1 erase
+  inside HALVE(2); clear of r3 = the terminal C-erase; set of r8,r7 = two
+  B0 writes. Depth-d = d x HALVE(2) interleaved with (d+1) x CTX-2.
+  OPEN: s11444 depth-2-into-base variant shows one FEWER CTX-2 - third
+  sub-case needing its own transcript before the general R2 lemma.
+
+R1 INSTANCE (s8012->s8603): `<[1;1;0^8] {{F}}> [0^2;(1;0)^45;1^16]` ->
+  `<[1;1;0^5;1;1;0^2] {{A}}> [0;(1;0)^44;1^20]` (p-1, L+4, slot0 set).
+R2 INSTANCE (s9168->s9763): `<[1;1;0^5;1;1;0] {{F}}> [0^2;(1;0)^43;1^24]` ->
+  `<[1;1;0;1;1;0^6] {{A}}> [0;(1;0)^42;1^28]` (slot0->slot1).
+
+RESTRUCTURE (odd base, s15804->s16363): CS, HALVE(2) carry, CS, then head
+meets base 1^5 (run>=3): HALVE(5) runs THROUGH it, A0@-33 = the extra deep
+turn extends base one cell LEFT; 3 B0 refill writes rebuild base solid
+1 cell left; freed cell = one new slot; then normal half-period. Net:
+base 1^5 shifts left 1, counter zone 0^7 -> 0^8, p-1, L+4.
+**Even-base sub-case differs** (s19916, base 1^6: exits F0, leftmost 1
+jumps 4 cells, longer tail) - budget a separate lemma; needs transcript.
+
+ERA BOUNDARY (s5913->s6311, p=1): R1 increment; last 2 micros; punch
+C-erase(88=L); CTX-L g=90; SHALLOW A-turn (halve meets wall after 1 one);
+tape = solid 1^(L+8); B-scan right, B0 writes at right edge; an extra
+CTX-2 AT THE RIGHT EDGE (same lemma, different neighborhood); HALVE(L+5)
+keeps/erases alternately -> A0. p' = (L+8-4)/2 = L/2+2 exact; L' = 4.
+
+B1 instruments (scratchpad): dt2.mjs (deep-turn configs in busycoq
+notation), walldiff.mjs (absolute-aligned wall cells - cracked the slot
+geometry), wtrace.mjs (per-state-run transcript with wall window),
+period.mjs (per-interval anatomy), dt_all.txt (278 deep turns to 300k).
+
 ## Coq progress (coq/Parity.v, all GREEN in WSL against busycoq upstream)
 
 Atoms: B_ones, C_ones, DE_fill (D-first even fill), ED_fill (E-first),
