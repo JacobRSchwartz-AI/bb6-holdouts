@@ -835,6 +835,28 @@ Proof.
   finish.
 Qed.
 
+(** ** THE FULL PERIOD (class A).
+
+    Deep A-turn to deep A-turn: the pair count drops by two, the block
+    grows by eight, and the wall counter increments by one. Everything
+    here is a theorem about the machine, with no side conditions beyond
+    the shapes themselves. *)
+Theorem full_period : forall bs k m,
+  ([0; 0] *> slots bs *> const 0) {{A}}>
+    [0; 1]^^(k + 5) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  ([0; 0] *> slots (bump bs) *> const 0) {{A}}>
+    [0; 1]^^(k + 3) *> [0] *> [1]^^(2 * m + 10) *> const 0.
+Proof.
+  introv.
+  follow half_period.
+  replace (k + 4) with (k + 1 + 3) by lia.
+  replace (2 * m + 6) with (2 * (m + 2) + 2) by lia.
+  follow classA_step.
+  replace (k + 1 + 2) with (k + 3) by lia.
+  replace (2 * (m + 2) + 6) with (2 * m + 10) by lia.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
