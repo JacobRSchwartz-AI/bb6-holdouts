@@ -35,10 +35,16 @@ for(let s=0;s<MAX;s++){
         while(w.slice(i,i+4)==='1100'){d++;i+=4;}
         return (w[i]==='0'&&w[i+1]==='0')?d:null; })();
       const classB=(w.slice(0,5)==='01100');
+      const restr=(()=>{ if(w[0]!=='0'||w[1]!=='0')return null;
+        let i=2,d=0;
+        while(w.slice(i,i+4)==='1100'){d++;i+=4;}
+        let n=0; while(w[i+n]==='1')n++;
+        return n>=3?{d,n}:null; })();
       if(r.P===1) tag = (classA!==null)?'era_boundary_d(d='+classA+')':'BOUNDARY-UNCOVERED';
       else if(r.P<3) tag='F:P='+r.P;
       else if(classA!==null) tag='f_to_a(d='+classA+')';
       else if(classB) tag='f_to_a_era';
+      else if(restr) tag='restructure_'+(restr.n%2?'odd':'even');
       else tag='F-UNCOVERED:'+w.slice(0,12);
     }
     tally[tag]=(tally[tag]??0)+1;

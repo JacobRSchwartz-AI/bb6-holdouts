@@ -418,3 +418,46 @@ REMAINING, now precisely scoped and measurable:
 
 Run `node tools/parity-cover.mjs 20000000` after each new lemma; the
 uncovered count is the honest progress metric.
+
+## COVERAGE AFTER THE RESTRUCTURES (2026-08-18, final measurement)
+
+  1851 / 2492 deep turns covered by proven lemmas = 74.3%
+
+  1087 half_period     390 f_to_a(d=0)      172 restructure_odd
+     8 half_period_2     6 f_to_a(d=1,2,3)  172 restructure_even
+     7 half_period_4     5 f_to_a_era         4 era_boundary_d
+   349 F-UNCOVERED     288 RIGHT-UNPARSED     4 BOUNDARY-UNCOVERED
+
+The restructures took the gap from 730 to 349, as predicted. What is left
+is a DIFFERENT thing, and it is worth naming precisely because it is the
+real remaining research content:
+
+  001100011000   00 | 1100 | 0 | 11 | 000    gap of ONE zero between slots
+  000110000000   000 | 11 | 0000000          first slot at offset THREE
+
+Every lemma I have (cs_body, excursion_chain, incr_full) assumes the wall
+is `[0;0] ++ (1100)^d ++ [0;0]`: first slot at offset 2, gaps of exactly 2.
+These walls have offset 3 and gaps of 1. So the wall is NOT a uniform
+4-cell-pitch odometer in general -- the pitch varies, which is the deeper
+form of the same drift the restructures cause.
+
+Mechanically what happens on such a wall: cs_body still fires (it only
+needs two zeros), the head emerges two cells left, and THEN the dispatch
+finds a 1 where the clean model expects a 0 -- i.e. it lands in the
+degenerate branch (degen_cs, proven) rather than the carry branch. So the
+pieces exist; what is missing is a general excursion lemma that dispatches
+on the wall cell by cell with a well-founded induction, instead of
+excursion_chain's fixed (1100)^d pattern.
+
+HONEST ASSESSMENT. That generalisation is the remaining work and it is not
+a rewrite of existing lemmas -- it is a new induction over an alphabet of
+wall shapes I have not characterised. I do not have a proof that the
+reachable wall language is finitely describable, and B1's data (30 distinct
+prefixes at 2e7 steps, still growing) does not settle it either way. This
+is the honest boundary of the campaign as of this session.
+
+WHAT IS SOLID: the parity core is complete and unconditional. Every fill
+scan in every proven lemma crosses an even gap, and the only halt rule is
+E reading 1. `half_period` shows one half period preserves block evenness
+with no side conditions at all. If the wall induction is completed, the
+non-halt theorem follows from what is already proven.
