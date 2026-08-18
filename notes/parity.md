@@ -504,3 +504,47 @@ finite list, NOT new machine analysis and NOT a wall grammar.
 
 This is the single most useful thing this session produced for finishing
 the proof, and it only became visible by measuring instead of assuming.
+
+## NEXT SESSION STARTS HERE (state at end of 2026-08-18)
+
+63 results in coq/Parity.v, every one `Closed under the global context`.
+File compiles clean: `cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`.
+
+DONE AND UNCONDITIONAL -- the parity core:
+  half_period / _4 / _2   one half period consumes a pair, grows the block
+                          by four, PRESERVES BLOCK EVENNESS. No side
+                          conditions. Evenness is exactly what makes the
+                          D/E fill scan exit in D; E-reads-1 is the only
+                          halt rule. This is the whole safety argument.
+  punch_refill            the fill crosses an even gap, by construction.
+
+DONE -- the wall machinery:
+  slots / bump / slots_incr      odometer + increment law, in the kernel
+  classA_step / classB_step      both alignments closed
+  full_period                    A-turn to A-turn, counter bumped
+  era_boundary_d / _slots        p' = L/2+2, L' = 4
+  f_to_a / f_to_a_era            both F-half cases
+  degen_cs / restructure_odd / restructure_even
+  exc_blank / exc_carry          general-excursion ends
+
+THE ONE REMAINING PIECE, precisely:
+A 4-way dispatcher over the finite wall prefix ws, by well-founded
+induction on |ws|, with a DISJUNCTIVE conclusion. Cases on the first two
+cells of the left stream (all four branch lemmas already proven):
+  0,0 and right starts 0  -> cs_body,     recurse on ws minus 2
+  1,1                     -> carry_step,  recurse on ws minus 2
+  0,0 and right starts 1  -> bitset,      TERMINATE (C-facing)
+  0,1                     -> degen_cs,    TERMINATE (micro anchor)
+  1,0                     -> F1 then A0,  TERMINATE (A-turn)
+Then: the descent induction on P (half_period* + the F-half lemmas down to
+P=1, then era_boundary), and progress_nonhalt_cond with C = the deep-turn
+anchor. Base case from `startup`.
+
+MEASURE PROGRESS WITH: node tools/parity-cover.mjs 20000000
+Currently 1851/2492 deep turns (74.3%) discharged by a proven lemma. That
+number is the honest metric; it should reach 2492 before the assembly is
+attempted.
+
+CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA is
+still an OPEN BB(6) holdout. Nothing here has been submitted anywhere, and
+nothing should be until `~ halts tm c0` compiles.
