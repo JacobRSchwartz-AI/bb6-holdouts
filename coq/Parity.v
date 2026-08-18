@@ -682,6 +682,18 @@ Proof.
   finish.
 Qed.
 
+(** ** The degenerate CS body.
+
+    At the first F-turn of a new era the wall's set bit sits immediately
+    left of the turn cell, so the B-scan preserves it and turns one cell
+    to the right: C lands at c+1, the fill reads a 1 at once (gap 0, not
+    2), and the excursion is five steps with no carry. This is B1's
+    fourth dispatch branch, keyed on tape[c-1] = 1. Raw trace s1173. *)
+Lemma degen_cs : forall l r,
+  l <* <[1] <* <[0] <{{F}} 0 >> [1] *> r -->*
+  l <* <[1; 1] {{F}}> [0; 1] *> r.
+Proof. execute. Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
