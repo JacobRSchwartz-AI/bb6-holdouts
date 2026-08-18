@@ -328,3 +328,43 @@ The restructure sub-cases (odd/even base) are NOT needed for 1-4: they are
 what keeps the counter's own representation finite over very long runs, and
 the invariant in (2) admits them as further `slots` values. Their exact
 transcripts are above if they turn out to be needed.
+
+## FINDING 2026-08-18 (late): why the wall/pair split is not invariant
+
+Composing degen_cs forward exposed a real structural fact, not a proof bug.
+
+At an ORDINARY F-turn (f_to_a, PROVEN) the left carries exactly one 1 when
+the halving starts, so the halve emits no extra pairs and p goes k+3 -> k+2:
+a clean decrease.
+
+At the ERA-START F-turn the two preceding steps (degen_cs, then the
+degenerate micro step) DEPOSIT ones into the wall, so when sweep_F's halving
+runs it finds FIVE ones, not one. It halves four of them into two fresh
+`[0;1]` pairs and leaves one for the A-turn. Those two pairs are wall
+material converted into pair-region material.
+
+So the boundary between "wall" and "pair region" is not preserved by the
+dynamics -- the halving eats into the wall. This is the same phenomenon B1
+reported from the other side ("restructures shift a run one cell left",
+"the fixed-slot decode drifts"), and it is why the naive parameterization
+(wall on the left, [0;1]^^p on the right, disjoint) cannot close.
+
+Consequences for the remaining plan:
+- f_to_a_era CANNOT be stated as p -> p-1 with the same split. Attempting
+  it gives p -> p+1, which contradicts the census, because the extra pairs
+  are miscounted wall cells.
+- The right move is to stop tracking p and the wall separately. For NONHALT
+  the arithmetic is not needed at all: progress_nonhalt_cond only needs an
+  invariant closed under -->+, and the ONLY safety obligation is that every
+  D/E fill crosses an even gap. That obligation is discharged by
+  punch_refill's hypothesis (block = 2*M) plus the CTX-0/CTX-2 cases, none
+  of which mention p.
+- So the promising reformulation is an invariant on the RIGHT side alone
+  ("head at a deep turn, block length even") with the entire left stream
+  existentially quantified and only required to be eventually-blank. Every
+  lemma already proven is left-generic in exactly this sense (l is a free
+  variable in all of them), which is why they compose so freely.
+  The open question is whether the left can be left fully abstract at the
+  halving step, where the number of leading ones decides A-turn vs F-turn.
+  That is the next thing to try, and it is a re-statement job, not new
+  machine analysis.
