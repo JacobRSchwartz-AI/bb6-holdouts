@@ -972,6 +972,121 @@ Lemma exc_carry : forall ws r,
   ((ws *> const 0) <* <[1; 1]) <{{F}} r -->* (ws *> const 0) <{{F}} [0; 1] *> r.
 Proof. introv. apply carry_step. Qed.
 
+(** The last atom the dispatcher needs: the bit write when the cell beyond
+    the turn already carries a 1. Three steps rather than seven, and it
+    lands C on exactly the shape `bitset` does. *)
+Lemma bitset_odd : forall l r,
+  l <* <[1] <* <[0] <{{F}} 1 >> r -->* l <* <[1; 1] {{C}}> 1 >> r.
+Proof. execute. Qed.
+
+(** THE DISPATCHER.
+
+    Only two right-hand phases occur: P0, the head faces `0 1 ..`, and P1,
+    it faces `1 ..`. Reading the head cell and the one beyond it gives four
+    shapes per phase, and every one of the eight is an atom already proved:
+
+      phase  head,next   atom          effect
+      P0     0,0         cs_body       -> P1, two wall cells consumed
+      P0     0,1         degen_cs      terminates, F facing right
+      P0     1,0         f1_to_A       terminates, A-turn
+      P0     1,1         carry_step    -> P0, two wall cells consumed
+      P1     0,0         bitset        terminates, C facing right
+      P1     0,1         bitset_odd    terminates, C facing right
+      P1     1,0         f1_to_A       terminates, A-turn
+      P1     1,1         carry_step    -> P0, two wall cells consumed
+
+    So the excursion ends in one of three configurations, whatever the
+    wall. *)
+Definition ExcOut (c : Q * tape) : Prop :=
+  (exists l r, c = l <* <[1; 1] {{C}}> 1 >> r)
+  \/ (exists l r, c = l <* <[1; 1] {{F}}> [0; 1] *> r)
+  \/ (exists l r, c = l {{A}}> [0] *> [1] *> r).
+
+Lemma exc_blank_1 : forall r,
+  exists c, ((const 0 : Stream Sym) <{{F}} 1 >> r) -->* c /\ ExcOut c.
+Proof.
+  introv.
+  exists (((const 0 : Stream Sym) <* <[1; 1]) {{C}}> 1 >> r). split.
+  - rewrite (blank_app 2) at 1. follow bitset. finish.
+  - left. exists (const 0 : Stream Sym), r. reflexivity.
+Qed.
+
+Lemma exc_blank_0 : forall r,
+  exists c, ((const 0 : Stream Sym) <{{F}} 0 >> 1 >> r) -->* c /\ ExcOut c.
+Proof.
+  introv.
+  destruct (exc_blank_1 (1 >> 1 >> 1 >> r)) as [c [Hc HO]].
+  exists c. split; [| exact HO].
+  rewrite (blank_app 2) at 1. follow cs_body. exact Hc.
+Qed.
+
+(** Every excursion over every finite wall terminates, in one of the three
+    ExcOut shapes. Induction on a bound for the wall's length: the two
+    non-terminating branches each eat two cells, and past the end of the
+    wall the tape is blank, where the walk is exactly cs_body then the bit
+    write. No census, no grammar, no assumption about which walls occur. *)
+Lemma excursion_gen : forall n ws r,
+  length ws <= n ->
+  (exists c, ((ws *> const 0) <{{F}} 0 >> 1 >> r) -->* c /\ ExcOut c)
+  /\ (exists c, ((ws *> const 0) <{{F}} 1 >> r) -->* c /\ ExcOut c).
+Proof.
+  induction n as [| n IH]; introv Hlen.
+  - destruct ws as [| a ws].
+    + split; [apply exc_blank_0 | apply exc_blank_1].
+    + simpl in Hlen. lia.
+  - destruct ws as [| a ws].
+    { split; [apply exc_blank_0 | apply exc_blank_1]. }
+    assert (E : exists b ws',
+      (cons a ws) *> const 0 = a >> b >> (ws' *> const 0)
+      /\ length ws' <= n).
+    { destruct ws as [| b ws'].
+      - exists S0, (@nil Sym). split.
+        + simpl. rewrite <- const_unfold. reflexivity.
+        + simpl. lia.
+      - exists b, ws'. split.
+        + reflexivity.
+        + simpl in Hlen. lia. }
+    destruct E as [b [ws' [E Hlen']]].
+    rewrite E.
+    destruct a; destruct b.
+    + split.
+      * destruct (IH ws' (1 >> 1 >> 1 >> r) Hlen') as [_ [c [Hc HO]]].
+        exists c. split; [| exact HO]. follow cs_body. exact Hc.
+      * exists (((ws' *> const 0) <* <[1; 1]) {{C}}> 1 >> r). split.
+        { follow bitset. finish. }
+        { left. exists (ws' *> const 0), r. reflexivity. }
+    + split.
+      * exists (((ws' *> const 0) <* <[1; 1]) {{F}}> [0; 1] *> r). split.
+        { follow degen_cs. finish. }
+        { right. left. exists (ws' *> const 0), r. reflexivity. }
+      * exists (((ws' *> const 0) <* <[1; 1]) {{C}}> 1 >> r). split.
+        { follow bitset_odd. finish. }
+        { left. exists (ws' *> const 0), r. reflexivity. }
+    + split.
+      * exists ((ws' *> const 0) {{A}}> [0] *> [1] *> 0 >> 1 >> r). split.
+        { follow f1_to_A. finish. }
+        { right. right. exists (ws' *> const 0), (0 >> 1 >> r). reflexivity. }
+      * exists ((ws' *> const 0) {{A}}> [0] *> [1] *> 1 >> r). split.
+        { follow f1_to_A. finish. }
+        { right. right. exists (ws' *> const 0), (1 >> r). reflexivity. }
+    + split.
+      * destruct (IH ws' (0 >> 1 >> r) Hlen') as [[c [Hc HO]] _].
+        exists c. split; [| exact HO]. follow carry_step.
+        cbn [Str_app]. exact Hc.
+      * destruct (IH ws' (1 >> r) Hlen') as [[c [Hc HO]] _].
+        exists c. split; [| exact HO]. follow carry_step.
+        cbn [Str_app]. exact Hc.
+Qed.
+
+(** The excursion, stated the way the rest of the proof consumes it: from
+    ANY deep F-turn -- any finite wall, any right-hand tail -- the machine
+    reaches one of three shapes. *)
+Corollary excursion : forall ws r,
+  exists c, ((ws *> const 0) <{{F}} 0 >> 1 >> r) -->* c /\ ExcOut c.
+Proof.
+  introv. apply (excursion_gen (length ws) ws r). lia.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
