@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { parseMachine } from '../src/machine.mjs';
 import { runMacro } from '../src/macro.mjs';
 
-const machines = readFileSync('data/open.txt', 'utf8').trim().split('\n');
+const machines = readFileSync(process.argv[2] ?? 'data/open.txt', 'utf8').trim().split('\n');
 const OPS = 100000;
 const KS = [1, 2, 3, 4];
 

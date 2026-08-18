@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { parseMachine } from '../src/machine.mjs';
 import { huntMachine } from '../src/hunt.mjs';
 
-const machines = readFileSync('data/open.txt', 'utf8').trim().split('\n');
+const machines = readFileSync(process.argv[2] ?? 'data/open.txt', 'utf8').trim().split('\n');
 mkdirSync('certs', { recursive: true });
 
 const tally = {};
