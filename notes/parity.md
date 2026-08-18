@@ -150,6 +150,29 @@ THE INCREMENT EXCURSION (Coq-ready):
 
 R1 INSTANCE (s8012->s8603): `<[1;1;0^8] {{F}}> [0^2;(1;0)^45;1^16]` ->
   `<[1;1;0^5;1;1;0^2] {{A}}> [0;(1;0)^44;1^20]` (p-1, L+4, slot0 set).
+**B1 CORRECTION (second pass): the landing-cell dispatch is FOUR-way,
+keyed on tape[c-1] FIRST** (149/149 agreement to s400000):
+- (D) tape[c-1]=1 -> DEGENERATE CS: B preserves that 1 and turns one cell
+  RIGHT, so C0 lands at c+1, D starts at c+2 = the low cell HALVE(2) left
+  set, reads 1 -> gap 0 (CTX-0, not CTX-2). Leaf case, no recursion;
+  terminal C-erase is 4d+1, not 4d+4. Fires when the carry chain runs out
+  of lattice-aligned slots and meets a base run sitting +1 off-lattice
+  (v = 2^m - 1 mod 2^m); one-shot per wall layout (it fuses the pair into
+  the base and re-aligns). Two instances to s400000: s11444, s147336.
+- (A) tape[c-1]=0, tape[c-2]=0 -> R1 set, excursion ends.
+- (B) tape[c-1]=0, run at c-2 = 2 -> HALVE(2), recurse at c-4.
+- (C) tape[c-1]=0, run at c-2 = n>=3 -> RESTRUCTURE, split on n mod 2.
+  **n odd -> exits A0 (base extends 1 cell left, 3 refills); n even ->
+  exits F0 (base jumps 4 cells left, 5 refills).** 33/33 exact.
+NOTE: the earlier line "depth-d = d x HALVE(2) + (d+1) x CTX-2" is WRONG in
+the degenerate case; and the even-restructure exit figure is 0^10 at event
+exit (0^8 only later at the next A-anchor).
+UNIFIED POST-CONDITION (all three wall-cascade sub-cases):
+`const 0 <* <[BASE; 0^9] {{F}}> [0; (1;0)^^(p-1); 1^^L]`, L unchanged, one
+pair consumed; only BASE differs (anomaly 1^4; odd 1^5; even 1^2 0^3 1^4).
+Fill audits inside all windows: 9/5/5 fills, gaps in {0,2}, all exit D1.
+Fresh 2e7-step global run: 2,498,993 fills, ZERO odd.
+
 R2 INSTANCE (s9168->s9763): `<[1;1;0^5;1;1;0] {{F}}> [0^2;(1;0)^43;1^24]` ->
   `<[1;1;0;1;1;0^6] {{A}}> [0;(1;0)^42;1^28]` (slot0->slot1).
 
@@ -182,6 +205,28 @@ anchor, 6 steps), junction (last 2 pairs -> C at block face, deposits 1^6),
 punch_refill (C erase 2m + fill: `l <* <[1] {{C}}> [1]^^(2m) *> const 0
 -->* l <{{F}} 1 >> 1 >> [1;1]^^m *> 1 >> const 0`), ones_comm, lpow_pair.
 Startup: c0 --> first structured config (8 steps).
+
+**incr_full (GREEN) — the odometer increment at ANY carry depth, one lemma:**
+`l <* <[0;0] <* ([1;1] ++ [0;0])^^d <* <[0;0] <{{F}} 0 >> [1;0] *> [1;0] *> [1] *> r
+ -->* l <* <[1;1] <* [0]^^(4*d+4) {{F}}> [0;1;0;1] *> r`
+d occupied lattice slots cleared, slot d set, zero field ends 4d+4 wide.
+Built from cs_body (9 steps, the CTX-2 fill), carry_step (= FA_halve 1),
+excursion_chain (induction on d — this is where the 4-cell pitch is
+DERIVED), bitset, C_phase. Verified vs simulator: d=0 -> s8031, d=1 -> s9199.
+The hypothesis shape (lattice-aligned [0;0] gaps) is exactly what excludes
+B1's degenerate case, so this lemma is sound as stated.
+
+**sweep_F (GREEN)** — the F-half period from the micro anchor the increment
+hands over, through micros/junction/punch/refill/halve to the wall face.
+
+**half_period (GREEN) — THE INVARIANT STEP:**
+`l {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0 -->*
+ l <{{F}} [0;1]^^(k+4) *> [0] *> [1]^^(2*m+6) *> const 0`
+One half period consumes exactly ONE pair and grows the block by exactly
+FOUR. Block enters 2m+2, leaves 2m+6: evenness preserved, which is
+precisely punch_refill's hypothesis (the fill scan crosses an even gap and
+exits in D, never in E). `p -> p-1, L -> L+4` is now a theorem, not a
+census. Helper: tail_regroup (refold the solid block).
 
 **sweep_A_odd (GREEN, the full A-type half-period):**
 `l <* <[0] <* <[1] {{A}}> [0;1]^^(k+5) *> [0] *> [1]^^(2*m+2) *> const 0

@@ -199,6 +199,14 @@ Proof.
     simpl. rewrite IHm. reflexivity.
 Qed.
 
+Lemma lpow_push : forall (x : Sym) n (r : Stream Sym),
+  [x]^^n *> x >> r = x >> [x]^^n *> r.
+Proof.
+  induction n; introv.
+  - reflexivity.
+  - simpl. rewrite IHn. reflexivity.
+Qed.
+
 Lemma ones_comm : forall m (r : Stream Sym),
   [1; 1]^^m *> 1 >> r = 1 >> [1; 1]^^m *> r.
 Proof.
@@ -290,6 +298,151 @@ Proof.
      them is not needed: F now faces the wall top `.. 0 1`. One F1 step
      and the A0 turn close it. *)
   execute.
+Qed.
+
+(** ** The increment excursion (the F0 deep turn's wall write).
+
+    CS body: 9 steps. F consumes two wall zeros, B0 writes a 1, the CTX-2
+    fill (gap exactly 2) absorbs into it; F emerges two cells deeper. *)
+Lemma cs_body : forall l r,
+  l <* <[0; 0] <{{F}} 0 >> r -->* l <{{F}} 1 >> 1 >> 1 >> r.
+Proof. execute. Qed.
+
+(** Carry: the occupied slot pair under F is halved (= FA_halve n=1),
+    clearing the high cell; F emerges four cells deeper with the slot's
+    low cell exposed for the terminal erase. Already provable directly. *)
+Lemma carry_step : forall l r,
+  l <* <[1; 1] <{{F}} r -->* l <{{F}} [0; 1] *> r.
+Proof.
+  introv. exact (FA_halve 1 l r).
+Qed.
+
+(** R1 tail: F meets an empty slot; two B0 writes set the bit pair, the
+    terminal C-erase clears the scratch and the excursion hands the head
+    to the micro-train at a standard micro anchor. Ground truth: raw
+    steps s8018-s8035 (B1 transcript, R1 instance). *)
+Lemma r1_tail : forall l r,
+  l <* <[0; 0] <{{F}} [1; 1; 1] *> [1; 0] *> [1; 0] *> [1; 0] *> r -->*
+  l <* <[1; 1] <* <[0; 0; 0] <* <[1; 1] <* <[0] {{F}}> [0; 1] *> [0] *> r.
+Proof. execute. Qed.
+
+(** Bit set: F meets the empty slot with the CS junk to its right; two
+    B0 writes set the bit pair and C emerges facing the junk. 8 steps. *)
+Lemma bitset : forall l r,
+  l <* <[0; 0] <{{F}} 1 >> r -->* l <* <[1; 1] {{C}}> 1 >> r.
+Proof. execute. Qed.
+
+(** Train handoff: after the terminal erase, the head re-enters the pair
+    region and settles on a standard micro anchor. *)
+Lemma tail_train : forall l r,
+  l <* <[0] {{C}}> [0; 1; 0; 1] *> r -->*
+  l <* <[1; 1] <* <[0] {{F}}> [0; 1] *> r.
+Proof. execute. Qed.
+
+(** The carry chain: d occupied slots are cleared one by one, each by a
+    CS body plus a 2-halving; the junk left behind is solid 1s of length
+    4d+3. The 4-cell slot pitch is derived here, not assumed. *)
+Lemma excursion_chain : forall d l r,
+  l <* ([1; 1] ++ [0; 0])^^d <* <[0; 0] <{{F}} 0 >> r -->*
+  l <{{F}} [1]^^(4 * d + 3) *> r.
+Proof.
+  induction d; introv.
+  - follow cs_body. finish.
+  - rewrite lpow_S, Str_app_assoc.
+    follow cs_body.
+    follow carry_step.
+    follow IHd.
+    replace (4 * S d + 3) with (S (S (S (S (4 * d + 3))))) by lia.
+    rewrite !lpow_push. finish.
+Qed.
+
+(** The full increment: carry chain, bit set, terminal erase of the junk
+    plus the first pair, handing the head to the micro train at a standard
+    micro anchor. This is R1 and R2 at every carry depth d in one
+    statement: d occupied slots are cleared, slot d is set, and the wall's
+    zero field ends up 4d+4 wide. *)
+Lemma incr_full : forall d l r,
+  l <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0] <{{F}}
+    0 >> [1; 0] *> [1; 0] *> [1] *> r -->*
+  l <* <[1; 1] <* [0]^^(4 * d + 4) {{F}}> [0; 1; 0; 1] *> r.
+Proof.
+  introv.
+  follow excursion_chain.
+  replace (4 * d + 3) with (S (4 * d + 2)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow bitset.
+  change ([1; 0] *> [1; 0] *> [1] *> r) with (1 >> 0 >> [1; 0] *> [1] *> r).
+  rewrite lpow_push.
+  change (1 >> 1 >> [1]^^(4 * d + 2) *> 0 >> [1; 0] *> [1] *> r)
+    with ([1]^^(S (S (4 * d + 2))) *> 0 >> [1; 0] *> [1] *> r).
+  replace (S (S (4 * d + 2))) with (4 * d + 4) by lia.
+  follow C_phase.
+  execute.
+Qed.
+
+(** ** The F-half period: from the micro anchor the increment hands over,
+    through the micro train, junction, punch-through, even refill and the
+    halving, to the face of the wall. Mirror of sweep_core with no launch
+    (the increment already placed the head on a micro anchor). *)
+Lemma sweep_F : forall k m l,
+  l <* <[0] {{F}}> [0; 1]^^(k + 2) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <* <[1] <{{F}} [0; 1]^^(k + 2) *> [1] *> [1] *> [1; 1]^^(m + 1)
+    *> [1] *> const 0.
+Proof.
+  introv.
+  rewrite lpow_add, Str_app_assoc.
+  change ([0; 1]^^2 *> [0] *> [1]^^(2 * m + 2) *> const 0)
+    with ([0; 1; 0; 1] *> [0] *> [1]^^(2 * m + 2) *> const 0).
+  follow micro_all.
+  replace (2 * m + 2) with (S (2 * m + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow junction.
+  change (l <* <[1; 1]^^k <* <[1; 1; 1; 1; 1; 1])
+    with (l <* <[1; 1]^^k <* <[1]^^5 <* <[1]).
+  change ([1] *> [1]^^(2 * m + 1) *> const 0)
+    with ([1]^^(S (2 * m + 1)) *> const 0).
+  replace (S (2 * m + 1)) with (2 * (m + 1)) by lia.
+  follow punch_refill.
+  rewrite lpow_pair, !ones_join.
+  replace (5 + 2 * k) with (2 * (k + 2) + 1) by lia.
+  rewrite lpow_add, <- lpow_pair, Str_app_assoc.
+  follow FA_halve.
+  rewrite <- lpow_add.
+  finish.
+Qed.
+
+(** ** The recurrence.
+
+    Regrouping the refilled run: the block emitted by a half period is
+    solid, so it refolds into a single power of ones. *)
+Lemma tail_regroup : forall m (r : Stream Sym),
+  [1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> r = [1]^^(2 * m + 5) *> r.
+Proof.
+  introv.
+  replace (2 * m + 5) with (2 + (2 * (m + 1) + 1)) by lia.
+  rewrite (lpow_add _ 2 (2 * (m + 1) + 1) [1]), Str_app_assoc.
+  rewrite (lpow_add _ (2 * (m + 1)) 1 [1]), Str_app_assoc.
+  rewrite <- lpow_pair.
+  reflexivity.
+Qed.
+
+(** THE INVARIANT STEP. One half period consumes exactly one pair and
+    grows the block by exactly four cells. Since the block enters as
+    2m+2 and leaves as 2m+6, its length stays even -- and that evenness
+    is precisely what the fill scan needs to survive (punch_refill's
+    hypothesis). This is `p -> p-1, L -> L+4` of the empirical wall law,
+    now a theorem. *)
+Lemma half_period : forall k m l,
+  l {{A}}> [0; 1]^^(k + 5) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <{{F}} [0; 1]^^(k + 4) *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  follow sweep_core.
+  rewrite tail_regroup.
+  replace (k + 5) with (k + 4 + 1) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  replace (2 * m + 6) with (S (2 * m + 5)) by lia.
+  finish.
 Qed.
 
 (** ** Startup: c0 to the first structured configuration. *)
