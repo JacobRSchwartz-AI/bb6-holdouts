@@ -288,23 +288,43 @@ Compile: `wsl cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`
    halved and restructured (`ba.ee` -> `babee`), dots replenished — the same
    dynamic one level up, self-similar.
 
-## REMAINING WORK (as of 2026-08-18, 42 lemmas green, all axiom-free)
+## STATE 2026-08-18 (47 lemmas, all `Closed under the global context`)
 
-The mathematical core is done: the recurrence (half_period), the increment
-at all carry depths (incr_full), and the era reset (era_boundary). What is
-left is the WALL BOOKKEEPING and the final assembly:
+PROVEN, covering the orbit end to end except the wall's own bookkeeping:
+- half_period / half_period_4 / half_period_2 : the A-turn half period for
+  every even pair count. p -> p-1, L -> L+4, EVENNESS PRESERVED (the whole
+  halt-guard argument).
+- incr_full : the odometer increment at every carry depth (R1 + R2 in one).
+- f_to_a : the F-turn half period WITH its wall write (increment excursion,
+  micro train, punch, halve) -> next A-turn, wall incremented.
+- era_incr_d / era_boundary_d : the era reset at every carry depth.
+  p' = M+3 = L/2+2 and L' = 4 DERIVED (run length 2M+7 is odd, so the halve
+  yields M+3 pairs and the leftover 1 feeds the A-turn).
+- degen_cs : B1's fourth dispatch branch (tape[c-1]=1), which is exactly
+  what fires at the FIRST F-turn of a new era -- confirmed on the machine
+  at s1173, five steps, no carry.
 
-1. F-turn -> A-turn for p >= 2: compose incr_full + sweep_F + the ending.
-   Blocked only on knowing the wall is lattice-aligned, i.e. on (3).
-2. The three wall sub-cases B1 isolated: degenerate CS (leaf, C-erase
-   4d+1), odd restructure (base +1 cell, 3 refills), even restructure
-   (base +4 cells, 5 refills). All have exact transcripts in this file;
-   all exit to the SAME normal form, so the glue above them is shared.
-3. `wall_ok : list Sym -> Prop` as an inductive predicate over the binary
-   odometer (slot k at 4-cell pitch), plus closure under (1)-(2). This is
-   the real remaining design work; incr_full's hypothesis shape is already
-   the right interface (it demands lattice-aligned [0;0] gaps, which is
-   exactly what excludes the degenerate case).
-4. `Inv (w, p, L) := wall_ok w /\ p >= 1 /\ 4 | L`, then
-   progress_nonhalt_cond with C = the A-turn anchor, base case from
-   startup, giving `Theorem nonhalt : ~ halts tm c0`. Then the CI job.
+THE REMAINING GAP, stated precisely.
+The wall alignment shifts by one cell across an era boundary:
+era_boundary_d leaves the A-turn with `[0]^^(4d+1) ++ [1;1] ++ l`, one zero
+short of the `[0;0] ++ (1100)^d ++ [0;0] ++ l` shape that f_to_a needs. That
+is not a bug -- it is why degen_cs exists and why B1 saw the fixed-slot
+decode drift. So closure needs:
+1. degen_cs composed forward into a full era-start F-turn -> A-turn lemma
+   (the micro train after it does NOT match micro_all as stated: the cell
+   left of the anchor is 1, not 0 -- needs its own short induction).
+2. `slots : list bool -> list Sym` (4 cells/slot, [1;1;0;0] set,
+   [0;0;0;0] clear) + `slots_decomp` (every counter has a lowest clear
+   slot; base case needs Helper.const_unfold via a blank_app lemma).
+   f_to_a then reads: wall = [0;0] *> slots bs *> const 0, and its output
+   is [0;0] *> slots (bump bs) *> const 0. I verified this identity by
+   hand; it is the reason the wall closure works at all.
+3. An induction over the (even) pair count p: half_period* then f_to_a,
+   down to p=2, then era_boundary_d. Gives A-turn(era k) -->+ A-turn(era k+1).
+4. progress_nonhalt_cond with C = the A-turn anchor and the index
+   (bs, p, m); base case from `startup`. Then the CI job.
+
+The restructure sub-cases (odd/even base) are NOT needed for 1-4: they are
+what keeps the counter's own representation finite over very long runs, and
+the invariant in (2) admits them as further `slots` values. Their exact
+transcripts are above if they turn out to be needed.
