@@ -902,6 +902,47 @@ Proof.
   finish.
 Qed.
 
+(** ** The restructure.
+
+    When the carry chain meets the wall's base run instead of an empty
+    slot, the halving runs THROUGH the base: the whole wall is consumed
+    and re-emitted as pair material, and the machine arrives at an A-turn
+    over blank tape. So a restructure resets the counter to zero -- which
+    is why the fixed-slot decode drifts across one (B1's observation),
+    and why the invariant only ever has to admit the blank wall here. *)
+Lemma f1_to_A_blank : forall r,
+  ([1] *> const 0) <{{F}} r -->* (const 0) {{A}}> [0] *> [1] *> r.
+Proof. execute. Qed.
+
+Lemma restructure_odd : forall d n r,
+  (([1]^^(2 * n + 1) *> const 0) <* ([1; 1] ++ [0; 0])^^d <* <[0; 0]) <{{F}}
+    0 >> r -->*
+  (const 0) {{A}}> [0] *> [1] *> [0; 1]^^n *> [1]^^(4 * d + 3) *> r.
+Proof.
+  introv.
+  follow excursion_chain.
+  rewrite (lpow_add _ (2 * n) 1 [1]), <- lpow_pair, Str_app_assoc.
+  follow FA_halve.
+  follow f1_to_A_blank.
+  finish.
+Qed.
+
+(** The even sub-case: the halving consumes the base exactly and the head
+    arrives in F over blank tape (F0 = 0LB keeps going left), which is
+    what costs the extra rebuild steps B1 measured. Same conclusion for
+    the invariant: the counter is reset. *)
+Lemma restructure_even : forall d n r,
+  (([1]^^(2 * n) *> const 0) <* ([1; 1] ++ [0; 0])^^d <* <[0; 0]) <{{F}}
+    0 >> r -->*
+  (const 0) <{{F}} [0; 1]^^n *> [1]^^(4 * d + 3) *> r.
+Proof.
+  introv.
+  follow excursion_chain.
+  rewrite <- lpow_pair.
+  follow FA_halve.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
