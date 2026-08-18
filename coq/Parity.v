@@ -581,6 +581,107 @@ Proof.
   finish.
 Qed.
 
+(** ** The F-half period with its wall write.
+
+    From a deep F-turn whose counter has d trailing occupied slots: the
+    increment excursion clears them and sets slot d, the micro train and
+    punch run as usual, and the halving lands on the next A-turn. One
+    pair consumed, block grown by four, wall incremented. *)
+Lemma f_to_a : forall d k m l,
+  l <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0] <{{F}}
+    [0; 1]^^(k + 3) *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <* <[1; 1] <* [0]^^(4 * d + 2) {{A}}>
+    [0; 1]^^(k + 2) *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  replace (k + 3) with (3 + k) by lia.
+  rewrite lpow_add, Str_app_assoc.
+  follow incr_full.
+  (* fold the two pairs the increment handed back *)
+  change ([0; 1; 0; 1] *> [0; 1]^^k *> [0] *> [1]^^(2 * m + 2) *> const 0)
+    with ([0; 1]^^2 *> [0; 1]^^k *> [0] *> [1]^^(2 * m + 2) *> const 0).
+  rewrite <- (Str_app_assoc ([0; 1]^^2) ([0; 1]^^k)), <- lpow_add.
+  replace (2 + k) with (k + 2) by lia.
+  (* expose one wall zero for sweep_F's anchor *)
+  replace (4 * d + 4) with (S (4 * d + 3)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow sweep_F.
+  (* expose one more for the A-turn *)
+  replace (4 * d + 3) with (S (4 * d + 2)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow f1_to_A.
+  change ([0] *> [1] *> [0; 1]^^(k + 2) *> [1] *> [1] *> [1; 1]^^(m + 1)
+          *> [1] *> const 0)
+    with ([0; 1] *> [0; 1]^^(k + 2) *>
+          ([1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0)).
+  rewrite tail_regroup.
+  rewrite <- (lpow_shift' _ (k + 2) [0; 1]).
+  replace (2 * m + 6) with (S (2 * m + 5)) by lia.
+  finish.
+Qed.
+
+(** ** The era boundary at any carry depth. *)
+
+Lemma d1_step : forall l r, l <* <[0] {{D}}> [1] *> r -->* l {{F}}> [0; 1] *> r.
+Proof. execute. Qed.
+
+Lemma era_incr_d : forall d l r,
+  l <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0] <{{F}}
+    0 >> [1; 0] *> [1] *> r -->*
+  l <* <[1; 1] <* [0]^^(4 * d + 3) <* <[1; 1] {{C}}> [1] *> r.
+Proof.
+  introv.
+  follow excursion_chain.
+  replace (4 * d + 3) with (S (4 * d + 2)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow bitset.
+  (* C erases the junk plus the pair's one: 4d+4 in all *)
+  change ([1; 0] *> [1] *> r) with (1 >> 0 >> [1] *> r).
+  rewrite lpow_push, !ones_succ'.
+  replace (4 * d + 2 + 1 + 1) with (4 * d + 4) by lia.
+  follow C_phase.
+  follow d1_step.
+  replace (4 * d + 4) with (S (4 * d + 3)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow p2_glue.
+  replace (S (4 * d + 2)) with (4 * d + 3) by lia.
+  finish.
+Qed.
+
+Lemma era_boundary_d : forall d M l,
+  l <* <[0; 0] <* ([1; 1] ++ [0; 0])^^d <* <[0; 0] <{{F}}
+    0 >> [1; 0] *> [1]^^(2 * M + 2) *> const 0 -->*
+  l <* <[1; 1] <* [0]^^(4 * d + 1) {{A}}>
+    [0; 1]^^(M + 3) *> [0] *> [1]^^4 *> const 0.
+Proof.
+  introv.
+  replace (2 * M + 2) with (S (2 * M + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow era_incr_d.
+  rewrite ones_succ.
+  replace (2 * M + 1 + 1) with (2 * (M + 1)) by lia.
+  change (l <* <[1; 1] <* [0]^^(4 * d + 3) <* <[1; 1])
+    with (l <* <[1; 1] <* [0]^^(4 * d + 3) <* <[1] <* <[1]).
+  follow punch_refill.
+  replace (4 * d + 3) with (S (4 * d + 2)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow shallow_A.
+  rewrite lpow_pair, lpow_push, !ones_succ'.
+  follow B_ones.
+  follow right_edge.
+  rewrite lpow_shift', ones_succ.
+  replace (2 * (M + 1) + 1 + 1 + 1 + 1 + 1) with (2 * (M + 3) + 1) by lia.
+  rewrite lpow_add, <- lpow_pair, Str_app_assoc.
+  follow FA_halve.
+  replace (4 * d + 2) with (S (4 * d + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow f1_to_A.
+  change ([0] *> [1] *> [0; 1]^^(M + 3) *> 1 >> 1 >> 1 >> const 0)
+    with ([0; 1] *> [0; 1]^^(M + 3) *> 1 >> 1 >> 1 >> const 0).
+  rewrite <- lpow_shift'.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
