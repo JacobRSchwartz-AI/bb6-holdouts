@@ -207,6 +207,12 @@ Proof.
   - simpl. rewrite IHn. reflexivity.
 Qed.
 
+Lemma ones_succ : forall n (r : Stream Sym),
+  [1] *> [1]^^n *> r = [1]^^(n + 1) *> r.
+Proof.
+  introv. rewrite lpow_add, Str_app_assoc, lpow_shift'. reflexivity.
+Qed.
+
 Lemma ones_comm : forall m (r : Stream Sym),
   [1; 1]^^m *> 1 >> r = 1 >> [1; 1]^^m *> r.
 Proof.
@@ -441,6 +447,70 @@ Proof.
   rewrite tail_regroup.
   replace (k + 5) with (k + 4 + 1) by lia.
   rewrite lpow_add, Str_app_assoc.
+  replace (2 * m + 6) with (S (2 * m + 5)) by lia.
+  finish.
+Qed.
+
+(** ** Small-p half periods.
+
+    The general half_period needs five pairs (launch three, junction two).
+    The last turns of an era have fewer, and their chains differ. p = 4:
+    the launch hands straight to the junction, no micro train. *)
+Lemma half_period_4 : forall m l,
+  l {{A}}> [0; 1]^^4 *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <{{F}} [0; 1]^^3 *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  change ([0; 1]^^4 *> [0] *> [1]^^(2 * m + 2) *> const 0)
+    with ([0; 1; 0; 1; 0; 1] *> [0; 1] *> [0] *> [1]^^(2 * m + 2) *> const 0).
+  follow launch_entry.
+  replace (2 * m + 2) with (S (2 * m + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow junction.
+  change (l <* <[1; 1; 1] <* <[1; 1; 1; 1; 1; 1])
+    with (l <* <[1; 1; 1] <* <[1]^^5 <* <[1]).
+  change ([1] *> [1]^^(2 * m + 1) *> const 0)
+    with ([1]^^(S (2 * m + 1)) *> const 0).
+  replace (S (2 * m + 1)) with (2 * (m + 1)) by lia.
+  follow punch_refill.
+  change ([1; 1; 1] *> l) with ([1]^^3 *> l).
+  rewrite !ones_join.
+  replace (5 + 3) with (2 * 4) by lia.
+  rewrite <- lpow_pair.
+  follow FA_halve.
+  change (1 >> 1 >> [1; 1]^^(m + 1) *> 1 >> const 0)
+    with ([1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0).
+  rewrite tail_regroup.
+  replace (2 * m + 6) with (S (2 * m + 5)) by lia.
+  finish.
+Qed.
+
+(** p = 2: the launch runs straight into the block; seven steps of glue
+    hand C the face of it. *)
+Lemma p2_glue : forall l r,
+  l <* <[0] {{F}}> [0; 1] *> r -->* l <* <[1; 1] {{C}}> [1] *> r.
+Proof. execute. Qed.
+
+Lemma half_period_2 : forall m l,
+  l {{A}}> [0; 1]^^2 *> [0] *> [1]^^(2 * m + 2) *> const 0 -->*
+  l <{{F}} [0; 1]^^1 *> [0] *> [1]^^(2 * m + 6) *> const 0.
+Proof.
+  introv.
+  replace (2 * m + 2) with (S (2 * m + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  change ([0; 1]^^2 *> [0] *> [1] *> [1]^^(2 * m + 1) *> const 0)
+    with ([0; 1; 0; 1; 0; 1] *> [1]^^(2 * m + 1) *> const 0).
+  follow launch_entry.
+  follow p2_glue.
+  rewrite ones_succ.
+  replace (2 * m + 1 + 1) with (2 * (m + 1)) by lia.
+  change (l <* <[1; 1; 1] <* <[1; 1]) with (l <* <[1]^^4 <* <[1]).
+  follow punch_refill.
+  change ([1]^^4 *> l) with ([1; 1]^^2 *> l).
+  follow FA_halve.
+  change (1 >> 1 >> [1; 1]^^(m + 1) *> 1 >> const 0)
+    with ([1] *> [1] *> [1; 1]^^(m + 1) *> [1] *> const 0).
+  rewrite tail_regroup.
   replace (2 * m + 6) with (S (2 * m + 5)) by lia.
   finish.
 Qed.
