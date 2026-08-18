@@ -515,6 +515,72 @@ Proof.
   finish.
 Qed.
 
+(** ** The era boundary (p = 1).
+
+    The increment still fires, but its terminal erase runs out of pairs,
+    so the tail differs from incr_full: C ends on the face of the block
+    itself rather than at a micro anchor. 26 concrete steps. *)
+Lemma era_incr : forall l r,
+  l <* <[0; 0] <* <[0; 0] <{{F}} 0 >> [1; 0] *> [1] *> r -->*
+  l <* <[1; 1] <* <[0; 0; 0] <* <[1; 1] {{C}}> [1] *> r.
+Proof. execute. Qed.
+
+Lemma ones_succ' : forall n (r : Stream Sym), 1 >> [1]^^n *> r = [1]^^(n + 1) *> r.
+Proof. introv. rewrite <- ones_succ. reflexivity. Qed.
+
+(** The shallow A-turn: with no pairs left, the halving scan meets the
+    wall after a single one, and A0 writes the cell it lands on. *)
+Lemma shallow_A : forall l r,
+  l <* <[0] <* <[1] <{{F}} r -->* l <* <[1] {{B}}> 1 >> r.
+Proof. execute. Qed.
+
+(** The right edge: B runs off the written tape, writes, and the CTX-2
+    fill at the blank turns the head around. *)
+Lemma right_edge : forall l,
+  l {{B}}> const 0 -->* l <{{F}} 1 >> 1 >> 1 >> const 0.
+Proof. execute. Qed.
+
+Lemma f1_to_A : forall l r,
+  l <* <[0] <* <[1] <{{F}} r -->* l {{A}}> [0] *> [1] *> r.
+Proof. execute. Qed.
+
+(** THE ERA BOUNDARY. With one pair left the block is consumed whole,
+    the tape becomes a single solid run, and halving it back rebuilds the
+    pair region. The counters reset exactly as the census says:
+    p' = L/2 + 2 and L' = 4, with L = 2M+2 so p' = M+3. *)
+Lemma era_boundary : forall M l,
+  l <* <[0; 0] <* <[0; 0] <{{F}} 0 >> [1; 0] *> [1]^^(2 * M + 2) *> const 0
+  -->*
+  l <* <[1; 1] <* <[0] {{A}}> [0; 1]^^(M + 3) *> [0] *> [1]^^4 *> const 0.
+Proof.
+  introv.
+  replace (2 * M + 2) with (S (2 * M + 1)) by lia.
+  rewrite lpow_S, Str_app_assoc.
+  follow era_incr.
+  rewrite ones_succ.
+  replace (2 * M + 1 + 1) with (2 * (M + 1)) by lia.
+  change (l <* <[1; 1] <* <[0; 0; 0] <* <[1; 1])
+    with (l <* <[1; 1] <* <[0; 0; 0] <* <[1] <* <[1]).
+  follow punch_refill.
+  change (l <* <[1; 1] <* <[0; 0; 0] <* <[1])
+    with (l <* <[1; 1] <* <[0; 0] <* <[0] <* <[1]).
+  follow shallow_A.
+  (* fold the solid run *)
+  rewrite lpow_pair, lpow_push, !ones_succ'.
+  follow B_ones.
+  follow right_edge.
+  (* the run plus the A0 cell is odd: halving leaves one for the A-turn *)
+  rewrite lpow_shift', ones_succ.
+  replace (2 * (M + 1) + 1 + 1 + 1 + 1 + 1) with (2 * (M + 3) + 1) by lia.
+  rewrite lpow_add, <- lpow_pair, Str_app_assoc.
+  follow FA_halve.
+  follow f1_to_A.
+  change ([0] *> [1] *> [0; 1]^^(M + 3) *> 1 >> 1 >> 1 >> const 0)
+    with ([0; 1] *> [0; 1]^^(M + 3) *> 1 >> 1 >> 1 >> const 0).
+  rewrite <- lpow_shift'.
+  finish.
+Qed.
+
 (** ** Startup: c0 to the first structured configuration. *)
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
