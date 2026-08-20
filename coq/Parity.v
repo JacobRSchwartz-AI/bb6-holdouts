@@ -1143,3 +1143,232 @@ Qed.
 
 Lemma startup : c0 -->* const 0 <* <[1] {{B}}> [1; 1; 1; 1] *> const 0.
 Proof. execute. Qed.
+
+(** ** THE RUN-LEVEL MACHINE.
+
+    tools/parity-macro.mjs implements the machine at this granularity and
+    is co-verified against the raw simulator at every one of 2,498,992
+    fill exits over 2e7 steps, byte-exact. The right side is a list of
+    1-run lengths separated by single zeros over blank; a cap bit marks a
+    leading zero (the P0 form). The wall is a raw cell list over blank.
+
+    `exc` computes the excursion's exit -- which of C or B re-enters the
+    right side, with what wall and what right word -- from any wall at
+    all. `exc_sim` below proves it: the run-level machine IS the machine. *)
+
+Fixpoint runs (rs : list nat) : Stream Sym :=
+  match rs with
+  | nil => const 0
+  | cons r rest => [1]^^r *> 0 >> runs rest
+  end.
+
+Definition rside (cap : bool) (rs : list nat) : Stream Sym :=
+  if cap then 0 >> runs rs else runs rs.
+
+Definition rhead (rs : list nat) : nat :=
+  match rs with nil => O | cons r _ => r end.
+
+(** The push algebra: what each excursion move does to the right word.
+    A carry prepends `0 1`; the A0 turn and the B-scan entry prepend a
+    bare 1; the CS body eats the cap and prepends three 1s. *)
+Definition cpush (cap : bool) (rs : list nat) : list nat :=
+  if cap then cons (S O) rs
+  else match rs with
+       | nil => cons (S O) nil
+       | cons r rest => cons (S r) rest
+       end.
+
+Definition push3 (rs : list nat) : list nat :=
+  match rs with
+  | nil => cons (S (S (S O))) nil
+  | cons r rest => cons (S (S (S r))) rest
+  end.
+
+Lemma ones_S : forall n (X : Stream Sym), [1]^^(S n) *> X = 1 >> [1]^^n *> X.
+Proof. reflexivity. Qed.
+
+Lemma runs_cons : forall r rest, runs (cons r rest) = [1]^^r *> 0 >> runs rest.
+Proof. reflexivity. Qed.
+
+Lemma runs_expose : forall r rest,
+  runs (cons (S r) rest) = 1 >> [1]^^r *> 0 >> runs rest.
+Proof. introv. cbn [runs]. apply ones_S. Qed.
+
+Lemma cpush_eq : forall cap rs, [0; 1] *> rside cap rs = rside true (cpush cap rs).
+Proof.
+  introv. destruct cap.
+  - reflexivity.
+  - destruct rs as [| r rest].
+    + cbn [rside cpush runs]. rewrite (blank_app 1) at 1. reflexivity.
+    + reflexivity.
+Qed.
+
+Lemma push1_eq : forall cap rs, 1 >> rside cap rs = runs (cpush cap rs).
+Proof.
+  introv. destruct cap.
+  - reflexivity.
+  - destruct rs as [| r rest].
+    + cbn [rside cpush runs]. rewrite (blank_app 1) at 1. reflexivity.
+    + reflexivity.
+Qed.
+
+Lemma push3_eq : forall rs, 1 >> 1 >> 1 >> runs rs = runs (push3 rs).
+Proof.
+  introv. destruct rs as [| r rest].
+  - cbn [push3 runs]. rewrite (blank_app 1) at 1. reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma cpush_pos : forall cap rs, 1 <= rhead (cpush cap rs).
+Proof. introv. destruct cap; cbn; [lia |]. destruct rs; cbn; lia. Qed.
+
+Lemma push3_pos : forall rs, 1 <= rhead (push3 rs).
+Proof. introv. destruct rs; cbn; lia. Qed.
+
+(** The degenerate CS body composed through to the C-entry (degen_cs plus
+    the three-step F0/B1/B0 turn). *)
+Lemma degen_full : forall l r,
+  l <* <[1] <* <[0] <{{F}} 0 >> 1 >> r -->* l <* <[1; 1; 1] {{C}}> 1 >> r.
+Proof. execute. Qed.
+
+Lemma a0_step : forall l r, l {{A}}> 0 >> r -->* l <* <[1] {{B}}> r.
+Proof. execute. Qed.
+
+(** The excursion, as a function. Exits: ExC = C re-enters (erasing the
+    leading run), ExB = B re-enters (skimming it). Two wall cells per
+    move; the exits push their bit-write 1s back onto the wall. *)
+Inductive xexit : Type :=
+  | ExC : list Sym -> list nat -> xexit
+  | ExB : list Sym -> list nat -> xexit.
+
+Fixpoint exc (ws : list Sym) (cap : bool) (rs : list nat) : xexit :=
+  match ws with
+  | cons 1 (cons 1 ws') => exc ws' true (cpush cap rs)
+  | cons 1 (cons 0 ws') => ExB (cons 1 ws') (cpush cap rs)
+  | cons 1 nil => ExB (cons 1 nil) (cpush cap rs)
+  | cons 0 (cons 0 ws') =>
+      if cap then exc ws' false (push3 rs) else ExC (cons 1 (cons 1 ws')) rs
+  | cons 0 (cons 1 ws') =>
+      ExC (if cap then cons 1 (cons 1 (cons 1 ws')) else cons 1 (cons 1 ws')) rs
+  | cons 0 nil =>
+      if cap then ExC (cons 1 (cons 1 nil)) (push3 rs)
+      else ExC (cons 1 (cons 1 nil)) rs
+  | nil =>
+      if cap then ExC (cons 1 (cons 1 nil)) (push3 rs)
+      else ExC (cons 1 (cons 1 nil)) rs
+  end.
+
+Definition xconf (x : xexit) : Q * tape :=
+  match x with
+  | ExC ws rs => (ws *> const 0) {{C}}> runs rs
+  | ExB ws rs => (ws *> const 0) {{B}}> runs rs
+  end.
+
+(** The blank-wall excursion: the CS body fires over blank cells (when
+    capped) and the bit write ends it. *)
+Lemma exc_blank_sim : forall cap rs,
+  1 <= rhead rs ->
+  (const 0 : Stream Sym) <{{F}} rside cap rs -->* xconf (exc nil cap rs).
+Proof.
+  introv Hrs.
+  destruct cap; cbn [exc xconf rside].
+  - rewrite (blank_app 2) at 1.
+    follow cs_body.
+    rewrite (blank_app 2) at 1.
+    follow bitset.
+    rewrite push3_eq. finish.
+  - destruct rs as [| r rest]; [cbn in Hrs; lia |].
+    destruct r as [| r]; [cbn in Hrs; lia |].
+    rewrite runs_expose.
+    rewrite (blank_app 2) at 1.
+    follow bitset.
+    rewrite <- runs_expose. finish.
+Qed.
+
+(** THE SIMULATION. From any deep turn -- any finite wall, any right word
+    with a positive leading run -- the machine runs the excursion and
+    arrives exactly where `exc` says, with the exact wall and word. This
+    strengthens excursion_gen from an existential to a computation. *)
+Lemma exc_sim : forall n ws cap rs,
+  length ws <= n ->
+  1 <= rhead rs ->
+  (ws *> const 0) <{{F}} rside cap rs -->* xconf (exc ws cap rs).
+Proof.
+  induction n as [| n IH]; introv Hlen Hrs.
+  - destruct ws; [| cbn in Hlen; lia ].
+    apply exc_blank_sim, Hrs.
+  - destruct ws as [| a ws].
+    { apply exc_blank_sim, Hrs. }
+    destruct ws as [| b ws].
+    + (* singleton wall: pad the stream with one blank cell *)
+      destruct a; cbn [exc].
+      * (* a = 0: the bitset family at the blank edge *)
+        assert (P : (cons 0 nil) *> const 0
+                    = (const 0 : Stream Sym) <* <[0; 0]).
+        { cbn [Str_app]. f_equal. apply const_unfold. }
+        rewrite P.
+        destruct cap; cbn [xconf rside].
+        -- follow cs_body.
+           rewrite (blank_app 2) at 1.
+           follow bitset.
+           rewrite push3_eq. finish.
+        -- destruct rs as [| r rest]; [cbn in Hrs; lia |].
+           destruct r as [| r]; [cbn in Hrs; lia |].
+           rewrite runs_expose.
+           follow bitset.
+           rewrite <- runs_expose. finish.
+      * (* a = 1: f1_to_A at the blank edge *)
+        assert (P : (cons 1 nil) *> const 0
+                    = (const 0 : Stream Sym) <* <[0] <* <[1]).
+        { cbn [Str_app]. f_equal. apply const_unfold. }
+        rewrite P.
+        cbn [exc xconf].
+        follow f1_to_A.
+        follow a0_step.
+        cbn [Str_app].
+        rewrite push1_eq.
+        finish.
+    + (* two explicit cells *)
+      cbn in Hlen.
+      assert (Hlen' : length ws <= n) by lia.
+      destruct a; destruct b; cbn [exc].
+      * (* 0,0 *)
+        change ((0 :: 0 :: ws) *> const 0)
+          with ((ws *> const 0) <* <[0; 0]).
+        destruct cap; cbn [xconf rside].
+        -- follow cs_body.
+           rewrite push3_eq.
+           apply (IH ws false (push3 rs) Hlen' (push3_pos rs)).
+        -- destruct rs as [| r rest]; [cbn in Hrs; lia |].
+           destruct r as [| r]; [cbn in Hrs; lia |].
+           rewrite runs_expose.
+           follow bitset.
+           rewrite <- runs_expose. finish.
+      * (* 0,1 *)
+        change ((0 :: 1 :: ws) *> const 0)
+          with ((ws *> const 0) <* <[1] <* <[0]).
+        destruct rs as [| r rest]; [cbn in Hrs; lia |].
+        destruct r as [| r]; [cbn in Hrs; lia |].
+        destruct cap; cbn [xconf rside].
+        -- rewrite runs_expose.
+           follow degen_full.
+           rewrite <- runs_expose. finish.
+        -- rewrite runs_expose.
+           follow bitset_odd.
+           rewrite <- runs_expose. finish.
+      * (* 1,0 *)
+        change ((1 :: 0 :: ws) *> const 0)
+          with ((ws *> const 0) <* <[0] <* <[1]).
+        cbn [xconf].
+        follow f1_to_A.
+        follow a0_step.
+        cbn [Str_app].
+        rewrite push1_eq.
+        finish.
+      * (* 1,1: the carry *)
+        change ((1 :: 1 :: ws) *> const 0)
+          with ((ws *> const 0) <* <[1; 1]).
+        follow carry_step.
+        rewrite cpush_eq.
+        apply (IH ws true (cpush cap rs) Hlen' (cpush_pos cap rs)).
+Qed.
