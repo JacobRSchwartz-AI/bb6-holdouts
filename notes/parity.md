@@ -793,7 +793,7 @@ At every fill, the usable top u = wallT - 1 satisfies
 
     u = 0 or 1  (mod 4),   u >= 1     i.e.  u in {1, 4, 5, 8, 9, 12, 13, ...}
 
-Verified over 30M abstract events: zero exceptions. The session-2 fillok
+Verified: 12,835 fills over 30M abstract events, zero exceptions. The session-2 fillok
 set {1,4,5,>=7} was an OVERAPPROXIMATION: 7, 10, 11, 14, 15... never
 occur, and closure genuinely fails for them. Derivation of the recursion:
 odd u = absorb, j = (u-1)/2 pairs, exits MB [1^j, x+1]; the skim ladder
@@ -837,8 +837,10 @@ is clean": correct but not finitely checkable with this quotient.
 
 ### The structural discovery that shapes the path forward
 
-Over 4M+ events: **the wall's RUN COUNT never exceeds 15** (typically
-7-13) while its cell count and the rs length grow unboundedly. The wall
+Over 4M events the wall's RUN COUNT never exceeds 15 (typically 7-13);
+at 30M the maximum is 17. So it is not a hard constant but grows very
+slowly (plausibly ~ the digit-word length |W|), while cell count and rs
+length grow unboundedly. The wall
 is always one huge top run over a bounded stack of small segments; the
 odometer's digits live on the RIGHT side (rs: long 1-blocks between
 values). So the reachable set is: bounded wall shape vector (<= 15
