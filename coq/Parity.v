@@ -1546,3 +1546,81 @@ Proof.
     inversion Hstep; subst s'; clear Hstep.
     apply be_sim.
 Qed.
+
+(** ** Nibble preservation.
+
+    A right word with at least two runs is protected: every C-erasure
+    inside it stops at a single 0 (gap 0), and the excursion's pushes only
+    prepend or grow the head run, so the run count never drops, every run
+    stays positive, and the LAST run -- the only one a fill can ever
+    erase -- is untouched. This is the reason the machine is safe in the
+    pair region whatever the wall looks like. *)
+
+Definition nib (rs : list nat) : Prop :=
+  2 <= length rs /\ List.Forall (le 1) rs /\ Nat.even (List.last rs O) = true.
+
+Lemma last_cons : forall (x : nat) l d, l <> nil -> List.last (cons x l) d = List.last l d.
+Proof. introv H. destruct l; [contradiction | reflexivity]. Qed.
+
+Lemma nib_cpush : forall cap rs, nib rs -> nib (cpush cap rs).
+Proof.
+  introv [Hlen [Hpos Hlast]].
+  destruct cap; cbn [cpush].
+  - split; [cbn; lia |]. split.
+    + constructor; [lia | exact Hpos].
+    + rewrite last_cons; [exact Hlast |].
+      destruct rs; [cbn in Hlen; lia | discriminate].
+  - destruct rs as [| r rest]; [cbn in Hlen; lia |].
+    destruct rest as [| r2 rest]; [cbn in Hlen; lia |].
+    split; [cbn; cbn in Hlen; lia |]. split.
+    + inversion Hpos; subst. constructor; [lia | assumption].
+    + rewrite last_cons in *; try discriminate. exact Hlast.
+Qed.
+
+Lemma nib_push3 : forall rs, nib rs -> nib (push3 rs).
+Proof.
+  introv [Hlen [Hpos Hlast]].
+  destruct rs as [| r rest]; [cbn in Hlen; lia |].
+  destruct rest as [| r2 rest]; [cbn in Hlen; lia |].
+  cbn [push3]. split; [cbn; cbn in Hlen; lia |]. split.
+  - inversion Hpos; subst. constructor; [lia | assumption].
+  - rewrite last_cons in *; try discriminate. exact Hlast.
+Qed.
+
+(** Through any excursion over any wall: a nibble word exits as a nibble
+    word, and the exit wall starts with the bit write's 1s. *)
+Lemma exc_nib : forall n ws cap rs,
+  length ws <= n ->
+  nib rs ->
+  match exc ws cap rs with
+  | ExC ws' rs' => nib rs' /\ exists t, ws' = cons 1 (cons 1 t)
+  | ExB ws' rs' => nib rs' /\ exists t, ws' = cons 1 t
+  end.
+Proof.
+  induction n as [| n IH]; introv Hlen Hnib.
+  - destruct ws; [| cbn in Hlen; lia ].
+    cbn [exc]. destruct cap.
+    + split; [apply nib_push3, Hnib | eauto].
+    + split; [exact Hnib | eauto].
+  - destruct ws as [| a ws].
+    { cbn [exc]. destruct cap.
+      + split; [apply nib_push3, Hnib | eauto].
+      + split; [exact Hnib | eauto]. }
+    destruct ws as [| b ws].
+    + destruct a; cbn [exc].
+      * destruct cap.
+        -- split; [apply nib_push3, Hnib | eauto].
+        -- split; [exact Hnib | eauto].
+      * split; [apply nib_cpush, Hnib | eauto].
+    + cbn in Hlen.
+      assert (Hlen' : length ws <= n) by lia.
+      destruct a; destruct b; cbn [exc].
+      * destruct cap.
+        -- exact (IH ws false (push3 rs) Hlen' (nib_push3 rs Hnib)).
+        -- split; [exact Hnib | eauto].
+      * destruct cap.
+        -- split; [exact Hnib | eauto].
+        -- split; [exact Hnib | eauto].
+      * split; [apply nib_cpush, Hnib | eauto].
+      * exact (IH ws true (cpush cap rs) Hlen' (nib_cpush cap rs Hnib)).
+Qed.

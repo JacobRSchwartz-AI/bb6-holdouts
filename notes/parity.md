@@ -574,54 +574,83 @@ so the walk terminates; past the wall the tape is blank, where it is
 cs_body then the bit write. The excursion therefore NEVER HALTS, whatever
 the wall -- the left half of the machine is unconditionally safe.
 
-## NEXT SESSION STARTS HERE (state at end of 2026-08-18)
+## THE RUN-LEVEL MACHINE IS FORMAL (2026-08-20)
 
-68 results in coq/Parity.v, every one `Closed under the global context`.
-Compiles clean: `cp coq/Parity.v ~/busycoq/verify/ && coqc -Q . BusyCoq Parity.v`.
+tools/parity-macro.mjs implements the machine as a run-level abstract
+system: wall = cell list over blank, right side = list of 1-run lengths
+separated by single 0s (a cap bit marks the P0 form). CO-VERIFIED against
+the raw simulator at every one of 2,498,992 fill exits over 2e7 steps,
+byte-exact, and the gap0/fill tallies cross-check parity-cover exactly
+(2,495,023 + 3,970). The events: BE (B skims the leading run), CE (C
+erases it -- d=1 nibble safe for any run, d>=2 fill NEEDS EVEN), EXC
+(the excursion dispatch: carry pushes 01, cs pushes 111 eating the cap,
+bitset/bitset_odd/degen exit to CE, f1_to_A exits to BE).
 
-DONE AND UNCONDITIONAL:
-  half_period / _4 / _2   one half period consumes a pair and grows the
-                          block by four, PRESERVING BLOCK EVENNESS, with
-                          no side conditions.
-  macro_fill / macro_gap0 the halt criterion, both branches, arbitrary
-                          context on both sides.
-  excursion / excursion_gen   the left walk, ANY finite wall.
+MEASURED FACTS THAT SHAPE THE INVARIANT (all at 8M events):
+- Every fill happens at the RIGHT EDGE: right rest EMPTY, c = 0 mod 4.
+- Fill-time wall law: u = topRun - 1 is in {1, 4, 5, >=6}; NEVER 0, 2,
+  or 3. u odd => ABSORB (carries then f1A folds the run into the wall);
+  u even >= 4 => INSULATE (two carries cap the run even and push 01
+  pairs; the block is then behind single gaps forever). Depth-0 always.
+- The insulate carries ARE what rebuilds the pair region: (01)^(u/2)
+  over the frozen even block. The machine is: nibble pairs onto the
+  wall, punch the block at the edge, halve the deposits back into pairs.
+- State classes at every CE/BE (the invariant table): 39 classes.
+  Dominant: C 3+runs head=1 last=even (the pair region, any wall).
+  MB states always have wall-top T=1. MC singles (fills) have
+  T in {2,5,6,odd>=7,even>=8}. [1,r2]-two-run states have T in
+  {3,4,odd>=7,even>=8} -- NEVER T=2, which is the one death-adjacent
+  class (it would punch at T'=4, u=3).
 
-DONE -- the wall machinery:
-  slots / bump / slots_incr, classA_step / classB_step, full_period,
-  era_boundary_d / _slots, f_to_a / f_to_a_era, degen_cs,
-  restructure_odd / restructure_even.
+COQ (coq/Parity.v, 113 declarations, ALL Closed under the global
+context): the run-level layer is PROVEN:
+- runs/rside interpretation; push algebra cpush/push3 + equations.
+- exc : the excursion as a TOTAL FUNCTION over any wall.
+- exc_sim : (ws *> const 0) <{{F}} rside cap rs -->+ xconf (exc ws cap rs)
+  by fuel induction -- excursion_gen strengthened to a computation.
+- mst/mconf/mstep : the whole machine as a state-transition function;
+  mstep = None exactly at the halt criterion + invariant-excluded shapes.
+- be_sim / ce_gap0_sim / ce_edge_sim / ce_fill_sim (via punch_refill).
+- mstep_sim : Forall (le 1) rs -> mstep s = Some s' ->
+  mconf s -->+ mconf s'. STRICT progress, whole machine, one lemma.
+- exc_nib : words with >=2 runs, all >=1, last EVEN pass through ANY
+  excursion unchanged in those three facts (the nibble protection).
 
-WHAT IS LEFT, precisely. The proof now needs one thing only: an invariant
-on CONFIGURATIONS, closed under one macro cycle, in which every C-scan
-that faces two or more zeros erases an even run. Two halves:
+THE INVARIANT, DERIVED (to be encoded next session):
+  fillok u := u <> 0 /\ u <> 2 /\ u <> 3   (u = wallTop - 1 at punches)
+  Inv(MC ws rs): wallT >= 2, Forall >= 1, and by rs:
+    nil       => fillok (wallT - 1)            [the c=0 edge fill]
+    [c]       => even c /\ fillok (wallT - 1)  [the punch]
+    c::rest   => last even /\ (head-1 two-run states need wallT >= 3)
+  Inv(MB ws rs): rs <> nil, Forall >= 1, last even;
+    singles [a] have a >= 4 (the absorb relaunch), giving the next
+    MC-nil fill u = a + wallT >= 5 unconditionally.
+  Closure sketch (verified against the abstract machine):
+  - nibbles with >=3 runs: exc_nib, any wall. Exit walls are 1;1-topped
+    so wallT' >= 2 always.
+  - [c,r2] gap0: exc enters on a 0-topped wall => IMMEDIATE bitset exit:
+    T' = 2 (c >= 2, u'=1 absorb-next) or 2+T (c=1, safe iff T >= 3).
+  - fills: u odd => absorb: j=(u-1)/2 pair-pushes then ExB; j=0 gives
+    MB [c+4] (a >= 4); j>=1 gives a nibble word [1^j, c+4].
+    u even >= 4 => two carries reach [1, c+4] (nibble), then exc_nib.
 
-  1. The right side. Measured shape (parity-right.mjs): the 288 deep turns
-     the standard parse rejects are ONE family -- the standard right side
-     with a single embedded odd 1-run inside the pair region, the residue
-     of a restructure. So the right-side invariant is
-        every internal 0-run has length 1, and the FINAL 1-run is even
-     which covers the standard shape and the defect shape at once. Internal
-     runs are then safe by macro_gap0 regardless of parity, and the final
-     run is the only one macro_fill has to guard. This wants a generalised
-     sweep over an arbitrary such word -- an induction the same size as
-     excursion_gen, and the same shape.
+THE ONE REMAINING QUESTION, precisely: which word-structure fact keeps
+head>=2 EXACTLY-3-run words [x, 1, L] from occurring with the wrong
+wall (their gap0 would create the forbidden [1, L]-at-T=2 punch).
+The census says they never do (zero [1,r2]-T=2 states in 8M events);
+the defect words carry their >=2 runs in a consumed-first prefix. Next
+session: split the census classes runs=3 exact vs 4+, trace the
+predecessors of [1,r2] states, encode the resulting word grammar
+(likely: at most one run >= 2 among the non-last runs, positioned
+before all the pair-1s), then write Inv as above, prove closure per
+mstep case (the lemmas exist: exc_nib + the bitset-immediate equation
++ the absorb/insulate computations on exc), assemble with
+progress_nonhalt_cond (A := mst, C := mconf, P := Inv), base case from
+startup, then the CI job.
 
-  2. Joining the two. excursion_gen currently concludes with an
-     EXISTENTIAL configuration, which proves termination but is not yet
-     composable: to close the loop its conclusion has to track the written
-     prefix, not just its existence. Strengthen it to
-        exists pre l, .. -->* l {{q}}> pre *> r0
-     with r0 the untouched tail, then feed each of the three exits into the
-     generalised sweep.
+MEASURE WITH: node tools/parity-macro.mjs --states 8000000 (the class
+table), --fills (the u census), 20000000 (co-verification).
 
-  Then progress_nonhalt with the deep-turn anchor, base case from
-  `startup`, and a CI job.
-
-MEASURE PROGRESS WITH: node tools/parity-cover.mjs 20000000
-Deep-turn coverage is still the honest structural metric; the halt-guard
-section below it is now at 100% by general lemmas.
-
-CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA is
-still an OPEN BB(6) holdout. `~ halts tm c0` is NOT proven. Nothing here
+CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA
+is still an OPEN BB(6) holdout. `~ halts tm c0` is NOT proven. Nothing
 has been submitted anywhere, and nothing should be until it compiles.

@@ -19,7 +19,7 @@
 
 const args = process.argv.slice(2);
 const MODE = args[0] === '--mine' ? 'mine' : args[0] === '--dump' ? 'dump'
-  : args[0] === '--fills' ? 'fills' : args[0] === '--windows' ? 'windows' : 'verify';
+  : args[0] === '--fills' ? 'fills' : args[0] === '--windows' ? 'windows' : args[0] === '--states' ? 'states' : 'verify';
 const N = Number(args[MODE === 'verify' ? 0 : 1] ?? 2e6);
 
 class Halt extends Error {}
@@ -65,6 +65,7 @@ class Abs {
   rpushSeq(cells) { for (let i = cells.length - 1; i >= 0; i--) this.rpush(cells[i], 1); }
 
   stepBE() {
+    if (this.onState) this.onState('B');
     const a = this.rpopRun(1);
     if (!a) throw new Error('BE: right does not start with a 1-run');
     this.wpush(1, a + 1);
@@ -73,6 +74,7 @@ class Abs {
   }
 
   stepCE() {
+    if (this.onState) this.onState('C');
     const c = this.rlead() === 1 ? this.rpopRun(1) : 0;
     const d = this.rleadLen();    // Infinity when the rest is blank
     if (this.onCE) this.onCE(c, d);
@@ -299,7 +301,11 @@ function runFills(maxEvents) {
     if (d < 2) return;
     const wk = fillWalk(abs.wall);
     const rest = abs.right.length ? tok(abs.right) : '';
-    const k = `c%4=${c % 4} rest=[${rest}] ${wk.verdict} depth=${wk.depth}`;
+    const u = (abs.wall[0]?.[0] === 1 ? abs.wall[0][1] : 0) - 1;
+    const uc = u <= 6 ? String(u) : u % 2 ? 'odd>6' : 'even>6';
+    const g = abs.wall[1]?.[0] === 0 ? Math.min(abs.wall[1][1], 3) : 0;
+    const w2 = abs.wall[2]?.[0] === 1 ? (abs.wall[2][1] % 2 ? 'o' : 'e') : '-';
+    const k = `c%4=${c % 4} rest=[${rest}] ${wk.verdict} u=${uc} g=${g} w2=${w2}`;
     verdicts.set(k, (verdicts.get(k) ?? 0) + 1);
     if (wk.verdict.startsWith('DEATH')) {
       deaths++;
@@ -344,8 +350,37 @@ function runWindows(maxEvents) {
     console.log(`\n  x${v}  ${k}`);
 }
 
+// The invariant table: at every C-/B-entry, the state class
+// (mode, word shape, wall-top run). The distinct classes ARE the Coq
+// invariant's cases; closure is checked per class.
+function runStates(maxEvents) {
+  const abs = new Abs();
+  const seen = new Map();
+  abs.onState = (m) => {
+    const rs = abs.right;
+    const len = rs.length === 0 ? '0' : rs.length <= 2 ? String(rs.length) : '3+';
+    const runsOnly = rs.filter(([v]) => v === 1).map(([, n]) => n);
+    const head = runsOnly.length ? (runsOnly[0] === 1 ? '1' : runsOnly[0] % 2 ? 'o' : 'e') : '-';
+    const last = runsOnly.length ? (runsOnly[runsOnly.length - 1] % 2 ? 'o' : 'e') : '-';
+    const lead0 = rs.length && rs[0][0] === 0 ? 'z' : '';
+    const T = abs.wall[0]?.[0] === 1 ? abs.wall[0][1] : 0;
+    const Tc = T <= 6 ? String(T) : T % 2 ? 'o' : 'e';
+    const nRuns = runsOnly.length === 0 ? '0' : runsOnly.length === 1 ? '1'
+      : runsOnly.length === 2 ? '2' : '3+';
+    const k = `${m} ${lead0}runs=${nRuns} head=${head} last=${last} T=${Tc}`;
+    seen.set(k, (seen.get(k) ?? 0) + 1);
+  };
+  try {
+    while (abs.stats.events < maxEvents) abs.nextCheckpoint();
+  } catch (e) { console.log('STOPPED: ' + e.message); }
+  console.log(`events=${abs.stats.events} distinct-state-classes=${seen.size}`);
+  for (const [k, v] of [...seen.entries()].sort((a, b) => b[1] - a[1]))
+    console.log(`  ${String(v).padStart(9)}  ${k}`);
+}
+
 if (MODE === 'verify') runVerify(N);
 else if (MODE === 'mine') runMine(N);
 else if (MODE === 'fills') runFills(N);
 else if (MODE === 'windows') runWindows(N);
+else if (MODE === 'states') runStates(N);
 else runDump(N);
