@@ -925,3 +925,20 @@ roughly doubles per epoch. Architecture A is therefore fully specified:
 Open detail for the round lemma: the family's MID-round states carry
 the wall's transient segments (<= 15 runs, measured); the phase lemmas
 must thread them explicitly.
+
+### Why architecture A needs NO new tape-level work
+
+mstep and exc are FUNCTIONS. The round and epoch lemmas are therefore
+mstep-iteration computations at the mst level: `mstep^n (base params) =
+Some (base params')`, provable by induction over the drain counters
+with the EXISTING call-site equation library (exc_run_t, exc_absorb,
+exc_insulate, exc_zz, plus small new equations if the phase shapes
+demand them) discharging each parameterized exc computation. mstep_sim
+(proven, strict progress) lifts every mstep step to `-->+` on the tape,
+and progress_nonhalt_cond closes nonhalt over P s := exists params,
+s = base params. The startup already lands in the family (the anchor
+MB [1] [4] = the ev-2 base row). Remaining work is therefore: (1) the
+mid-round phase-state shapes (symbolically run one round through the
+equations; wall stays <= 15 runs), (2) the round lemma's drain
+induction, (3) the epoch lemma's digit-word carry, (4) assembly. All
+arithmetic + function computation; no new excursion inductions.
