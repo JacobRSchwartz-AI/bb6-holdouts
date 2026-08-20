@@ -1853,3 +1853,177 @@ Proof.
     destruct rs as [| a rest]; [contradiction |].
     eexists. reflexivity.
 Qed.
+
+(** ** The deep excursion.
+
+    Entered only after the first CS body of an insulate resolution. From
+    there every uncapped head is >= 2 (the CS merge put it there), capped
+    two-run words keep heads >= 2, and the one dangerous capped shape
+    [1, b, y] always carries b >= 2. wallok rules out interior singleton
+    1-runs, so an uncapped state never faces (1,0): deep f1A is always
+    post-carry, a prepend, never a merge. *)
+
+Definition second (rs : list nat) : nat :=
+  match rs with cons _ (cons b _) => b | _ => O end.
+
+Lemma wallok_tail : forall a ws, wallok (cons a ws) -> wallok ws.
+Proof.
+  introv H.
+  destruct a.
+  - destruct ws as [| b ws]; [exact I |].
+    destruct b; [exact H |].
+    destruct ws as [| c ws]; [contradiction |].
+    destruct c; [contradiction | exact H].
+  - exact H.
+Qed.
+
+Lemma wallok_zero_guard : forall ws,
+  wallok (cons 0 ws) ->
+  (forall t, ws <> cons 1 (cons 0 t)) /\ ws <> cons 1 nil.
+Proof.
+  introv H. split.
+  - introv E. subst ws. contradiction.
+  - introv E. subst ws. contradiction.
+Qed.
+
+Definition dmot (ws : list Sym) (cap : bool) (rs : list nat) : Prop :=
+  nib rs /\ w3 rs /\ wallok ws /\
+  (cap = false -> 2 <= rhead rs /\
+     (forall t, ws <> cons 1 (cons 0 t)) /\ ws <> cons 1 nil) /\
+  (cap = true ->
+     (length rs = 2 -> 2 <= rhead rs) /\
+     (length rs = 3 -> rhead rs = S O -> 2 <= second rs)).
+
+(** push3 under the capped conditions keeps w3. *)
+Lemma w3_push3_cap : forall rs,
+  nib rs -> w3 rs ->
+  (length rs = 2 -> 2 <= rhead rs) ->
+  (length rs = 3 -> rhead rs = S O -> 2 <= second rs) ->
+  w3 (push3 rs).
+Proof.
+  introv Hnib Hw3 H2 H3.
+  destruct rs as [| a rest]; [exact I |].
+  cbn [push3].
+  destruct rest as [| b rest]; [exact I |].
+  destruct rest as [| c rest]; [exact I |].
+  destruct rest as [| d rest]; [| exact Hw3].
+  cbn. intro.
+  destruct a as [| a].
+  - destruct Hnib as [_ [Hpos _]]. inversion Hpos; lia.
+  - destruct a as [| a].
+    + specialize (H3 eq_refl eq_refl). cbn in H3. lia.
+    + apply Hw3. lia.
+Qed.
+
+Lemma exc_deep : forall n ws cap rs,
+  length ws <= n ->
+  dmot ws cap rs ->
+  match exc ws cap rs with
+  | ExC ws' rs' => nib rs' /\ w3 rs' /\ (length rs' = 2 -> 2 <= rhead rs')
+  | ExB ws' rs' => nib rs' /\ w3 rs' /\ rhead rs' = S O /\ 3 <= length rs'
+  end.
+Proof.
+  induction n as [| n IH]; introv Hlen HM;
+    destruct HM as [Hnib [Hw3 [Hok [Hf Ht]]]].
+  - destruct ws; [| cbn in Hlen; lia ].
+    cbn [exc]. destruct cap.
+    + destruct (Ht eq_refl) as [T2 T3].
+      split; [apply nib_push3, Hnib |].
+      split; [apply w3_push3_cap; assumption |].
+      intro HL. destruct rs as [| a rest]; [cbn in HL; lia |].
+      cbn [push3]. cbn. lia.
+    + destruct (Hf eq_refl) as [Hhd _].
+      auto.
+  - destruct ws as [| a ws].
+    { cbn [exc]. destruct cap.
+      + destruct (Ht eq_refl) as [T2 T3].
+        split; [apply nib_push3, Hnib |].
+        split; [apply w3_push3_cap; assumption |].
+        intro HL. destruct rs as [| x rest]; [cbn in HL; lia |].
+        cbn [push3]. cbn. lia.
+      + destruct (Hf eq_refl) as [Hhd _]. auto. }
+    destruct ws as [| b ws].
+    + destruct a.
+      * (* 0 :: nil *)
+        cbn [exc]. destruct cap.
+        -- destruct (Ht eq_refl) as [T2 T3].
+           split; [apply nib_push3, Hnib |].
+           split; [apply w3_push3_cap; assumption |].
+           intro HL. destruct rs as [| x rest]; [cbn in HL; lia |].
+           cbn [push3]. cbn. lia.
+        -- destruct (Hf eq_refl) as [Hhd _]. auto.
+      * (* 1 :: nil *)
+        cbn [exc]. destruct cap.
+        -- split; [apply nib_cpush, Hnib |].
+           split; [apply w3_cons1, Hw3 |].
+           split; [reflexivity |].
+           destruct Hnib as [HL _]. cbn. lia.
+        -- destruct (Hf eq_refl) as [_ [_ Hno]]. contradiction.
+    + cbn in Hlen. assert (Hlen' : length ws <= n) by lia.
+      destruct a; destruct b; cbn [exc].
+      * (* 0,0 *)
+        destruct cap.
+        -- (* the CS body: recurse uncapped with head >= 4 *)
+           destruct (Ht eq_refl) as [T2 T3].
+           apply IH; [exact Hlen' |].
+           split; [apply nib_push3, Hnib |].
+           split; [apply w3_push3_cap; assumption |].
+           split; [eapply wallok_tail, wallok_tail, Hok |].
+           split.
+           ++ intro. split.
+              ** destruct rs as [| x rest];
+                   [destruct Hnib as [HL _]; cbn in HL; lia |].
+                 cbn [push3]. cbn. lia.
+              ** apply wallok_zero_guard.
+                 eapply wallok_tail, Hok.
+           ++ discriminate.
+        -- destruct (Hf eq_refl) as [Hhd _].
+           split; [exact Hnib |]. split; [exact Hw3 |]. auto.
+      * (* 0,1 *)
+        destruct cap.
+        -- (* degen: the capped word exits as is *)
+           destruct (Ht eq_refl) as [T2 T3].
+           split; [exact Hnib |]. split; [exact Hw3 |]. exact T2.
+        -- destruct (Hf eq_refl) as [Hhd _].
+           split; [exact Hnib |]. split; [exact Hw3 |]. auto.
+      * (* 1,0 *)
+        destruct cap.
+        -- split; [apply nib_cpush, Hnib |].
+           split; [apply w3_cons1, Hw3 |].
+           split; [reflexivity |].
+           destruct Hnib as [HL _]. cbn. lia.
+        -- destruct (Hf eq_refl) as [_ [Hno _]].
+           exfalso. eapply Hno. reflexivity.
+      * (* 1,1: the carry *)
+        apply IH; [exact Hlen' |].
+        split; [apply nib_cpush, Hnib |].
+        split.
+        { destruct cap.
+          - apply w3_cons1, Hw3.
+          - destruct (Hf eq_refl) as [Hhd _].
+            destruct rs as [| x rest];
+              [destruct Hnib as [HL _]; cbn in HL; lia |].
+            cbn [cpush].
+            eapply w3_head_ge; [exact Hhd | exact Hw3]. }
+        split; [eapply wallok_tail, wallok_tail, Hok |].
+        split; [discriminate |].
+        intro. split.
+        -- intro HL. destruct cap.
+           ++ cbn [cpush] in HL. cbn in HL.
+              destruct Hnib as [HL2 _]. lia.
+           ++ destruct (Hf eq_refl) as [Hhd _].
+              destruct rs as [| x rest];
+                [destruct Hnib as [HL2 _]; cbn in HL2; lia |].
+              cbn in Hhd. cbn [cpush]. cbn. lia.
+        -- intro HL. destruct cap.
+           ++ destruct rs as [| x rest];
+                [destruct Hnib as [HL2 _]; cbn in HL2; lia |].
+              cbn [cpush] in HL. cbn in HL.
+              intro. cbn [cpush second].
+              destruct (Ht eq_refl) as [T2 _].
+              apply T2. cbn. lia.
+           ++ destruct (Hf eq_refl) as [Hhd _].
+              destruct rs as [| x rest];
+                [destruct Hnib as [HL2 _]; cbn in HL2; lia |].
+              cbn in Hhd. cbn [cpush]. cbn [rhead]. intro Hx. lia.
+Qed.
