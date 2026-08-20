@@ -452,7 +452,47 @@ function closeCheck() {
   }
 }
 
-if (MODE === '--filllaw') {
+if (MODE === '--recur') {
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  let prev = null;
+  for (let ev = 0; ev < N; ev++) {
+    if (s.m === 'C' && s.wall.length === 1 && s.wall[0][1] === 2 && s.rs.length > 1 && s.rs[0] % 4 === 0) {
+      // canonical base: C [1^2] [H, ...mid..., 1^K, L]
+      const rs = s.rs;
+      const H = rs[0];
+      const L = rs[rs.length - 1];
+      let K = 0, i = rs.length - 2;
+      while (i >= 0 && rs[i] === 1) { K++; i--; }
+      const W = rs.slice(1, i + 1).join('.');
+      const cur = { ev, H, K, L, W };
+      let d = '';
+      if (prev) d = `  dH=${H - prev.H} dK=${K - prev.K} dL=${L - prev.L}`;
+      console.log(`ev ${ev}: H=${H} W=[${W}] K=${K} L=${L}${d}`);
+      prev = cur;
+    }
+    s = mstepR(s);
+    if (!s) break;
+  }
+} else if (MODE === '--rounds') {
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  let printed = 0;
+  const rsRle = rs => {
+    const out = [];
+    for (const v of rs) {
+      if (out.length && out[out.length - 1][0] === v) out[out.length - 1][1]++;
+      else out.push([v, 1]);
+    }
+    return out.map(([v, n]) => (n === 1 ? `${v}` : `${v}x${n}`)).join(' ');
+  };
+  for (let ev = 0; ev < N && printed < 60; ev++) {
+    if (s.wall.length <= 2 && s.wall[0][1] <= 2 && s.rs.length > 1) {
+      console.log(`ev ${ev} ${s.m} [${wallStr(s.wall)}] rs: ${rsRle(s.rs).slice(0, 150)}`);
+      printed++;
+    }
+    s = mstepR(s);
+    if (!s) break;
+  }
+} else if (MODE === '--filllaw') {
   let s = { m: 'B', wall: [[1, 1]], rs: [4] };
   let fills = 0, maxRuns = 0;
   const badU = new Map();

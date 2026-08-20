@@ -901,3 +901,27 @@ climbs by 4 and K drops; per epoch W increments like a counter and a
 new digit appears every ~4x events. This is the parameterized family
 for architecture A: F(W, inner-state, K, L) with the two lemmas
 (inner-round transformation; epoch/digit-increment) to prove in Coq.
+
+### The round recurrence and the conservation law (`--recur` census)
+
+At canonical base states C [1^2] [H, W, 1^K, L], every within-round step
+(dH = +4) satisfies EXACTLY:
+
+    K -> K - D,   L -> L + 4D,   D -> 2D      (D a power of 2)
+
+so **L + 4K is conserved within an epoch** (measured: 88,88,88 /
+412,412 / 6712,6712,6712 / ...), and D doubles per round: the binary
+doubling engine. Epoch boundaries (H resets to 4, W increments like a
+counter over {5,9}-digits) re-initialize (K, L, D) from the mass, which
+roughly doubles per epoch. Architecture A is therefore fully specified:
+
+    round lemma:  base(W, H, K, L, D) -->+ base(W, H+4, K-D, L+4D, 2D)
+                  (induction over the D-drain; reuses the excursion
+                   machinery: decay-pump, fill, absorb/skim, cs-descent)
+    epoch lemma:  K < D case: -->+ base(incr W, 4, K', L', D')
+    nonhalt:      progress_nonhalt_cond over the family; no closure
+                  invariant needed -- the family IS the invariant.
+
+Open detail for the round lemma: the family's MID-round states carry
+the wall's transient segments (<= 15 runs, measured); the phase lemmas
+must thread them explicitly.
