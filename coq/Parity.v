@@ -1624,3 +1624,232 @@ Proof.
       * split; [apply nib_cpush, Hnib | eauto].
       * exact (IH ws true (cpush cap rs) Hlen' (nib_cpush cap rs Hnib)).
 Qed.
+
+(** ** The excursion at its call sites, computed.
+
+    mstep only ever invokes exc from two wall shapes: a zero-topped wall
+    (after a gap-0 nibble: immediate bit-write exit) and a one-run-topped
+    wall (after a fill: the carries resolve it). These equations and the
+    absorb/insulate resolutions below compute every case. *)
+
+Lemma exc_zz : forall ws cap rs,
+  exc (cons 0 (cons 0 ws)) cap rs
+  = if cap then exc ws false (push3 rs) else ExC (cons 1 (cons 1 ws)) rs.
+Proof. reflexivity. Qed.
+
+(** Prepending j ones to the word: what j capped carries do. *)
+Fixpoint prep (j : nat) (rs : list nat) : list nat :=
+  match j with O => rs | S j' => cons (S O) (prep j' rs) end.
+
+Lemma prep_comm : forall j rs, prep j (cons (S O) rs) = cons (S O) (prep j rs).
+Proof.
+  induction j; introv; cbn [prep].
+  - reflexivity.
+  - rewrite IHj. reflexivity.
+Qed.
+
+(** A run of 2j ones under a capped word: j carries, each prepending 1. *)
+Lemma exc_run_t : forall j wt rs,
+  exc ([1]^^(2 * j) ++ wt) true rs = exc wt true (prep j rs).
+Proof.
+  induction j; introv.
+  - reflexivity.
+  - replace (2 * S j) with (S (S (2 * j))) by lia.
+    cbn [lpow]. rewrite <- List.app_assoc. cbn [List.app].
+    change (exc (cons 1 (cons 1 ([1]^^(2 * j) ++ wt))) true rs)
+      with (exc ([1]^^(2 * j) ++ wt) true (cpush true rs)).
+    rewrite IHj.
+    change (cpush true rs) with (cons (S O) rs).
+    rewrite prep_comm. reflexivity.
+Qed.
+
+(** A capped odd run over a zero: the carries prepend and the last cell
+    meets (1,0) -- the A0 turn hands B the word. *)
+Lemma exc_odd_t : forall j wt rs,
+  exc ([1]^^(2 * j + 1) ++ cons 0 wt) true rs
+  = ExB (cons 1 wt) (cons (S O) (prep j rs)).
+Proof.
+  induction j; introv.
+  - reflexivity.
+  - replace (2 * S j + 1) with (S (S (2 * j + 1))) by lia.
+    cbn [lpow]. rewrite <- List.app_assoc. cbn [List.app].
+    change (exc (cons 1 (cons 1 ([1]^^(2 * j + 1) ++ cons 0 wt))) true rs)
+      with (exc ([1]^^(2 * j + 1) ++ cons 0 wt) true (cpush true rs)).
+    rewrite IHj.
+    change (cpush true rs) with (cons (S O) rs).
+    rewrite prep_comm. reflexivity.
+Qed.
+
+Lemma exc_odd_t_nil : forall j rs,
+  exc ([1]^^(2 * j + 1)) true rs
+  = ExB (cons 1 nil) (cons (S O) (prep j rs)).
+Proof.
+  induction j; introv.
+  - reflexivity.
+  - replace (2 * S j + 1) with (S (S (2 * j + 1))) by lia.
+    cbn [lpow].
+    change (exc ([1] ++ [1] ++ [1]^^(2 * j + 1)) true rs)
+      with (exc ([1]^^(2 * j + 1)) true (cpush true rs)).
+    rewrite IHj.
+    change (cpush true rs) with (cons (S O) rs).
+    rewrite prep_comm. reflexivity.
+Qed.
+
+(** The absorb resolution: an odd run of usable ones over a zero (or the
+    blank edge). The run is folded into the wall and B relaunches. *)
+Lemma exc_absorb : forall j x wt,
+  exc ([1]^^(2 * j + 1) ++ cons 0 wt) false (cons x nil)
+  = ExB (cons 1 wt) (prep j (cons (S x) nil)).
+Proof.
+  destruct j; introv.
+  - reflexivity.
+  - replace (2 * S j + 1) with (S (S (2 * j + 1))) by lia.
+    cbn [lpow]. rewrite <- List.app_assoc. cbn [List.app].
+    change (exc (cons 1 (cons 1 ([1]^^(2 * j + 1) ++ cons 0 wt))) false (cons x nil))
+      with (exc ([1]^^(2 * j + 1) ++ cons 0 wt) true (cons (S x) nil)).
+    rewrite exc_odd_t. reflexivity.
+Qed.
+
+Lemma exc_absorb_nil : forall j x,
+  exc ([1]^^(2 * j + 1)) false (cons x nil)
+  = ExB (cons 1 nil) (prep j (cons (S x) nil)).
+Proof.
+  destruct j; introv.
+  - reflexivity.
+  - replace (2 * S j + 1) with (S (S (2 * j + 1))) by lia.
+    cbn [lpow].
+    change (exc ([1] ++ [1] ++ [1]^^(2 * j + 1)) false (cons x nil))
+      with (exc ([1]^^(2 * j + 1)) true (cons (S x) nil)).
+    rewrite exc_odd_t_nil. reflexivity.
+Qed.
+
+(** The insulate resolution, first stage: an even run >= 4 spends two
+    carries turning the exposed run into the two-run capped word
+    [1, x+1] -- the block is even and behind a single gap from here on,
+    and the rest of the excursion is nibble-protected. *)
+Lemma exc_insulate : forall j x wt,
+  exc ([1]^^(2 * j + 4) ++ wt) false (cons x nil)
+  = exc ([1]^^(2 * j) ++ wt) true (cons (S O) (cons (S x) nil)).
+Proof.
+  introv.
+  replace (2 * j + 4) with (S (S (S (S (2 * j))))) by lia.
+  cbn [lpow]. rewrite <- !List.app_assoc. cbn [List.app].
+  reflexivity.
+Qed.
+
+(** ** The word-suffix guard.
+
+    w3 forbids the one dangerous suffix: a run >= 2, then a single pair
+    run, then the final block. Its gap-0 would hand C the [1, L] word
+    over a wall-top of exactly 2, whose c = 1 nibble punches the block
+    at usable-top 3 -- the dead class. Everything the machine ever
+    pushes or consumes preserves w3; checked at 15M C/B-entries. *)
+Fixpoint w3 (rs : list nat) : Prop :=
+  match rs with
+  | cons a (cons b (cons c nil)) => 2 <= a -> b <> S O
+  | cons _ rest => w3 rest
+  | nil => True
+  end.
+
+Lemma w3_tail : forall a rest, w3 (cons a rest) -> w3 rest.
+Proof.
+  introv H.
+  destruct rest as [| b rest]; [exact I |].
+  destruct rest as [| c rest]; [exact I |].
+  destruct rest as [| d rest]; [exact I | exact H].
+Qed.
+
+Lemma w3_cons1 : forall rs, w3 rs -> w3 (cons (S O) rs).
+Proof.
+  introv H.
+  destruct rs as [| b rest]; [exact I |].
+  destruct rest as [| c rest]; [exact I |].
+  destruct rest as [| d rest]; [| exact H].
+  cbn. intro Habs. lia.
+Qed.
+
+(** Head merges (the carry's +1, the CS body's +3) preserve w3 whenever
+    the old head was already >= 2 -- which the excursion guarantees at
+    every merge site after the initial run. *)
+Lemma w3_head_ge : forall a a' rest,
+  2 <= a -> w3 (cons a rest) -> w3 (cons a' rest).
+Proof.
+  introv Ha H.
+  destruct rest as [| b rest]; [exact I |].
+  destruct rest as [| c rest]; [exact I |].
+  destruct rest as [| d rest]; [| exact H].
+  cbn in *. intro. apply H, Ha.
+Qed.
+
+(** ** THE INVARIANT.
+
+    Validated against the abstract machine at 15,005,277 consecutive
+    C-/B-entries (30M events): every clause below holds at every one.
+    fillok is the fill-time law: the usable top-run u = wallT - 1 of a
+    punch avoids 0 (exposed exit), 2 (one carry then cs re-exposes),
+    3 (absorb hands MB [1,c+4], whose skim punches at u = 2) and 6 (the
+    insulate cs collides with the [1,1,L] transient). wallok: interior
+    wall 1-runs are never singletons (only the f1A turn writes a lone 1,
+    always at the top, and the next skim merges it). *)
+
+Fixpoint wallT (ws : list Sym) : nat :=
+  match ws with cons 1 t => S (wallT t) | _ => O end.
+
+Fixpoint zrun (ws : list Sym) : nat :=
+  match ws with cons 0 t => S (zrun t) | _ => O end.
+
+Definition wgap (ws : list Sym) : nat := zrun (List.skipn (wallT ws) ws).
+
+Definition fillok (u : nat) : Prop :=
+  u = S O \/ u = 4 \/ u = 5 \/ 7 <= u.
+
+Fixpoint wallok (ws : list Sym) : Prop :=
+  match ws with
+  | cons 0 (cons 1 (cons 0 _)) => False
+  | cons 0 (cons 1 nil) => False
+  | cons _ t => wallok t
+  | nil => True
+  end.
+
+Definition Inv (s : mst) : Prop :=
+  match s with
+  | MC ws rs =>
+      2 <= wallT ws /\ wallok ws /\ List.Forall (le 1) rs /\
+      match rs with
+      | nil => fillok (wallT ws - S O) /\ (wallT ws = 5 -> wgap ws <> S O)
+      | cons c nil => Nat.even c = true /\ fillok (wallT ws - S O)
+                      /\ (wallT ws = 5 -> wgap ws <> S O)
+      | cons c rest =>
+          Nat.even (List.last rs O) = true /\ w3 rs /\
+          (forall r2, rs = cons (S O) (cons r2 nil) ->
+             wallT ws = 3 \/ wallT ws = 4 \/ 7 <= wallT ws)
+      end
+  | MB ws rs =>
+      1 <= wallT ws /\ wallok ws /\ List.Forall (le 1) rs /\
+      match rs with
+      | nil => False
+      | cons a nil => 4 <= a /\ Nat.even a = true
+      | cons a (cons _ nil) => False
+      | cons a rest =>
+          Nat.even (List.last rs O) = true /\ w3 rs /\ a = S O
+      end
+  end.
+
+(** The safety half of closure: an invariant state always has a
+    successor -- mstep's None branches are unreachable. The other half
+    (Inv is preserved) is the remaining work. *)
+Lemma inv_safe : forall s, Inv s -> exists s', mstep s = Some s'.
+Proof.
+  introv HI. destruct s as [ws rs | ws rs]; cbn in HI.
+  - destruct HI as [HT [Hok [Hwf Hrs]]].
+    destruct ws as [| a ws']; [cbn in HT; lia |].
+    destruct a; [cbn in HT; lia |].
+    destruct rs as [| c rest].
+    + eexists. reflexivity.
+    + destruct rest as [| r2 rest'].
+      * destruct Hrs as [Hc _]. cbn [mstep]. rewrite Hc. eexists. reflexivity.
+      * eexists. reflexivity.
+  - destruct HI as [HT [Hok [Hwf Hrs]]].
+    destruct rs as [| a rest]; [contradiction |].
+    eexists. reflexivity.
+Qed.

@@ -660,6 +660,107 @@ base case from startup, then the CI job.
 MEASURE WITH: node tools/parity-macro.mjs --states 8000000 (the class
 table), --fills (the u census), 20000000 (co-verification).
 
+## THE CLOSURE, FULLY SPECIFIED (2026-08-20, session 2)
+
+Coq green through: exc_zz / prep / exc_run_t / exc_odd_t(_nil) /
+exc_absorb(_nil) / exc_insulate (the excursion computed at every call
+site); w3 + w3_tail / w3_cons1 / w3_head_ge; wallT / zrun / wgap /
+fillok / wallok; Inv (the full invariant, below); inv_safe (an Inv
+state never hits a halt branch). All Closed under the global context.
+
+THE INVARIANT (validated at 15,005,277 C/B-entries over 30M events in
+its weak form; the strengthened form below is being validated -- run
+node tools/parity-macro.mjs --inv 30000000):
+  fillok u := u in {1,4,5} or u >= 7        (u = wallT - 1 at punches)
+  MC ws rs: wallT >= 2, wallok, runs >= 1, and
+    nil / [c]: (even c,) fillok(wallT-1), (wallT=5 -> wgap <> 1)
+    [1,r2]:    last even, w3, wallT in {3,4} or >= 7
+    multi:     last even, w3
+  MB ws rs: wallT = 1 (singles and multi), wallok, runs >= 1, and
+    [a]:    a >= 4, a even, (a = 4 -> zrun(tl ws) <> 1)
+    2-run:  FORBIDDEN (never occurs)
+    multi:  head = 1, last even, w3
+  (The two wallT-at-MB clauses and the a=4-zrun guard are the additions
+   still to re-validate; everything else passed at 30M.)
+
+WHY EACH DANGEROUS u IS EXCLUDED: u=0 exposed-exit; u=2 carry-then-cs
+re-exposes; u=3 absorb hands MB [1,c+4] whose skim punches at u=2;
+u=6 the insulate cs collides with the [1,1,L] transient making
+[4,1,L] (w3-dead). u=1 absorbs via j=0 (MB [c+4], relaunch); u=4
+insulates to [1,c+4] then cs to [4,c+4] (g>=2 by the T=5-guard);
+u=5 absorbs via j=2 (MB [1,1,4]); u>=7 generic absorb/insulate.
+
+EXC_DEEP -- the one remaining induction (the deep excursion, entered
+only from post-first-cs states), fuel induction over the wall:
+  motive M ws cap rs :=
+    nib rs /\ w3 rs /\ wallok ws /    (cap = false -> 2 <= rhead rs)   [the cs-merge keeps heads >= 2]
+    /\ (cap = true ->
+         (length rs = 2 -> 2 <= rhead rs)          [no [1,x] deep]
+         /\ (length rs = 3 /\ rhead rs = 1 -> 2 <= second rs))
+  conclusions:
+    ExC ws' rs': nib /\ w3 /\ (length rs' = 2 -> 2 <= rhead rs')
+      [so the Inv [1,r2]-T-clause is VACUOUS for deep exits]
+    ExB ws' rs': nib /\ w3 /\ rhead rs' = 1 /\ 3 <= length rs'
+      [deep f1A is always post-carry: prepend, never merge]
+  key case facts:
+  - (1,0)/cap=false is IMPOSSIBLE deep: at the cs-case the wall was
+    0::0::ws', and wallok(0::0::ws') forbids ws' = 1::0::_ and 1::nil
+    (the interior-singleton clauses see the leading 0). So a fresh
+    cap=false state never faces (1,0); after any carry cap=true.
+  - degen (0,1)/cap=true: word len>=3 or len-2-head>=2 (motive), so
+    the exit never makes a [1,r2] state; wall 1;1;1-topped.
+  - cs (0,0)/cap=true: push3 head-merge; w3 by w3_head_ge (old head
+    >= 2 except the len-3-head-1 case, where second >= 2 makes the
+    new 3-suffix (4, >=2, y) safe).
+  - carries: cpush; nib_cpush, w3_cons1 / w3_head_ge.
+
+CLOSURE CASE INVENTORY (inv_preserve : Inv s -> mstep s = Some s' ->
+Inv s'), all reduced to the lemmas above + arithmetic:
+ 1. MB [a] -> MC ([1]^(S a)++ws) nil: T' = a+2 (wallT_MB = 1), u' = a+1
+    odd >= 5: fillok. T'=5 <-> a=4: wgap' = zrun(tl ws): the a=4-guard.
+ 2. MB [1,...multi] -> MC rest: T' = 2+1 = 3; rest=[1,r2] needs T' in
+    set: 3 ok. rest multi: w3_tail. rest=[r2]: T'=3: fillok(2)?? NO --
+    MB [1,r2] 2-run is forbidden, so rest as a single arises only from
+    MB [1,r2] = dead clause. rest = [c] singles come only from... (MB
+    3-run [1,c2,c3] -> MC [c2,c3] 2-run, never a single). OK.
+ 3. MC nil (edge fill): exc(tl ws) false [3]: u = T-1 by fillok:
+    u=1: exc_absorb j=0: MB [4]: Inv needs even 4 ok, a=4-guard:
+      zrun(tl(1::wt)) = zrun wt: from the T=2-fill's wgap... thread:
+      (T=2 -> wgap <> 2)?? -- VALIDATE, may need one more clause.
+    u=4: exc_insulate + concrete g-split (g>=2 by T5-guard: cs to
+      [4,4]?? entry [3]: 2 carries -> [1,4], cs -> [4,4], then
+      exc_deep. g=0/blank: concrete: ExC [1;1] [4,4]-ish).
+    u=5: exc_absorb j=2: MB [1,1,4]: multi, head 1, last even. OK.
+    u>=7 odd: exc_absorb: MB [1^j,4]: multi OK.
+    u>=8 even: exc_insulate + exc_run_t + cs + exc_deep.
+ 4. MC [c] (punch): same split with entry [3+c], c even.
+ 5. MC [c,r2] gap0: exc([0]^(S c)++ws) false [r2]: exc_zz-immediate:
+    ExC (1;1;[0]^(c-1)++ws) [r2]: c>=2: T'=2, rs'=[r2] single: fillok(1)
+    ok; T'=5 impossible (T'=2). c=1: T'=2+T: rs'=[r2]: fillok(1+T): T
+    in {3,4,>=7} (the [1,r2]-clause!) gives u' in {4,5,>=8}: ok. And
+    the T'=5-wgap-guard: T'=2+T=5 <-> T=3: wgap' = ...: thread the
+    [1,r2]-T=3 states' wgap -- VALIDATE, may need one more clause.
+ 6. MC [c,r2,...multi] gap0: exc-immediate: ExC (...) [r2,...]: multi:
+    w3_tail, last even preserved; [r2,r3] exact-2 with r2=1: T'=2 or
+    2+T: the [1,r2]-T-clause at the TARGET: T'=2 FAILS the set!! --
+    the source was [c,1,r3] with w3: 3-exact => 2<=c -> 1<>1
+    contradiction => c=1 => T'=2+T with T>=2... c>=2 & [c,1,r3]-exact-3
+    is w3-DEAD, so only c=1 survives: T' = 2+T >= 4, need in {3,4,>=7}:
+    T=2 -> 4 ok; T=3 -> 5 BAD -- but [1,1,r3]-exact-3 states: measured
+    T-set was {2,5,6,o,e} at runs=3 head=1 r2=1... T=3 absent. NEEDS
+    the [1,1,r3]-T-clause threaded (T <> 3, T <> 5-ish). VALIDATE.
+ 7. MB multi -> MC: covered by 2.
+
+The three VALIDATE marks are the only open micro-questions; each is a
+one-line census (add clause, run --inv 30000000). Then inv_preserve is
+mechanical, and:
+
+  Theorem nonhalt : ~ halts tm c0.
+  Proof: multistep_nonhalt via startup-to-anchor (compute the first
+  Inv state concretely: startup gives MB [1] [4]-ish -- check!), then
+  progress_nonhalt_cond with A := mst, C := mconf, P := Inv,
+  step from inv_safe + inv_preserve + mstep_sim.
+
 CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA
 is still an OPEN BB(6) holdout. `~ halts tm c0` is NOT proven. Nothing
 has been submitted anywhere, and nothing should be until it compiles.

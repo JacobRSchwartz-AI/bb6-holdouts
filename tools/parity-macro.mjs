@@ -19,7 +19,7 @@
 
 const args = process.argv.slice(2);
 const MODE = args[0] === '--mine' ? 'mine' : args[0] === '--dump' ? 'dump'
-  : args[0] === '--fills' ? 'fills' : args[0] === '--windows' ? 'windows' : args[0] === '--states' ? 'states' : 'verify';
+  : args[0] === '--fills' ? 'fills' : args[0] === '--windows' ? 'windows' : args[0] === '--states' ? 'states' : args[0] === '--trace' ? 'trace' : args[0] === '--inv' ? 'inv' : args[0] === '--graph' ? 'graph' : 'verify';
 const N = Number(args[MODE === 'verify' ? 0 : 1] ?? 2e6);
 
 class Halt extends Error {}
@@ -378,9 +378,143 @@ function runStates(maxEvents) {
     console.log(`  ${String(v).padStart(9)}  ${k}`);
 }
 
+// Trace the fate of a defect run sitting third-from-last: find a C-/B-entry
+// whose word has suffix [x>=2, 1, L], then print every entry until the word
+// is down to two runs. Answers how [x,1,L]-at-CE is avoided.
+function runTrace(maxEvents) {
+  const abs = new Abs();
+  let tracing = false, printed = 0;
+  abs.onState = (m) => {
+    const runsOnly = abs.right.filter(([v]) => v === 1).map(([, n]) => n);
+    const mm = runsOnly.length;
+    if (!tracing && mm >= 3 && runsOnly[mm - 3] >= 2 && runsOnly[mm - 2] === 1) {
+      tracing = true;
+      console.log(`--- trigger at event ${abs.stats.events} ---`);
+    }
+    if (tracing && printed < 400) {
+      const T = abs.wall[0]?.[0] === 1 ? abs.wall[0][1] : 0;
+      console.log(`${m} T=${String(T).padStart(3)} rs=[${runsOnly.join(',')}]`);
+      printed++;
+      if (mm <= 2) { tracing = false; console.log('--- resolved ---'); }
+    }
+    if (printed >= 400) throw new Halt('trace budget');
+  };
+  try {
+    while (abs.stats.events < maxEvents) abs.nextCheckpoint();
+  } catch (e) { console.log('STOPPED: ' + e.message); }
+}
+
+// THE INVARIANT, exactly as it will be encoded in Coq. Checked at every
+// C-/B-entry. fillok u: the post-fill excursion survives iff the usable
+// top-run u avoids {0,2,3} (0: exposed exit erases the odd run; 2: one
+// carry then cs re-exposes it; 3: absorb hands over MB [1,c+4] whose skim
+// punches at u=2). w3: no [x>=2, 1, L] suffix (its gap0 would punch the
+// final run at wall-top 2). [1,r2] two-run C-states need T>=3 (their c=1
+// gap0 punches at T+2). MB singles are absorb relaunches with a>=4;
+// MB two-run states punch after one skim, needing fillok(a+T).
+function runInv(maxEvents) {
+  const fillok = (u) => u === 1 || u === 4 || u === 5 || u >= 7;
+  const w3 = (rr) => !(rr.length >= 3 && rr[rr.length - 3] >= 2 && rr[rr.length - 2] === 1);
+  const wallok = (wall) => {
+    for (let i = 1; i < wall.length; i++)
+      if (wall[i][0] === 1 && wall[i][1] < 2) return false;
+    return true;
+  };
+  let checked = 0;
+  const abs = new Abs();
+  abs.onState = (m) => {
+    const R = abs.right;
+    for (let i = 0; i < R.length; i++) {
+      if (R[i][0] === (i % 2 ? 0 : 1)) continue;
+      throw new Error(`${m}: right not alternating 1-first`);
+    }
+    for (let i = 1; i < R.length; i += 2)
+      if (R[i][1] !== 1) throw new Error(`${m}: internal 0-run != 1`);
+    if (R.length && R[R.length - 1][0] === 0) throw new Error(`${m}: trailing 0-run`);
+    const rr = R.filter(([v]) => v === 1).map(([, n]) => n);
+    const T = abs.wall[0]?.[0] === 1 ? abs.wall[0][1] : 0;
+    const mlen = rr.length;
+    const fail = (tag) => { throw new Error(`INV ${tag} at event ${abs.stats.events}: T=${T} rr=[${rr.slice(0, 8)}...]`); };
+    if (!rr.every((r) => r >= 1)) fail(`${m}:run0`);
+    if (!wallok(abs.wall)) fail(`${m}:wallok`);
+    const g = abs.wall[1]?.[0] === 0 ? abs.wall[1][1] : 0;
+    if (m === 'C') {
+      if (T < 2) fail('C:T<2');
+      if (mlen === 0) {
+        if (!fillok(T - 1)) fail('Cnil:fillok');
+        if (T === 5 && g === 1) fail('Cnil:T5g1');
+      } else if (mlen === 1) {
+        if (rr[0] % 2) fail('C1:odd');
+        if (!fillok(T - 1)) fail('C1:fillok');
+        if (T === 5 && g === 1) fail('C1:T5g1');
+      } else {
+        if (rr[mlen - 1] % 2) fail('C:lastodd');
+        if (!w3(rr)) fail('C:w3');
+        if (mlen === 2 && rr[0] === 1 && !(T === 3 || T === 4 || T >= 7)) fail('C:[1,r]T');
+      }
+    } else {
+      if (T < 1) fail('B:T<1');
+      if (mlen === 0) fail('B:empty');
+      else if (mlen === 1) { if (rr[0] < 4 || rr[0] % 2) fail('B1:a'); }
+      else if (mlen === 2) fail('B2:exists');
+      else {
+        if (rr[mlen - 1] % 2) fail('B:lastodd');
+        if (!w3(rr)) fail('B:w3');
+        if (rr[0] !== 1) fail('B3:head');
+      }
+    }
+    checked++;
+  };
+  try {
+    while (abs.stats.events < maxEvents) abs.nextCheckpoint();
+    console.log(`INVARIANT HOLDS at all ${checked} C/B-entries over ${abs.stats.events} events`);
+  } catch (e) { console.log('VIOLATION: ' + e.message); }
+}
+
+// The class-transition graph: classify every C-/B-entry at the granularity
+// the closure proof needs, record every observed class -> class edge. The
+// node set is the invariant; the edge set is the closure case list.
+function classOf(mode, wall, right) {
+  const rr = right.filter(([v]) => v === 1).map(([, n]) => n);
+  const m = rr.length;
+  const clsRun = (n) => n <= 5 ? String(n) : n % 2 ? 'O' : 'E';
+  const head = m ? clsRun(rr[0]) : '-';
+  const r2 = m >= 2 ? (rr[1] === 1 ? '1' : '2+') : '-';
+  const last = m ? (rr[m - 1] % 2 ? 'o' : 'e') : '-';
+  const T = wall[0]?.[0] === 1 ? wall[0][1] : 0;
+  const Tc = T <= 7 ? String(T) : T % 2 ? 'O' : 'E';
+  const g = wall[1]?.[0] === 0 ? Math.min(wall[1][1], 4) : 0;
+  const w2 = wall[2]?.[0] === 1 ? clsRun(wall[2][1]) : '-';
+  const mlen = m <= 2 ? String(m) : '3+';
+  return `${mode}|m${mlen}|h${head}|r${r2}|l${last}|T${Tc}|g${g}|w${w2}`;
+}
+
+function runGraph(maxEvents) {
+  const abs = new Abs();
+  const nodes = new Map(), edges = new Map();
+  let prev = null;
+  abs.onState = (mode) => {
+    const k = classOf(mode, abs.wall, abs.right);
+    nodes.set(k, (nodes.get(k) ?? 0) + 1);
+    if (prev) { const e = prev + '  ->  ' + k; edges.set(e, (edges.get(e) ?? 0) + 1); }
+    prev = k;
+  };
+  try {
+    while (abs.stats.events < maxEvents) abs.nextCheckpoint();
+  } catch (e) { console.log('STOPPED: ' + e.message); }
+  console.log(`events=${abs.stats.events} nodes=${nodes.size} edges=${edges.size}`);
+  console.log('\nNODES:');
+  for (const [k, v] of [...nodes.entries()].sort()) console.log(`  ${String(v).padStart(9)}  ${k}`);
+  console.log('\nEDGES:');
+  for (const [k, v] of [...edges.entries()].sort()) console.log(`  ${String(v).padStart(9)}  ${k}`);
+}
+
 if (MODE === 'verify') runVerify(N);
 else if (MODE === 'mine') runMine(N);
 else if (MODE === 'fills') runFills(N);
 else if (MODE === 'windows') runWindows(N);
 else if (MODE === 'states') runStates(N);
+else if (MODE === 'trace') runTrace(N);
+else if (MODE === 'inv') runInv(N);
+else if (MODE === 'graph') runGraph(N);
 else runDump(N);
