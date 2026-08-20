@@ -875,3 +875,29 @@ C. Both fail -> the machine's true invariant may be inherently
 
 `~ halts tm c0` is NOT proven. The parity machine remains an open
 BB(6) holdout. Nothing has been posted anywhere.
+
+### The base-state family (the closed form, empirically)
+
+States with wall <= 2 runs and top <= 1^2 (`--rounds` census; rs in RLE):
+
+    ev 2       B [1^1]  1x2 4                      ev 1009   B [1^1]  1x2 9 1x30 72
+    ev 5       C [1^2]  4 8                        ev 1239   C [1^2]  4 1 9 1x22 104
+    ev 22      B [1^1]  1x6 12                     ev 1507   C [1^2]  8 1 9 1x6 168
+    ev 29      C [1^2]  4 1x4 16                   ev 2525   B [1^1]  1 9 1x92 44
+    ev 40      C [1^2]  8 1x2 24                   ev 3250   C [1^2]  4 9 1x84 76
+    ev 125     B [1^1]  1x18 20                    ev 4508   C [1^2]  8 9 1x68 140
+    ev 144     C [1^2]  4 1x16 24                  ev 6256   C [1^2]  12 9 1x36 268
+    ev 179     C [1^2]  8 1x14 32                  ev 22439  B [1^1]  1x3 9 1 5 1x112 384
+    ev 237     C [1^2]  12 1x10 48                 ev 25610  C [1^2]  4 1x2 9 1 5 1x80 512
+    ev 305     C [1^2]  16 1x2 80                  ev 28880  C [1^2]  8 1x2 9 1 5 1x16 768
+                                                   ev 96624  B [1^1]  1 9 1x2 9 5 1x200 872
+                                                   ev 341373 B [1^1]  1x4 5 1 5 9 1x504 1336
+
+Shape: rs = [HEAD (4,8,12,... inner-loop ladder with shrinking 1-block),
+W (a slowly-evolving word over {5, 9} with short 1-blocks -- the
+odometer's high digits), 1^K (K large, shrinking within an epoch),
+L (large, growing ~ +4 x consumed)]. Within an inner round the head
+climbs by 4 and K drops; per epoch W increments like a counter and a
+new digit appears every ~4x events. This is the parameterized family
+for architecture A: F(W, inner-state, K, L) with the two lemmas
+(inner-round transformation; epoch/digit-increment) to prove in Coq.
