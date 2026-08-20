@@ -2027,3 +2027,47 @@ Proof.
                 [destruct Hnib as [HL2 _]; cbn in HL2; lia |].
               cbn in Hhd. cbn [cpush]. cbn [rhead]. intro Hx. lia.
 Qed.
+
+(** ** The assembly.
+
+    Everything reduces to closure: if the invariant is preserved by one
+    macro step, the machine never halts. The base case is exact: the
+    8-step startup lands on the B-entry MB [1] [4], which satisfies the
+    invariant on the nose (wall = a single 1; word = the run of four;
+    the absorb relaunch shape with a = 4). *)
+
+Lemma inv_wf : forall s, Inv s -> List.Forall (le 1) (mrs s).
+Proof.
+  introv HI. destruct s as [ws rs | ws rs]; cbn in HI; tauto.
+Qed.
+
+Lemma startup_anchor : c0 -->* mconf (MB (cons 1 nil) (cons 4 nil)).
+Proof.
+  follow startup.
+  cbn [mconf runs].
+  rewrite zpad.
+  finish.
+Qed.
+
+Lemma inv_anchor : Inv (MB (cons 1 nil) (cons 4 nil)).
+Proof.
+  cbn. repeat split; auto.
+Qed.
+
+(** Non-halting, given closure. inv_preserve is the one open obligation:
+    Inv s -> mstep s = Some s' -> Inv s'. *)
+Lemma nonhalt_from_closure :
+  (forall s s', Inv s -> mstep s = Some s' -> Inv s') ->
+  ~ halts tm c0.
+Proof.
+  intro Hpres.
+  eapply multistep_nonhalt; [apply startup_anchor |].
+  apply progress_nonhalt_cond
+    with (i0 := MB (cons 1 nil) (cons 4 nil)) (C := mconf) (P := Inv);
+    [| exact inv_anchor].
+  intros s HI.
+  destruct (inv_safe s HI) as [s' Hs'].
+  exists s'. split.
+  - apply mstep_sim; [apply inv_wf, HI | exact Hs'].
+  - eapply Hpres; eauto.
+Qed.

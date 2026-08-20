@@ -751,15 +751,28 @@ Inv s'), all reduced to the lemmas above + arithmetic:
     the [1,1,r3]-T-clause threaded (T <> 3, T <> 5-ish). VALIDATE.
  7. MB multi -> MC: covered by 2.
 
-The three VALIDATE marks are the only open micro-questions; each is a
-one-line census (add clause, run --inv 30000000). Then inv_preserve is
-mechanical, and:
+VALIDATED 2026-08-20: the strengthened invariant (fillok {1,4,5,>=7},
+[1,r2]-T in {3,4,>=7}, T=5-wgap-guard, wallok, MB singles even >= 4,
+no MB 2-runs, MB multi head=1) HOLDS at all 15,005,277 C/B-entries
+over 30M events, zero violations.
 
-  Theorem nonhalt : ~ halts tm c0.
-  Proof: multistep_nonhalt via startup-to-anchor (compute the first
-  Inv state concretely: startup gives MB [1] [4]-ish -- check!), then
-  progress_nonhalt_cond with A := mst, C := mconf, P := Inv,
-  step from inv_safe + inv_preserve + mstep_sim.
+STILL TO VALIDATE-THEN-ADD before inv_preserve (one --inv round):
+  - MB states: wallT = 1 EXACTLY (Coq Inv currently has >= 1; the
+    closure arithmetic T' = a + 2 needs equality);
+  - MB [4]-singles: zrun (tl ws) <> 1 (feeds the target's T=5-guard);
+  - the T=2-fill successor guard (case 3 u=1) and the [1,1,r3]-exact-3
+    T-clause (case 6 c=1) -- census both, add the minimal clauses.
+Then inv_preserve is mechanical, and:
+
+  PROVEN AND GREEN (143 declarations, all axiom-free):
+    startup_anchor : c0 -->* mconf (MB [1] [4])   (exact, 8 steps)
+    inv_anchor     : Inv (MB [1] [4])
+    nonhalt_from_closure :
+      (forall s s', Inv s -> mstep s = Some s' -> Inv s') ->
+      ~ halts tm c0.
+  So the whole theorem is now literally one application away:
+    Theorem nonhalt := nonhalt_from_closure inv_preserve.
+  inv_preserve (the seven cases above) is the ONLY open obligation.
 
 CANDIDATE STATUS: the machine 1RB0LF_1RC1RB_0RD0RC_1LE1LF_1LD---_0LB1LA
 is still an OPEN BB(6) holdout. `~ halts tm c0` is NOT proven. Nothing
