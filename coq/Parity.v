@@ -10,6 +10,7 @@
 
 From BusyCoq Require Import Individual62.
 From Coq Require Import Lia.
+From Coq Require Import PeanoNat.
 Set Default Goal Selector "!".
 
 Definition tm : TM := fun '(q, s) =>
@@ -1264,24 +1265,46 @@ Definition xconf (x : xexit) : Q * tape :=
   | ExB ws rs => (ws *> const 0) {{B}}> runs rs
   end.
 
+Lemma zpad : 0 >> (const 0 : Stream Sym) = const 0.
+Proof. symmetry. apply const_unfold. Qed.
+
+(** The excursion exits as strict progress: each has a concrete head cell,
+    so one peeled step turns the rest over to the evstep machinery. These
+    carry the `-->+` that progress_nonhalt needs through the whole proof. *)
+Lemma bitset_plus : forall l r,
+  l <* <[0; 0] <{{F}} 1 >> r -->+ l <* <[1; 1] {{C}}> 1 >> r.
+Proof. introv. start_progress. Qed.
+
+Lemma bitset_odd_plus : forall l r,
+  l <* <[1] <* <[0] <{{F}} 1 >> r -->+ l <* <[1; 1] {{C}}> 1 >> r.
+Proof. introv. start_progress. Qed.
+
+Lemma degen_full_plus : forall l r,
+  l <* <[1] <* <[0] <{{F}} 0 >> 1 >> r -->+ l <* <[1; 1; 1] {{C}}> 1 >> r.
+Proof. introv. start_progress. Qed.
+
+Lemma f1_to_A_plus : forall l r,
+  l <* <[0] <* <[1] <{{F}} r -->+ l {{A}}> [0] *> [1] *> r.
+Proof. introv. start_progress. Qed.
+
 (** The blank-wall excursion: the CS body fires over blank cells (when
     capped) and the bit write ends it. *)
 Lemma exc_blank_sim : forall cap rs,
   1 <= rhead rs ->
-  (const 0 : Stream Sym) <{{F}} rside cap rs -->* xconf (exc nil cap rs).
+  (const 0 : Stream Sym) <{{F}} rside cap rs -->+ xconf (exc nil cap rs).
 Proof.
   introv Hrs.
   destruct cap; cbn [exc xconf rside].
   - rewrite (blank_app 2) at 1.
     follow cs_body.
     rewrite (blank_app 2) at 1.
-    follow bitset.
+    eapply progress_evstep_trans; [apply bitset_plus |].
     rewrite push3_eq. finish.
   - destruct rs as [| r rest]; [cbn in Hrs; lia |].
     destruct r as [| r]; [cbn in Hrs; lia |].
     rewrite runs_expose.
     rewrite (blank_app 2) at 1.
-    follow bitset.
+    eapply progress_evstep_trans; [apply bitset_plus |].
     rewrite <- runs_expose. finish.
 Qed.
 
@@ -1292,7 +1315,7 @@ Qed.
 Lemma exc_sim : forall n ws cap rs,
   length ws <= n ->
   1 <= rhead rs ->
-  (ws *> const 0) <{{F}} rside cap rs -->* xconf (exc ws cap rs).
+  (ws *> const 0) <{{F}} rside cap rs -->+ xconf (exc ws cap rs).
 Proof.
   induction n as [| n IH]; introv Hlen Hrs.
   - destruct ws; [| cbn in Hlen; lia ].
@@ -1310,12 +1333,12 @@ Proof.
         destruct cap; cbn [xconf rside].
         -- follow cs_body.
            rewrite (blank_app 2) at 1.
-           follow bitset.
+           eapply progress_evstep_trans; [apply bitset_plus |].
            rewrite push3_eq. finish.
         -- destruct rs as [| r rest]; [cbn in Hrs; lia |].
            destruct r as [| r]; [cbn in Hrs; lia |].
            rewrite runs_expose.
-           follow bitset.
+           eapply progress_evstep_trans; [apply bitset_plus |].
            rewrite <- runs_expose. finish.
       * (* a = 1: f1_to_A at the blank edge *)
         assert (P : (cons 1 nil) *> const 0
@@ -1323,7 +1346,7 @@ Proof.
         { cbn [Str_app]. f_equal. apply const_unfold. }
         rewrite P.
         cbn [exc xconf].
-        follow f1_to_A.
+        eapply progress_evstep_trans; [apply f1_to_A_plus |].
         follow a0_step.
         cbn [Str_app].
         rewrite push1_eq.
@@ -1342,7 +1365,7 @@ Proof.
         -- destruct rs as [| r rest]; [cbn in Hrs; lia |].
            destruct r as [| r]; [cbn in Hrs; lia |].
            rewrite runs_expose.
-           follow bitset.
+           eapply progress_evstep_trans; [apply bitset_plus |].
            rewrite <- runs_expose. finish.
       * (* 0,1 *)
         change ((0 :: 1 :: ws) *> const 0)
@@ -1351,16 +1374,16 @@ Proof.
         destruct r as [| r]; [cbn in Hrs; lia |].
         destruct cap; cbn [xconf rside].
         -- rewrite runs_expose.
-           follow degen_full.
+           eapply progress_evstep_trans; [apply degen_full_plus |].
            rewrite <- runs_expose. finish.
         -- rewrite runs_expose.
-           follow bitset_odd.
+           eapply progress_evstep_trans; [apply bitset_odd_plus |].
            rewrite <- runs_expose. finish.
       * (* 1,0 *)
         change ((1 :: 0 :: ws) *> const 0)
           with ((ws *> const 0) <* <[0] <* <[1]).
         cbn [xconf].
-        follow f1_to_A.
+        eapply progress_evstep_trans; [apply f1_to_A_plus |].
         follow a0_step.
         cbn [Str_app].
         rewrite push1_eq.
@@ -1371,4 +1394,155 @@ Proof.
         follow carry_step.
         rewrite cpush_eq.
         apply (IH ws true (cpush cap rs) Hlen' (cpush_pos cap rs)).
+Qed.
+
+(** ** The macro step: from a C- or B-entry to the next one.
+
+    Every excursion exit funnels into a C-entry (erase the leading run) or
+    a B-entry (skim it). One entry plus one excursion is `mstep`; the None
+    cases are exactly the halt criterion (an odd run erased at the right
+    edge) and shapes the invariant will exclude. *)
+
+Inductive mst : Type :=
+  | MC : list Sym -> list nat -> mst
+  | MB : list Sym -> list nat -> mst.
+
+Definition mconf (s : mst) : Q * tape :=
+  match s with
+  | MC ws rs => (ws *> const 0) {{C}}> runs rs
+  | MB ws rs => (ws *> const 0) {{B}}> runs rs
+  end.
+
+Definition mrs (s : mst) : list nat :=
+  match s with MC _ rs => rs | MB _ rs => rs end.
+
+Definition of_exit (x : xexit) : mst :=
+  match x with ExC ws rs => MC ws rs | ExB ws rs => MB ws rs end.
+
+Lemma xconf_of_exit : forall x, mconf (of_exit x) = xconf x.
+Proof. destruct x; reflexivity. Qed.
+
+Definition mstep (s : mst) : option mst :=
+  match s with
+  | MB ws nil => None
+  | MB ws (cons a rest) => Some (MC ([1]^^(S a) ++ ws) rest)
+  | MC ws nil =>
+      match ws with
+      | cons 1 ws' => Some (of_exit (exc ws' false (cons 3 nil)))
+      | _ => None
+      end
+  | MC ws (cons c nil) =>
+      if Nat.even c
+      then match ws with
+           | cons 1 ws' => Some (of_exit (exc ws' false (cons (3 + c) nil)))
+           | _ => None
+           end
+      else None
+  | MC ws (cons c rest) => Some (of_exit (exc ([0]^^(S c) ++ ws) false rest))
+  end.
+
+(** The B-scan entry: skim the leading run, convert the separator, hand C
+    the rest. Uniform over `rest` (the separator comes from blank when the
+    run is last). *)
+Lemma be_sim : forall a rest ws,
+  (ws *> const 0) {{B}}> runs (cons a rest) -->+
+  (([1]^^(S a) ++ ws) *> const 0) {{C}}> runs rest.
+Proof.
+  introv. rewrite Str_app_assoc. cbn [runs].
+  follow B_ones. execute.
+Qed.
+
+(** The C-scan entry, gap-0 branch: the erased run and its separator turn
+    to wall zeros, the fill reads a 1 at once, and the run's parity never
+    matters. This is the nibble that keeps the machine safe in the pair
+    region. *)
+Lemma ce_gap0_sim : forall c r rest ws,
+  (ws *> const 0) {{C}}> runs (cons c (cons (S r) rest)) -->*
+  (([0]^^(S c) ++ ws) *> const 0) <{{F}} runs (cons (S r) rest).
+Proof.
+  introv. rewrite Str_app_assoc. cbn [runs].
+  follow C_ones. execute.
+Qed.
+
+(** The C-scan entry at the right edge, empty word: the c = 0 fill. *)
+Lemma ce_edge_sim : forall ws,
+  ((cons 1 ws) *> const 0) {{C}}> runs nil -->*
+  (ws *> const 0) <{{F}} runs (cons 3 nil).
+Proof.
+  introv. cbn [runs]. rewrite zpad. execute.
+Qed.
+
+(** The C-scan entry at the right edge, the punch: the whole (even) run is
+    erased, the fill crosses the even gap -- the halt criterion, satisfied
+    -- and the wall's top 1 is drawn into the refilled run. *)
+Lemma ce_fill_sim : forall n ws,
+  ((cons 1 ws) *> const 0) {{C}}> runs (cons (2 * n) nil) -->*
+  (ws *> const 0) <{{F}} runs (cons (3 + 2 * n) nil).
+Proof.
+  introv.
+  assert (E2 : runs (cons (2 * n) nil) = [1]^^(2 * n) *> const 0).
+  { cbn [runs]. rewrite zpad. reflexivity. }
+  assert (E : runs (cons (3 + 2 * n) nil)
+              = 1 >> 1 >> [1; 1]^^n *> 1 >> const 0).
+  { cbn [runs]. rewrite zpad.
+    replace (3 + 2 * n) with (2 + (2 * n + 1)) by lia.
+    rewrite lpow_add, Str_app_assoc.
+    rewrite (lpow_add _ (2 * n) 1), Str_app_assoc.
+    rewrite <- lpow_pair.
+    reflexivity. }
+  rewrite E2, E.
+  change ((cons 1 ws) *> const 0) with ((ws *> const 0) <* <[1]).
+  follow C_ones.
+  execute.
+  rewrite <- Str_app_assoc, <- lpow_add.
+  replace (n + n) with (2 * n) by lia.
+  rewrite <- lpow_pair.
+  follow DE_fill.
+  execute.
+  rewrite ones_comm.
+  finish.
+Qed.
+
+(** THE MACRO STEP SIMULATES. One entry plus one excursion, composed. *)
+Lemma mstep_sim : forall s s',
+  List.Forall (le 1) (mrs s) ->
+  mstep s = Some s' ->
+  mconf s -->+ mconf s'.
+Proof.
+  introv Hwf Hstep. destruct s as [ws rs | ws rs].
+  - destruct rs as [| c rest].
+    + (* right edge, empty word: the c = 0 fill *)
+      destruct ws as [| a ws']; [discriminate |].
+      destruct a; [discriminate |].
+      inversion Hstep; subst s'; clear Hstep.
+      eapply evstep_progress_trans; [apply ce_edge_sim |].
+      rewrite xconf_of_exit.
+      apply (exc_sim (length ws') ws' false (cons 3 nil));
+        [constructor | cbn; lia].
+    + destruct rest as [| r2 rest'].
+      * (* right edge, the punch *)
+        cbn [mstep] in Hstep.
+        destruct (Nat.even c) eqn:Ec; [| discriminate].
+        destruct ws as [| a ws']; [discriminate |].
+        destruct a; [discriminate |].
+        inversion Hstep; subst s'; clear Hstep.
+        apply Nat.even_spec in Ec. destruct Ec as [n En]. subst c.
+        eapply evstep_progress_trans; [apply ce_fill_sim |].
+        rewrite xconf_of_exit.
+        apply (exc_sim (length ws') ws' false (cons (3 + 2 * n) nil));
+          [constructor | cbn; lia].
+      * (* the gap-0 nibble *)
+        cbn [mstep] in Hstep.
+        inversion Hstep; subst s'; clear Hstep.
+        inversion Hwf as [| ? ? H1 Hwf1]; subst.
+        inversion Hwf1 as [| ? ? H2 Hwf2]; subst.
+        destruct r2 as [| r2]; [lia |].
+        eapply evstep_progress_trans; [apply ce_gap0_sim |].
+        rewrite xconf_of_exit.
+        apply (exc_sim (length ([0]^^(S c) ++ ws)) ([0]^^(S c) ++ ws)
+                 false (cons (S r2) rest')); [constructor | cbn; lia].
+  - destruct rs as [| a rest]; [discriminate |].
+    cbn [mstep] in Hstep.
+    inversion Hstep; subst s'; clear Hstep.
+    apply be_sim.
 Qed.
