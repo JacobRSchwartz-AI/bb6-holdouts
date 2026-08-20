@@ -634,19 +634,28 @@ THE INVARIANT, DERIVED (to be encoded next session):
     MB [c+4] (a >= 4); j>=1 gives a nibble word [1^j, c+4].
     u even >= 4 => two carries reach [1, c+4] (nibble), then exc_nib.
 
-THE ONE REMAINING QUESTION, precisely: which word-structure fact keeps
-head>=2 EXACTLY-3-run words [x, 1, L] from occurring with the wrong
-wall (their gap0 would create the forbidden [1, L]-at-T=2 punch).
-The census says they never do (zero [1,r2]-T=2 states in 8M events);
-the defect words carry their >=2 runs in a consumed-first prefix. Next
-session: split the census classes runs=3 exact vs 4+, trace the
-predecessors of [1,r2] states, encode the resulting word grammar
-(likely: at most one run >= 2 among the non-last runs, positioned
-before all the pair-1s), then write Inv as above, prove closure per
-mstep case (the lemmas exist: exc_nib + the bitset-immediate equation
-+ the absorb/insulate computations on exc), assemble with
-progress_nonhalt_cond (A := mst, C := mconf, P := Inv), base case from
-startup, then the CI job.
+THE ONE REMAINING QUESTION, precisely: the word grammar that excludes
+[x>=2, 1, L] exactly-3-run words (their gap0 would create the forbidden
+[1, L]-at-T=2 punch). The exact-3 census (--states with runs=3 split,
+8M events) CONFIRMS they never occur: reachable exactly-3 words are
+[1,1,L] (the last pairs, dominant), [1,2+,L] and [e,2+,L] (defect
+residue, second run >= 2; one occurrence each, resolve safely: the
+head-1 one at T=2 punches at T'=4 only via a 2-run [x,L] intermediate
+whose gap0 gives T''=2, u=1, absorb). What is NOT yet explained: the
+census right-words include 14 01 11 01 15 01 1e = [4,1,1,1,5,1,L],
+whose naive head-consumption passes through [5,1,L]. It never appears
+at a CE, so something in the actual event interleaving (the pushes, or
+a BE skim) dissolves the 5 before it reaches third-from-last position.
+NEXT SESSION OPENS HERE: add a trace mode to parity-macro.mjs that
+finds a [..,5,1,L]-suffixed CE state and prints every event until the
+5-run is consumed. The answer fixes the word grammar (candidate: every
+non-last run >= 2 is followed by another run >= 2 until the final pair
+block -- i.e. the 1*-region between the defects and L is entered only
+behind a protective structure). Then: encode Inv as above, prove
+closure per mstep case (the lemmas exist: exc_nib + the
+bitset-immediate equation + the absorb/insulate computations on exc),
+assemble with progress_nonhalt_cond (A := mst, C := mconf, P := Inv),
+base case from startup, then the CI job.
 
 MEASURE WITH: node tools/parity-macro.mjs --states 8000000 (the class
 table), --fills (the u census), 20000000 (co-verification).

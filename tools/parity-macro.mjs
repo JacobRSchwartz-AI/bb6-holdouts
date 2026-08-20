@@ -365,9 +365,9 @@ function runStates(maxEvents) {
     const lead0 = rs.length && rs[0][0] === 0 ? 'z' : '';
     const T = abs.wall[0]?.[0] === 1 ? abs.wall[0][1] : 0;
     const Tc = T <= 6 ? String(T) : T % 2 ? 'o' : 'e';
-    const nRuns = runsOnly.length === 0 ? '0' : runsOnly.length === 1 ? '1'
-      : runsOnly.length === 2 ? '2' : '3+';
-    const k = `${m} ${lead0}runs=${nRuns} head=${head} last=${last} T=${Tc}`;
+    const nRuns = runsOnly.length <= 3 ? String(runsOnly.length) : '4+';
+    const r2c = runsOnly.length >= 2 ? (runsOnly[1] === 1 ? '1' : '2+') : '-';
+    const k = `${m} ${lead0}runs=${nRuns} head=${head} r2=${r2c} last=${last} T=${Tc}`;
     seen.set(k, (seen.get(k) ?? 0) + 1);
   };
   try {
