@@ -991,3 +991,45 @@ Remaining for Theorem nonhalt (three designed blocks, in order):
 3. Assembly: family F, mrun -> -->+ bridge (mstep_sim chained; needs
    mstep preserves rs-positivity, an easy exc induction), then
    progress_nonhalt_cond over F. Startup already lands in F.
+
+## SESSION 3 FINAL: blocks delivered and the exact remaining obligation
+
+DELIVERED GREEN (178 declarations, all Closed under the global context,
+through this commit):
+
+Block 3 COMPLETE -- the assembly:
+  exc_pos / mstep_pos (positivity through excursions and macro steps),
+  mrun_progress (mrun chains lift to -->+ via mstep_sim/progress_trans),
+  Theorem nonhalt_from_family :
+    forall F, F anchor -> (F -> positive rs) ->
+    (forall s, F s -> exists n s', mrun (S n) s = Some s' /\ F s') ->
+    ~ halts tm c0.
+
+Block 1 PARTIAL -- the chunk generators (the W-nil fragment):
+  chunkBig / chunkCascade / chunkTerm over the stack family
+  MC (1;1;stackw gs) (H :: prep p [L]), plus the full lap toolkit
+  (lapA, lapI_exit, lapI_cascade, lapI_carry, mstep_* equations,
+  blocks/iter4/exc_blocks).
+
+REMAINING (the one obligation: exhibit F and its closure), variant
+inventory read off the traces:
+  V4 accumulator-cascade: stack entries are (gap, run) with runs >= 2;
+     cascades ending at a run r: r odd -> f1A exit carrying rs digits
+     (the 1^r run is a unary accumulator; digits {5,9} are born here),
+     r even -> merged exit top. Generalize stackw to (gap, run) pairs
+     and add the two exit lemmas.
+  V5 digit-bury chunks: heads 5/9 bury 0^4/0^8 (mstep_bury covers the
+     shape; the chunk composition mirrors chunkBig).
+  V6 the p-exhaustion chain (epoch boundary): prefix 0/1 entries:
+     the T=2 punch (mstep_absorb j=0), MC-nil absorb (needs
+     mstep_absorb_nil, trivial mirror), the g=1 degen insulate (needs
+     mstep_insulate_degen: exc_insulate + run_t + (0,1)-degen, exits
+     top-4), top-4 pump re-entries.
+  V7 epoch terminal: the mass rebirth into the next base (composition
+     of V6 pieces; the digit word increments).
+  Then: Inductive F covering base/chunk-boundary/epoch-phase shapes
+  with side conditions, the closure case analysis (each case = one
+  chunk/variant lemma application), and
+    Theorem nonhalt : ~ halts tm c0 := nonhalt_from_family F ...
+  Validate every variant statement against parity-close.mjs traces
+  BEFORE encoding (the standing rule).
