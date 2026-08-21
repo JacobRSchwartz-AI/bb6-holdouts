@@ -2071,3 +2071,167 @@ Proof.
   - apply mstep_sim; [apply inv_wf, HI | exact Hs'].
   - eapply Hpres; eauto.
 Qed.
+
+(** ** The carry cascade (architecture A groundwork).
+
+    The wall tail below the working gap is a stack of [0;0;1;1] blocks:
+    a binary counter. An insulate excursion entering it with the cap set
+    increments it: each block costs one cs (head += 3) and one merging
+    carry (head += 1), leaving the cap set for the next block. *)
+
+Fixpoint blocks (k : nat) (rest : list Sym) : list Sym :=
+  match k with
+  | O => rest
+  | S k' => cons 0 (cons 0 (cons 1 (cons 1 (blocks k' rest))))
+  end.
+
+Fixpoint iter4 (k : nat) (rs : list nat) : list nat :=
+  match k with
+  | O => rs
+  | S k' => iter4 k' (cpush false (push3 rs))
+  end.
+
+Lemma iter4_head : forall k h t, iter4 k (cons h t) = cons (4 * k + h) t.
+Proof.
+  induction k; introv.
+  - reflexivity.
+  - cbn [iter4 push3 cpush]. rewrite IHk. f_equal. lia.
+Qed.
+
+Lemma exc_blocks : forall k rest rs,
+  exc (blocks k rest) true rs = exc rest true (iter4 k rs).
+Proof.
+  induction k; introv.
+  - reflexivity.
+  - cbn [blocks exc iter4]. apply IHk.
+Qed.
+
+(** ** Iterated macro steps and the lap lemmas. *)
+
+Fixpoint mrun (n : nat) (s : mst) : option mst :=
+  match n with
+  | O => Some s
+  | S n' => match mstep s with
+            | Some s' => mrun n' s'
+            | None => None
+            end
+  end.
+
+Lemma mrun_app : forall m n s,
+  mrun (m + n) s = match mrun m s with
+                   | Some s' => mrun n s'
+                   | None => None
+                   end.
+Proof.
+  induction m; introv.
+  - reflexivity.
+  - cbn [mrun Nat.add]. destruct (mstep s); [apply IHm | reflexivity].
+Qed.
+
+(** A pump step: the leading 1-run of a multi word erases, growing the
+    wall top by two. *)
+Lemma mstep_pump : forall ws rs',
+  rs' <> nil ->
+  mstep (MC ws (cons (S O) rs')) = Some (MC (cons 1 (cons 1 ws)) rs').
+Proof.
+  introv H. destruct rs' as [| x t]; [contradiction | reflexivity].
+Qed.
+
+Fixpoint wpump (j : nat) (ws : list Sym) : list Sym :=
+  match j with
+  | O => ws
+  | S j' => cons 1 (cons 1 (wpump j' ws))
+  end.
+
+Lemma wpump_inner : forall j ws,
+  wpump j (cons 1 (cons 1 ws)) = cons 1 (cons 1 (wpump j ws)).
+Proof.
+  induction j; introv; cbn [wpump]; [reflexivity |].
+  now rewrite IHj.
+Qed.
+
+Lemma prep_ne : forall j r2 rest, prep j (cons r2 rest) <> nil.
+Proof. introv. destruct j; discriminate. Qed.
+
+Lemma mrun_pump : forall j ws r2 rest,
+  mrun j (MC ws (prep j (cons r2 rest))) =
+  Some (MC (wpump j ws) (cons r2 rest)).
+Proof.
+  induction j; introv.
+  - reflexivity.
+  - cbn [mrun prep].
+    rewrite mstep_pump by apply prep_ne.
+    rewrite IHj.
+    now rewrite wpump_inner.
+Qed.
+
+(** The skim, named. *)
+Lemma mstep_skim : forall ws a rest,
+  mstep (MB ws (cons a rest)) = Some (MC ([1]^^(S a) ++ ws) rest).
+Proof. reflexivity. Qed.
+
+(** An absorb lap's fill: wall top 2j+2 (even), gap at least 1. The
+    excursion folds the top run into the word and hands B the rest. *)
+Lemma mstep_absorb : forall j wt L,
+  Nat.even L = true ->
+  mstep (MC ([1]^^(2*j+2) ++ cons 0 wt) (cons L nil)) =
+  Some (MB (cons 1 wt) (prep j (cons (S (3 + L)) nil))).
+Proof.
+  introv HL.
+  replace (([1]^^(2*j+2) ++ cons 0 wt)%list)
+    with ((cons 1 ([1]^^(2*j+1) ++ cons 0 wt))%list)
+    by (replace (2*j+2) with (S (2*j+1)) by lia; reflexivity).
+  cbn [mstep].
+  rewrite HL.
+  now rewrite (exc_absorb j (3 + L) wt).
+Qed.
+
+(** An insulate lap's fill, exiting inside the gap: wall top 2j+5 (odd,
+    1 mod 4 in the family since j is odd there), gap at least 4. Two
+    carries cap the run, the cs eats two zeros, the bitset exit two
+    more. *)
+Lemma mstep_insulate_exit : forall j g tail L,
+  Nat.even L = true ->
+  mstep (MC ([1]^^(2*j+5) ++ [0]^^(4+g) ++ tail) (cons L nil)) =
+  Some (MC (cons 1 (cons 1 ([0]^^g ++ tail)))
+           (push3 (prep (S j) (cons (S (3 + L)) nil)))).
+Proof.
+  introv HL.
+  replace (([1]^^(2*j+5) ++ [0]^^(4+g) ++ tail)%list)
+    with ((cons 1 ([1]^^(2*j+4) ++ [0]^^(4+g) ++ tail))%list)
+    by (replace (2*j+5) with (S (2*j+4)) by lia; reflexivity).
+  cbn [mstep].
+  rewrite HL.
+  rewrite (exc_insulate j (3 + L) ([0]^^(4+g) ++ tail)).
+  rewrite (exc_run_t j).
+  replace (([0]^^(4+g) ++ tail)%list)
+    with ((cons 0 (cons 0 (cons 0 (cons 0 ([0]^^g ++ tail)))))%list)
+    by (replace (4+g) with (S (S (S (S g)))) by lia; reflexivity).
+  cbn [exc of_exit].
+  rewrite prep_comm.
+  reflexivity.
+Qed.
+
+(** An insulate lap's fill that exhausts the gap: the cascade increments
+    the block counter all the way to blank and rebuilds the base. The
+    exit head is 4*(k+2) + L' arithmetic via iter4/push3. *)
+Lemma mstep_insulate_carry : forall j k L,
+  Nat.even L = true ->
+  mstep (MC ([1]^^(2*j+5) ++ blocks (S k) nil) (cons L nil)) =
+  Some (MC (cons 1 (cons 1 nil))
+           (push3 (iter4 (S k) (prep (S j) (cons (S (3 + L)) nil))))).
+Proof.
+  introv HL.
+  replace (([1]^^(2*j+5) ++ blocks (S k) nil)%list)
+    with ((cons 1 ([1]^^(2*j+4) ++ blocks (S k) nil))%list)
+    by (replace (2*j+5) with (S (2*j+4)) by lia; reflexivity).
+  cbn [mstep].
+  rewrite HL.
+  rewrite (exc_insulate j (3 + L) (blocks (S k) nil)).
+  rewrite (exc_run_t j).
+  rewrite prep_comm.
+  change (cons (S O) (prep j (cons (S (3 + L)) nil)))
+    with (prep (S j) (cons (S (3 + L)) nil)).
+  rewrite exc_blocks.
+  reflexivity.
+Qed.
