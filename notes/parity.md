@@ -966,3 +966,28 @@ odometers. The ONE new Coq lemma-family needed: the carry cascade
 
 by induction on k from the existing dispatch equations; then lap
 lemmas, the round induction over the tail counter, the epoch carry.
+
+### Session 3 close: the lap layer is GREEN (163 declarations, axiom-free)
+
+New in coq/Parity.v (all Closed under the global context):
+blocks/iter4/exc_blocks (the binary-counter cascade equation),
+mrun/mrun_app (iterated macro steps), mstep_pump/mrun_pump/wpump,
+mstep_skim, mstep_bury, mstep_absorb, mstep_insulate_exit,
+mstep_insulate_carry, and the composed laps:
+
+  lapA      : mrun (S n + 2) from (top 2, prefix S n, gap 0::wt, word L)
+              to (top 3, prefix n, word L+4)          [pump, fill, skim]
+  lapI_exit : mrun (S n + 1) from (top 3, prefix S n, gap 0^(4+g))
+              to (top 2, gap 0^g, head 4 ready to bury)
+  lapI_carry: mrun (S n + 1) from (top 3, prefix S n, gap = k+1 blocks
+              over blank) to the rebuilt base [1^2] with head via iter4
+
+Remaining for Theorem nonhalt (three designed blocks, in order):
+1. The round induction: compose bury + lapA + bury + lapI over the
+   tail counter (induction on the counter value in blocks form),
+   producing round(W,H,K,L,D) -> round(W,H+4,K-D,L+4D,2D).
+2. The epoch carry: the K < D case increments the rs digit word W
+   (the {5,9} digits) -- same cascade pattern one level up.
+3. Assembly: family F, mrun -> -->+ bridge (mstep_sim chained; needs
+   mstep preserves rs-positivity, an easy exc induction), then
+   progress_nonhalt_cond over F. Startup already lands in F.
