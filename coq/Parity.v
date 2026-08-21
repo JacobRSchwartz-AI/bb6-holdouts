@@ -2495,3 +2495,135 @@ Proof.
   cbn [push3].
   do 4 f_equal; lia.
 Qed.
+
+(** ** Block 3: the assembly. Positivity is preserved by macro steps, so
+    any mrun chain lifts to strict tape progress, and any family closed
+    under nonempty mrun steps proves non-halting. *)
+
+Definition xrs (x : xexit) : list nat :=
+  match x with ExC _ rs => rs | ExB _ rs => rs end.
+
+Lemma mrs_of_exit : forall x, mrs (of_exit x) = xrs x.
+Proof. destruct x; reflexivity. Qed.
+
+Lemma cpush_pos_all : forall cap rs,
+  List.Forall (le 1) rs -> List.Forall (le 1) (cpush cap rs).
+Proof.
+  introv H. destruct cap; cbn [cpush].
+  - constructor; [lia | exact H].
+  - destruct rs as [| r t].
+    + constructor; [lia | constructor].
+    + inversion H; subst. constructor; [lia | assumption].
+Qed.
+
+Lemma push3_pos_all : forall rs,
+  List.Forall (le 1) rs -> List.Forall (le 1) (push3 rs).
+Proof.
+  introv H. destruct rs as [| r t].
+  - constructor; [lia | constructor].
+  - inversion H; subst. constructor; [lia | assumption].
+Qed.
+
+Lemma exc_pos : forall n ws cap rs,
+  length ws <= n ->
+  List.Forall (le 1) rs ->
+  List.Forall (le 1) (xrs (exc ws cap rs)).
+Proof.
+  induction n; introv Hlen Hrs.
+  - destruct ws; [| cbn in Hlen; lia].
+    cbn [exc]. destruct cap; cbn [xrs]; [apply push3_pos_all |]; assumption.
+  - destruct ws as [| a ws'].
+    + cbn [exc]. destruct cap; cbn [xrs]; [apply push3_pos_all |]; assumption.
+    + destruct a.
+      * destruct ws' as [| b ws''].
+        { cbn [exc]. destruct cap; cbn [xrs]; [apply push3_pos_all |]; assumption. }
+        destruct b.
+        { cbn [exc].
+          destruct cap;
+            [ apply IHn; [cbn in Hlen |- *; lia | apply push3_pos_all; assumption]
+            | cbn [xrs]; assumption ]. }
+        { cbn [exc]. destruct cap; cbn [xrs]; assumption. }
+      * destruct ws' as [| b ws''].
+        { cbn [exc xrs]. apply cpush_pos_all. assumption. }
+        destruct b.
+        { cbn [exc xrs]. apply cpush_pos_all. assumption. }
+        { cbn [exc].
+          apply IHn; [cbn in Hlen |- *; lia | apply cpush_pos_all; assumption]. }
+Qed.
+
+Lemma mstep_pos : forall s s',
+  List.Forall (le 1) (mrs s) ->
+  mstep s = Some s' ->
+  List.Forall (le 1) (mrs s').
+Proof.
+  introv Hpos Hstep.
+  destruct s as [ws rs | ws rs].
+  - destruct rs as [| c rest].
+    + cbn [mstep] in Hstep.
+      destruct ws as [| a ws']; [discriminate |].
+      destruct a; [discriminate |].
+      injection Hstep as <-.
+      rewrite mrs_of_exit.
+      apply (exc_pos (length ws')); [constructor |].
+      constructor; [lia | constructor].
+    + destruct rest as [| r2 rest'].
+      * cbn [mstep] in Hstep.
+        destruct (Nat.even c); [| discriminate].
+        destruct ws as [| a ws']; [discriminate |].
+        destruct a; [discriminate |].
+        injection Hstep as <-.
+        rewrite mrs_of_exit.
+        apply (exc_pos (length ws')); [constructor |].
+        constructor; [lia | constructor].
+      * cbn [mstep] in Hstep.
+        injection Hstep as <-.
+        rewrite mrs_of_exit.
+        apply (exc_pos (length (cons 0 ([0]^^c ++ ws)))
+                       (cons 0 ([0]^^c ++ ws)) false (cons r2 rest'));
+          [constructor |].
+        cbn [mrs] in Hpos. inversion Hpos; subst. assumption.
+  - destruct rs as [| a rest]; [discriminate |].
+    cbn [mstep] in Hstep. injection Hstep as <-.
+    cbn [mrs] in *. inversion Hpos; subst. assumption.
+Qed.
+
+Lemma mrun_progress : forall n s s',
+  List.Forall (le 1) (mrs s) ->
+  mrun (S n) s = Some s' ->
+  mconf s -->+ mconf s'.
+Proof.
+  induction n; introv Hpos Hrun.
+  - cbn [mrun] in Hrun.
+    destruct (mstep s) as [s1 |] eqn:E; [| discriminate].
+    injection Hrun as <-.
+    eapply mstep_sim; eauto.
+  - remember (S n) as m.
+    cbn [mrun] in Hrun.
+    destruct (mstep s) as [s1 |] eqn:E; [| discriminate].
+    subst m.
+    eapply progress_trans.
+    + eapply mstep_sim; eauto.
+    + apply IHn; [| exact Hrun].
+      eapply mstep_pos; eauto.
+Qed.
+
+(** The packaged theorem: exhibit any family containing the anchor,
+    positive, and closed under nonempty mrun steps, and the machine
+    never halts. The chunk lemmas above are the intended generators. *)
+Theorem nonhalt_from_family : forall (F : mst -> Prop),
+  F (MB (cons 1 nil) (cons 4 nil)) ->
+  (forall s, F s -> List.Forall (le 1) (mrs s)) ->
+  (forall s, F s -> exists n s', mrun (S n) s = Some s' /\ F s') ->
+  ~ halts tm c0.
+Proof.
+  intros F Hanchor Hpos Hstep.
+  eapply multistep_nonhalt; [apply startup_anchor |].
+  apply progress_nonhalt_cond
+    with (i0 := MB (cons 1 nil) (cons 4 nil)) (C := mconf) (P := F);
+    [| exact Hanchor].
+  intros s HF.
+  destruct (Hstep s HF) as [n [s' [Hrun HF']]].
+  exists s'. split.
+  - eapply mrun_progress; [apply Hpos, HF | exact Hrun].
+  - exact HF'.
+Qed.
