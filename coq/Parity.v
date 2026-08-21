@@ -2238,10 +2238,13 @@ Qed.
 
 (** A bury step: a head run b+4 (at least 4) erases into wall zeros,
     resetting the top to two. *)
-Lemma mstep_bury : forall ws b r2 rest,
-  mstep (MC ws (cons (S (S (S (S b)))) (cons r2 rest))) =
-  Some (MC (cons 1 (cons 1 ([0]^^(S (S (S b))) ++ ws))) (cons r2 rest)).
-Proof. reflexivity. Qed.
+Lemma mstep_bury : forall ws b rs',
+  rs' <> nil ->
+  mstep (MC ws (cons (S (S (S (S b)))) rs')) =
+  Some (MC (cons 1 (cons 1 ([0]^^(S (S (S b))) ++ ws))) rs').
+Proof.
+  introv H. destruct rs' as [| x t]; [contradiction | reflexivity].
+Qed.
 
 Lemma wpump_lpow : forall n ws, wpump n ws = ([1]^^(2*n) ++ ws)%list.
 Proof.
@@ -2323,4 +2326,172 @@ Proof.
         rewrite lpow_app_assoc; reflexivity).
   rewrite (mstep_insulate_carry n k L HL).
   reflexivity.
+Qed.
+
+(** ** Chunks: one bury + absorb lap + insulate lap, the generator the
+    non-halting family steps by. The wall below the working top is a
+    stack of gap/block segments. *)
+
+Fixpoint stackw (gs : list nat) : list Sym :=
+  match gs with
+  | nil => nil
+  | cons g t => ([0]^^g ++ cons 1 (cons 1 (stackw t)))%list
+  end.
+
+Lemma stackw_app2 : forall k ys,
+  stackw (List.repeat 2 k ++ ys) = blocks k (stackw ys).
+Proof.
+  induction k; introv.
+  - reflexivity.
+  - cbn [stackw List.repeat List.app blocks].
+    now rewrite IHk.
+Qed.
+
+(** A big-head chunk: head 4c+8 buries a gap 4c+7; the absorb lap eats
+    one 0, the insulate lap four more, leaving a 4c+2 stack entry and a
+    fresh head 4. The prefix drops by two, the word gains 8. *)
+Lemma chunkBig : forall c gs p L,
+  Nat.even L = true ->
+  mrun (S ((S (S p) + 2) + (S p + 1)))
+    (MC (cons 1 (cons 1 (stackw gs)))
+        (cons (4*c+8) (prep (S (S p)) (cons L nil)))) =
+  Some (MC (cons 1 (cons 1 (stackw (cons (4*c+2) gs))))
+           (cons 4 (prep p (cons (8 + L) nil)))).
+Proof.
+  introv HL.
+  cbn [mrun].
+  replace (4*c+8) with (S (S (S (S (4*c+4))))) by lia.
+  rewrite mstep_bury by apply prep_ne.
+  rewrite mrun_app.
+  replace (([0]^^(S (S (S (4*c+4)))) ++ cons 1 (cons 1 (stackw gs)))%list)
+    with ((cons 0 ([0]^^(S (S (4*c+4))) ++ cons 1 (cons 1 (stackw gs))))%list)
+    by reflexivity.
+  rewrite (lapA (S p) _ L HL).
+  replace (([0]^^(S (S (4*c+4))) ++ cons 1 (cons 1 (stackw gs)))%list)
+    with (([0]^^(4 + (4*c+2)) ++ cons 1 (cons 1 (stackw gs)))%list)
+    by (do 2 f_equal; lia).
+  rewrite lapI_exit
+    by (replace (S (3 + L)) with (S (S (S (S L)))) by lia;
+        cbn [Nat.even]; assumption).
+  cbn [stackw].
+  do 4 f_equal.
+Qed.
+
+(** The insulate fill that cascades through k+1 counter blocks and then
+    exits in a deeper gap of at least 4. *)
+Lemma mstep_insulate_carryexit : forall j k g tail L,
+  Nat.even L = true ->
+  mstep (MC ([1]^^(2*j+5) ++ blocks (S k) ([0]^^(4+g) ++ tail)) (cons L nil)) =
+  Some (MC (cons 1 (cons 1 ([0]^^g ++ tail)))
+           (push3 (iter4 (S k) (prep (S j) (cons (S (3 + L)) nil))))).
+Proof.
+  introv HL.
+  replace (([1]^^(2*j+5) ++ blocks (S k) ([0]^^(4+g) ++ tail))%list)
+    with ((cons 1 ([1]^^(2*j+4) ++ blocks (S k) ([0]^^(4+g) ++ tail)))%list)
+    by (replace (2*j+5) with (S (2*j+4)) by lia; reflexivity).
+  cbn [mstep].
+  rewrite HL.
+  rewrite (exc_insulate j (3 + L) (blocks (S k) ([0]^^(4+g) ++ tail))).
+  rewrite (exc_run_t j).
+  rewrite prep_comm.
+  change (cons (S O) (prep j (cons (S (3 + L)) nil)))
+    with (prep (S j) (cons (S (3 + L)) nil)).
+  rewrite exc_blocks.
+  replace (([0]^^(4+g) ++ tail)%list)
+    with ((cons 0 (cons 0 (cons 0 (cons 0 ([0]^^g ++ tail)))))%list)
+    by (replace (4+g) with (S (S (S (S g)))) by lia; reflexivity).
+  cbn [exc of_exit].
+  reflexivity.
+Qed.
+
+Lemma lapI_cascade : forall n k g tail L,
+  Nat.even L = true ->
+  mrun (S n + 1)
+    (MC (cons 1 (cons 1 (cons 1 (blocks (S k) ([0]^^(4+g) ++ tail)))))
+        (prep (S n) (cons L nil))) =
+  Some (MC (cons 1 (cons 1 ([0]^^g ++ tail)))
+           (push3 (iter4 (S k) (prep (S n) (cons (S (3 + L)) nil))))).
+Proof.
+  introv HL.
+  rewrite mrun_app.
+  rewrite mrun_pump.
+  rewrite wpump_lpow.
+  cbn [mrun].
+  replace (([1]^^(2 * S n) ++ cons 1 (cons 1 (cons 1 (blocks (S k) ([0]^^(4+g) ++ tail)))))%list)
+    with (([1]^^(2 * n + 5) ++ blocks (S k) ([0]^^(4+g) ++ tail))%list)
+    by (replace (2 * n + 5) with (2 * S n + 3) by lia;
+        rewrite lpow_app_assoc; reflexivity).
+  rewrite (mstep_insulate_carryexit n k g tail L HL).
+  reflexivity.
+Qed.
+
+(** A cascade chunk: head 4 buries 0^3, the absorb lap trims it to the
+    carry shape, and the insulate lap increments through the stack's
+    leading 2-entries into a deeper 4c+6 entry, trimming it to 4c+2.
+    The reborn head is 4k+8. *)
+Lemma chunkCascade : forall k c rest p L,
+  Nat.even L = true ->
+  mrun (S ((S (S p) + 2) + (S p + 1)))
+    (MC (cons 1 (cons 1 (stackw (List.repeat 2 k ++ cons (4*c+6) rest))))
+        (cons 4 (prep (S (S p)) (cons L nil)))) =
+  Some (MC (cons 1 (cons 1 (stackw (cons (4*c+2) rest))))
+           (cons (4*k+8) (prep p (cons (8 + L) nil)))).
+Proof.
+  introv HL.
+  cbn [mrun].
+  change 4 with (S (S (S (S 0)))).
+  rewrite mstep_bury by apply prep_ne.
+  rewrite mrun_app.
+  replace (([0]^^(S (S (S 0))) ++ cons 1 (cons 1 (stackw (List.repeat 2 k ++ cons (4*c+6) rest))))%list)
+    with ((cons 0 (cons 0 (cons 0 (cons 1 (cons 1 (stackw (List.repeat 2 k ++ cons (4*c+6) rest)))))))%list)
+    by reflexivity.
+  rewrite (lapA (S p) _ L HL).
+  rewrite stackw_app2.
+  change (cons 0 (cons 0 (cons 1 (cons 1 (blocks k (stackw (cons (4*c+6) rest)))))))
+    with (blocks (S k) (stackw (cons (4*c+6) rest))).
+  cbn [stackw].
+  replace (([0]^^(4*c+6) ++ cons 1 (cons 1 (stackw rest)))%list)
+    with (([0]^^(4 + (4*c+2)) ++ (cons 1 (cons 1 (stackw rest))))%list)
+    by (do 2 f_equal; lia).
+  rewrite lapI_cascade
+    by (replace (S (3 + L)) with (S (S (S (S L)))) by lia;
+        cbn [Nat.even]; assumption).
+  cbn [mrun stackw prep].
+  rewrite iter4_head.
+  cbn [push3].
+  do 4 f_equal; lia.
+Qed.
+
+(** The terminal chunk: as above but the stack is all 2-entries; the
+    cascade runs to blank and lands the next base state. *)
+Lemma chunkTerm : forall k p L,
+  Nat.even L = true ->
+  mrun (S ((S (S p) + 2) + (S p + 1)))
+    (MC (cons 1 (cons 1 (stackw (List.repeat 2 k))))
+        (cons 4 (prep (S (S p)) (cons L nil)))) =
+  Some (MC (cons 1 (cons 1 nil))
+           (cons (4*k+8) (prep p (cons (8 + L) nil)))).
+Proof.
+  introv HL.
+  cbn [mrun].
+  change 4 with (S (S (S (S 0)))).
+  rewrite mstep_bury by apply prep_ne.
+  rewrite mrun_app.
+  replace (([0]^^(S (S (S 0))) ++ cons 1 (cons 1 (stackw (List.repeat 2 k))))%list)
+    with ((cons 0 (cons 0 (cons 0 (cons 1 (cons 1 (stackw (List.repeat 2 k)))))))%list)
+    by reflexivity.
+  rewrite (lapA (S p) _ L HL).
+  replace ((List.repeat 2 k)%list) with ((List.repeat 2 k ++ nil)%list)
+    by apply List.app_nil_r.
+  rewrite stackw_app2.
+  change (cons 0 (cons 0 (cons 1 (cons 1 (blocks k (stackw nil))))))
+    with (blocks (S k) (stackw nil)).
+  cbn [stackw].
+  rewrite lapI_carry
+    by (replace (S (3 + L)) with (S (S (S (S L)))) by lia;
+        cbn [Nat.even]; assumption).
+  cbn [mrun prep].
+  rewrite iter4_head.
+  cbn [push3].
+  do 4 f_equal; lia.
 Qed.
