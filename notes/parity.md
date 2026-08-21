@@ -1061,9 +1061,10 @@ ALL 1,095 boundary states over 2M events parse as:
   rs   = [H, W, 1^p, L] with H in {4,5,9} u {4k >= 8},
          W in {1,5,9}* (the digit word), L = 0 mod 4, L >= 4
 
-Census: p even in 1087/1095 (8 odd-p states to understand -- likely
-epoch-phase boundaries); top=4 in 169 (degen exits); gap-1 stack
-entries occur (51x, r=4 runs beneath). Entry classes for the closure
+Census correction: p is even in ALL 1095 states (the 8 non-majority
+states are p = 0, the epoch phases -- a clean F-condition: p even,
+p = 0 allowed); top=4 in 169 (degen exits); gap-1 stack entries occur
+(51x, r=4 runs beneath). Entry classes for the closure
 case analysis: {H4, H5, H8, H9, HQ} x {p>0, p=0} x {W empty/not} x
 {top 2/4} x stack-top classes -- estimate 25-40 composed hop lemmas,
 most compositions of the existing lap toolkit plus ~6 new mstep

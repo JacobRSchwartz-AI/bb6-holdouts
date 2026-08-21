@@ -529,6 +529,7 @@ if (MODE === '--roundtrace') {
       if (!(H === 4 || H === 5 || H === 9 || (H % 4 === 0 && H >= 8))) ok = false;
       if (!ok) { if (bad.length < 8) bad.push(`ev${ev} ${s.m} [${wallStr(s.wall)}] rs=[${rsStr(s.rs)}]`); }
       else {
+        if (p % 2 === 1 && bad.length < 8) bad.push(`ODDP ev${ev} top=${top} H=${H} W=[${W}] p=${p} L=${L} gs=[${gs.map(x=>x.join(':')).join(' ')}]`);
         note(`top=${top}`);
         note(`H=${H <= 9 ? H : 'Q'}`);
         note(`p%2=${p % 2}${p === 0 ? ' p0' : ''}`);
@@ -543,7 +544,7 @@ if (MODE === '--roundtrace') {
     s = mstepR(s);
     if (!s) { console.log('STUCK', ev); break; }
   }
-  console.log(`${boundaries} boundaries; ${bad.length ? 'PARSE FAILURES:' : 'all parse OK'}`);
+  console.log(`${boundaries} boundaries; notes/failures: ${bad.length}`);
   for (const b of bad) console.log('  ' + b);
   for (const [k, n] of [...cen].sort((a, b) => b[1] - a[1]).slice(0, 40)) console.log(`  ${n}x ${k}`);
 } else if (MODE === '--family') {
