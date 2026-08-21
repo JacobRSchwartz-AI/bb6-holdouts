@@ -944,3 +944,25 @@ mid-round phase-state shapes (symbolically run one round through the
 equations; wall stays <= 15 runs), (2) the round lemma's drain
 induction, (3) the epoch lemma's digit-word carry, (4) assembly. All
 arithmetic + function computation; no new excursion inductions.
+
+### The lap grammar: the wall tail IS a binary counter (`--roundtrace`)
+
+One round (dH = +4) = 2^r laps, each lap = pump + fill. Laps alternate:
+A-lap (absorb, T even at fill): eats ONE 0 of the leading gap, restores
+the rs prefix, L += 4. I-lap (insulate, T odd): a cs-cascade that
+INCREMENTS the wall tail read as a binary counter: blocks `0^2 1^2` are
+digits; the cascade consumes carry-digits (cs eats 0^2, the carry-merge
+eats 1^2, head += 4 per layer) until it can exit; the rs prefix drops 2
+per... (per-lap: 0 or 2, doubling per round via the carry structure).
+Round 5 trace (evs 179-237): tails `0^7 1^2` -> `0^6 1^2` ->
+`0^3 1^2 0^2 1^2` -> `0^2 1^2 0^2 1^2` -> collapse. Round 6: the same
+with one more digit. The leading `0^a` counts down (a: absorb -1,
+insulate -4 or carry). So: rounds = the tail-counter counting 2^r laps,
+epochs = the rs digit-word W counting rounds, the whole orbit = nested
+odometers. The ONE new Coq lemma-family needed: the carry cascade
+
+  exc ((0^2 ++ 1^2)^k ++ rest) with cap: k cs+merge layers, head += 4k,
+  continue at rest
+
+by induction on k from the existing dispatch equations; then lap
+lemmas, the round induction over the tail counter, the epoch carry.

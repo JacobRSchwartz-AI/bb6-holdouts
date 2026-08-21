@@ -452,7 +452,32 @@ function closeCheck() {
   }
 }
 
-if (MODE === '--recur') {
+if (MODE === '--roundtrace') {
+  // print every mst state from one canonical base to the next, RLE-compact
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  const isBase = st => st.m === 'C' && st.wall.length === 1 && st.wall[0][1] === 2
+    && st.rs.length > 1 && st.rs[0] % 4 === 0 && st.rs[0] > 0;
+  const rsRle = rs => {
+    const out = [];
+    for (const v of rs) {
+      if (out.length && out[out.length - 1][0] === v) out[out.length - 1][1]++;
+      else out.push([v, 1]);
+    }
+    return out.map(([v, n]) => (n === 1 ? `${v}` : `${v}x${n}`)).join(' ');
+  };
+  let ev = 0, seen = 0, tracing = false;
+  const target = Number(args[2] ?? 3);   // trace the target-th base-to-base round
+  for (; ev < N; ev++) {
+    if (isBase(s)) {
+      seen++;
+      if (seen === target) tracing = true;
+      else if (tracing) { console.log(`ev ${ev} BASE  C [${wallStr(s.wall)}] ${rsRle(s.rs)}`); break; }
+    }
+    if (tracing) console.log(`ev ${ev} ${s.m} [${wallStr(s.wall, 20)}] ${rsRle(s.rs).slice(0, 110)}`);
+    s = mstepR(s);
+    if (!s) break;
+  }
+} else if (MODE === '--recur') {
   let s = { m: 'B', wall: [[1, 1]], rs: [4] };
   let prev = null;
   for (let ev = 0; ev < N; ev++) {
