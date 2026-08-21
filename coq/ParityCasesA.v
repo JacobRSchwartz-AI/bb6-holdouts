@@ -247,6 +247,29 @@ Proof.
   reflexivity.
 Qed.
 
+(** ** Target 5: A:g5, the gap-5 contact.
+
+    A:g5 (tools/chunkstep-cases.json) is chunkCascade_w with its `g`
+    argument fixed at 1: the contact's gap `[0]^^(4+g)` is `[0]^^5` at
+    g = 1, already inside the range mstep_insulate_carryexit/exc_insulate
+    cover (no lower bound on g there), so no new machinery is needed --
+    only the specialization, with `tail` left open so the contact's run
+    and everything deeper pass through untouched, matching the JSON rule
+    ("entry becomes [1, run] (deeper untouched)"). Validated against the
+    JSON orbit instance (k=0, run=2, no deeper: p 44->42, L 16->24, n=91)
+    and four constructed instances varying k (0,1,2), run (1,2,3,4) and
+    deeper-tail shape/length (none, one entry, two entries), all exact
+    endpoint and step-count matches (task report has the full table). *)
+
+Corollary chunkA_g5 : forall (k p L : nat) (tail : list Sym),
+  Nat.even L = true ->
+  mrun (S ((S (S p) + 2) + (S p + 1)))
+    (MC (cons 1 (cons 1 (blocks k ([0; 0; 0; 0; 0] ++ tail))))
+        (cons 4 (prep (S (S p)) (cons L nil)))) =
+  Some (MC (cons 1 (cons 1 (cons 0 tail)))
+           (cons (4 * k + 8) (prep p (cons (8 + L) nil)))).
+Proof. introv HL. exact (chunkCascade_w k 1 p L tail HL). Qed.
+
 Print Assumptions chunkBig_w.
 Print Assumptions chunkBig_w4.
 Print Assumptions chunkBig9.
@@ -258,3 +281,4 @@ Print Assumptions blocks_swap.
 Print Assumptions chunkA_g3_short.
 Print Assumptions chunkA_g3term.
 Print Assumptions chunkA_g3.
+Print Assumptions chunkA_g5.
