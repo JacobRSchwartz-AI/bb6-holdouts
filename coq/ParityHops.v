@@ -106,3 +106,128 @@ Print Assumptions mstep_absorb_nil.
 Print Assumptions mstep_insulate_degen.
 Print Assumptions mstep_insulate_gap3.
 Print Assumptions mstep_insulate_nil.
+
+(** ** rs=nil coverage: the mstep Fixpoint's `MC ws nil` arm.
+
+    A DIFFERENT match arm from `cons L nil`: no `rest`, no separator, ws
+    dispatches straight against a fresh accumulator `cons 3 nil`. No
+    `Nat.even` guard -- there is no L to test -- and the arm is
+    definitionally the c=0 instance of the singleton arm (`3 + 0` reduces
+    to `3`, `Nat.even 0` to `true`), which is why the statement below is a
+    clean L=0 mirror of mstep_absorb even though it unfolds a distinct
+    Fixpoint clause. Both wt sub-shapes occur on the concrete orbit: of the
+    10 rs=nil dispatches in the first 1.9M events, 9 are wt<>nil, the 10th
+    (ev=1, off the startup anchor) is wt=nil. No insulate (odd-top)
+    instance occurs -- see exc_insulate_rs_ge2 below for why. *)
+
+(** Orbit instance: ev=8, j=6, wt = [0;1;1]
+    (MC [1]^14 [0;1;1] [] -> MB [1;0;1;1] [1^6,4]). *)
+Lemma mstep_absorb_rs0 : forall j wt,
+  mstep (MC ([1]^^(2*j+2) ++ cons 0 wt) nil) =
+  Some (MB (cons 1 wt) (prep j (cons 4 nil))).
+Proof.
+  introv.
+  replace (([1]^^(2*j+2) ++ cons 0 wt)%list)
+    with ((cons 1 ([1]^^(2*j+1) ++ cons 0 wt))%list)
+    by (replace (2*j+2) with (S (2*j+1)) by lia; reflexivity).
+  cbn [mstep].
+  now rewrite (exc_absorb j 3 wt).
+Qed.
+
+(** Orbit instance: ev=1, j=2, off the startup anchor itself
+    (MC [1]^6 [] -> MB [1] [1;1;4]). *)
+Lemma mstep_absorb_nil_rs0 : forall j,
+  mstep (MC ([1]^^(2*j+2)) nil) =
+  Some (MB (cons 1 nil) (prep j (cons 4 nil))).
+Proof.
+  introv.
+  replace ([1]^^(2*j+2))
+    with (cons 1 ([1]^^(2*j+1)))
+    by (replace (2*j+2) with (S (2*j+1)) by lia; reflexivity).
+  cbn [mstep].
+  now rewrite (exc_absorb_nil j 3).
+Qed.
+
+(** ** The insulate-family rs=nil mirror does not exist: an impossibility
+    result, not a gap. cpush/push3 never shrink their list argument --
+    they bump the head in place, or (only starting from nil) grow it from
+    0 to 1 -- so exc's threaded rs component is never shorter coming out
+    than it went in. *)
+Lemma prep_len : forall j rs, length rs <= length (prep j rs).
+Proof.
+  induction j; introv; cbn [prep].
+  - lia.
+  - specialize (IHj rs). cbn [length]. lia.
+Qed.
+
+Lemma cpush_len : forall cap rs, length rs <= length (cpush cap rs).
+Proof.
+  introv. destruct cap; cbn [cpush].
+  - cbn [length]. lia.
+  - destruct rs; cbn [length]; lia.
+Qed.
+
+Lemma push3_len : forall rs, length rs <= length (push3 rs).
+Proof. introv. destruct rs; cbn [push3 length]; lia. Qed.
+
+(** The general fact behind the impossibility argument: exc's rs component
+    is length-monotone under any wall, any cap, any rs -- mirrors exc_pos's
+    induction exactly, tracking length instead of positivity. *)
+Lemma exc_len_mono : forall n ws cap rs,
+  length ws <= n ->
+  length rs <= length (xrs (exc ws cap rs)).
+Proof.
+  induction n; introv Hlen.
+  - destruct ws; [| cbn in Hlen; lia].
+    cbn [exc]. destruct cap; cbn [xrs]; [apply push3_len | lia].
+  - destruct ws as [| a ws'].
+    + cbn [exc]. destruct cap; cbn [xrs]; [apply push3_len | lia].
+    + destruct a.
+      * destruct ws' as [| b ws''].
+        { cbn [exc]. destruct cap; cbn [xrs]; [apply push3_len | lia]. }
+        destruct b.
+        { cbn [exc]. destruct cap.
+          - transitivity (length (push3 rs));
+              [apply push3_len | apply IHn; cbn in Hlen |- *; lia].
+          - cbn [xrs]. lia. }
+        { cbn [exc]. destruct cap; cbn [xrs]; lia. }
+      * destruct ws' as [| b ws''].
+        { cbn [exc xrs]. apply cpush_len. }
+        destruct b.
+        { cbn [exc xrs]. apply cpush_len. }
+        { cbn [exc].
+          transitivity (length (cpush cap rs));
+            [apply cpush_len | apply IHn; cbn in Hlen |- *; lia]. }
+Qed.
+
+(** THE IMPOSSIBILITY. exc_insulate already lands rs at length exactly 2
+    (`cons 1 (cons (S x) nil)`) before a single cell of wt is examined;
+    exc_len_mono shows that floor can only rise from there, whatever wt is.
+    Since mstep_skim is the only route to an rs=nil MC state, and it needs
+    its MB's rs to already be a singleton, no insulate-shaped dispatch --
+    any of the six named wt shapes above, or any other -- can ever be the
+    immediate predecessor of an mstep (MC ws nil) call. The odd-top mirror
+    of mstep_absorb_rs0 isn't merely unobserved in the 5M-event scan: it's
+    unreachable by construction. No orbit instance -- this is the
+    non-existence half of the coverage gap. *)
+Lemma exc_insulate_rs_ge2 : forall j x wt,
+  2 <= length (xrs (exc ([1]^^(2*j+4) ++ wt) false (cons x nil))).
+Proof.
+  introv.
+  rewrite (exc_insulate j x wt).
+  rewrite (exc_run_t j).
+  assert (Hb : length wt <= length wt) by lia.
+  pose proof (exc_len_mono (length wt) wt true
+    (prep j (cons (S O) (cons (S x) nil))) Hb) as H.
+  pose proof (prep_len j (cons (S O) (cons (S x) nil))) as Hp.
+  cbn [length] in Hp.
+  lia.
+Qed.
+
+Print Assumptions mstep_absorb_rs0.
+Print Assumptions mstep_absorb_nil_rs0.
+Print Assumptions prep_len.
+Print Assumptions cpush_len.
+Print Assumptions push3_len.
+Print Assumptions exc_len_mono.
+Print Assumptions exc_insulate_rs_ge2.
