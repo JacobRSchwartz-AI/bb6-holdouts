@@ -1078,3 +1078,101 @@ chain (this resolves the odd-p and g1 questions and freezes F);
 (4) Theorem nonhalt : ~ halts tm c0 := nonhalt_from_family F ... .
 Everything above F is already proven (nonhalt_from_family, 178 decls,
 all axiom-free).
+
+## SESSION 4: THE SONNET WAVES (A1 orchestrating C-node subagents)
+
+Finish work delegated to sonnet subagents; every deliverable verified
+and committed from the root session. Wave 1 result: the mstep layer is
+CLOSED; the chunkstep successor map landed partial (continuation
+running); Coq composition of the validated cases fanned out in
+parallel.
+
+### mstep-level closure (coq/ParityHops.v, 11 lemmas, axiom-free)
+
+  mstep_absorb_nil     : MC [1]^(2j+2) [L] -> MB [1] (prep j [4+L])
+                         (exc's blank branch)
+  mstep_insulate_degen : MC [1]^(2j+5)++0::1::rest [L]
+                         -> MC (1;1;1;rest) (prep (S j) [4+L])
+                         (gap 1, capped (0,1) exit: the top-4 birth)
+  mstep_insulate_gap3  : MC [1]^(2j+5)++[0;0;0]++1::rest2 [L]
+                         -> MC (1;1;rest2) (push3 (prep (S j) [4+L]))
+                         (gap 3: one (0,0) spent, uncapped degen exit)
+  mstep_insulate_nil   : MC [1]^(2j+5) [L]
+                         -> MC [1;1] (push3 (prep (S j) [4+L]))
+  mstep_absorb_rs0 / mstep_absorb_nil_rs0 : the rs=nil arm
+                         (definitionally the c=0 singleton; no
+                         even-guard exists on that arm); covers all ten
+                         in-orbit rs=nil dispatches -- which are exactly
+                         the epoch-terminal wall-drains (top ~ 2^n,
+                         event index ~ 4^n: quadratic epoch cost)
+  prep_len / cpush_len / push3_len / exc_len_mono /
+  exc_insulate_rs_ge2  : the insulate-family rs=nil mirror is
+                         UNREACHABLE, not merely unobserved (exc's rs
+                         is length-monotone; insulate puts it at length
+                         2 before reading a single wall cell; only
+                         mstep_skim shrinks rs). Impossibility proof,
+                         not a gap.
+
+Coverage (5M-event classifier): every singleton-rs MC dispatch is one
+of seven lemma-covered classes {absorb, absorb_nil, insulate_exit
+(gap>=4), insulate_carry (gap=2; all 1104 real instances match blocks'
+rigid chain), insulate_degen (gap=1), insulate_gap3, insulate_nil};
+the general rest<>nil branch is exactly pump (c=1) / bury (c>=4) with
+heads 2,3 unreachable; rs=nil is the rs0 mirrors. Commits 77e4ce6,
+d1ab06d.
+
+### The chunkstep successor map (validated, partial)
+
+`--chunkstep N` in tools/parity-close.mjs implements chunkstep(F) -> F'
+as two phases, matching mstep's own split:
+
+Phase 1 (rs.length>=2 branch, proved uniform for ANY popped value:
+pushing 0^(v+1) always makes the excursion's first two cells 0,0 with
+cap=false, an immediate exit) walks [H, ...W] left to right. Each non-1
+symbol closes an entry (gap = symbol-1, run = the current fresh run)
+and resets the run to 2; each 1 grows the run by 2. The walk can land
+exactly on the next F-state mid-prefix: as soon as the run is
+fresh-2-or-4 and the next symbol is itself >=4, that's the boundary
+(H'/p/L untouched, stack gains the closed entries). This is the whole
+story for every W-nonempty source state checked (84/84 exact).
+
+Phase 2 fires once the prefix hits blank p ones then L. First contact
+is against the entry Phase 1 just closed (gap = H-1 if W was empty).
+If that gap >= 6 the contact is clean regardless of top/p/deeper
+stack: H'=4, push[gap-5, run], p-=2, L+=8 (chunkBig, generalized from
+H=4c+8 to H=9 too -- 203/203 exact).
+
+If the gap is small (3, only from H=4; or 4, only from H=5 or a
+digit-5 closure) the contact and the entry it's paired with (or blank)
+resolve together -- four dense tables (H in {4,5} x top in {2,4}),
+keyed on the SECOND entry's gap:
+- gap>=6: H'=4k+8 (k = leading (2,2)-chain length,
+  chunkCascade/chunkTerm generalized past gap=2 mod 4), shift -4.
+- gap=3,run=3 or gap=4,run=2: consumed to blank, H'=4k+8, top'=4.
+- gap=3 or 4 otherwise: H'=4 (k has no effect on H here), gap becomes
+  2+4k, run+=1 -- a double p-lap (p-=4, L+=16).
+- gap=5: H'=4k+8, gap becomes 1, run unchanged.
+- gap=2,run=2: absorbed into k for free.
+- gap=2,run odd: H'=4, gap becomes 3+4k, run unchanged (double lap),
+  AND the entry after that shifts gap -=1.
+- gap=2,run even>=4: births digit 9 into W; landing law mirrors
+  chunkCascade/Term with H'=4+4j (j = a following (2,2)-chain length).
+- gap=1: mirrors gap=2's even/odd split exactly (run=2 is its own
+  terminal; odd>=3 -> triple lap, W gets digit 5; even>=4 -> quintuple
+  lap, same digit).
+- H=5,top=2 is uniform regardless of what follows, even gap>=6:
+  top'=4, H'=4, triple lap, next entry's gap -=1.
+
+Open (not zero-mismatch; precisely characterized in
+tools/chunkstep-cases.json, NOT guessed away): F.p=0 (8/1095 states,
+the V6/V7 epoch territory; the mstep layer for it is the section
+above); a digit-9 birth landing on gap<6 recurses Phase-1-style in a
+way not yet derived; H in {4,5} with top=4 (only 3 and 2 shapes
+spot-checked); gap=4 reached via a digit-5 closure with run outside
+{2,4} (an accumulated value, not F.top -- the single biggest hole,
+worse at scale as W-words lengthen). Every proven-lap rule needs
+F.p>=2 going in; p=2 + a double-lap rule underflows (the epoch
+coupling). Validated: N=2M, 1094 hops, 193 mismatches (82.4% exact);
+N=10M, 1379 hops, 478 mismatches (65.4%). First boundary from the
+anchor: ev5, {top:2, stack:[], H:4, W:[], p:0, L:8} -- itself a p=0
+state, so the anchor leg enters F through the epoch case.

@@ -7,9 +7,12 @@
 //   node parity-close.mjs --cross 200000     RLE mstep == list mstep on orbit
 //   node parity-close.mjs --replay 30000000  orbit census: invb at every state
 //   node parity-close.mjs --close            synthetic closure: Inv -> Inv
+//   node parity-close.mjs --chunkstep 2000000  F-successor map, validated
 //
 // Wall lists are top-first arrays of 0/1 (Coq: list Sym, ws *> const 0).
 // RLE walls are arrays of [sym, len], top-first. rs is an array of nats.
+
+import { writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
 const MODE = args[0] ?? '--close';
@@ -452,7 +455,395 @@ function closeCheck() {
   }
 }
 
-if (MODE === '--roundtrace') {
+// ------------------------------------------------------------ F / chunkstep
+// F-state predicate, matching --grammar exactly: MC, wall top run 1s of
+// length 2 or 4, rs.length >= 2, rs[0] >= 4. Validated (--grammar) that
+// every reachable such state parses below with zero failures.
+function parseF(s) {
+  if (!(s.m === 'C' && s.wall.length && s.wall[0][0] === 1
+      && (s.wall[0][1] === 2 || s.wall[0][1] === 4)
+      && s.rs.length >= 2 && s.rs[0] >= 4)) return null;
+  if (s.wall.length % 2 === 0) return null;         // must end in a 1-run
+  const top = s.wall[0][1];
+  const stack = [];
+  for (let i = 1; i < s.wall.length; i += 2) {
+    if (s.wall[i][0] !== 0 || !s.wall[i + 1] || s.wall[i + 1][0] !== 1) return null;
+    stack.push([s.wall[i][1], s.wall[i + 1][1]]);
+  }
+  const rs = s.rs;
+  const H = rs[0], L = rs[rs.length - 1];
+  let p = 0, i = rs.length - 2;
+  while (i >= 1 && rs[i] === 1) { p++; i--; }
+  const W = rs.slice(1, i + 1);
+  if (!W.every(v => v === 1 || v === 5 || v === 9)) return null;
+  if (L % 4 !== 0 || L < 4) return null;
+  if (!(H === 4 || H === 5 || H === 9 || (H % 4 === 0 && H >= 8))) return null;
+  return { top, stack, H, W, p, L };
+}
+
+// chunkstep(F): the boundary-to-boundary successor map, a pure function of
+// parseF's output. Two phases, matching the abstract machine's own split
+// (mstep's rs.length>=2 branch vs its rs.length<=1 excursion branch):
+//
+// Phase 1 walks the rs prefix [H, ...W] left to right. Every mstep call
+// with rs.length>=2 is UNIFORM regardless of the popped value v (proof:
+// pushing 0^(v+1) always makes the excursion's first two cells 0,0 with
+// cap=false, which exits immediately): it buries the current run under a
+// fresh top-2 with a gap of v-1 below it, OR -- when v=1 -- just grows the
+// current run by 2 (the pushed 0,0 cancels against the immediate C-exit
+// merge). So each non-1 symbol closes an entry (gap=v-1, run=<whatever the
+// run had grown to>) and each 1 grows the run 2 at a time. The walk can
+// land EXACTLY on a new boundary mid-prefix: as soon as a run has just
+// become 2 or 4 (fresh close, or one grown step past it) and the next
+// unconsumed symbol is itself >= 4, that IS the next F-state (verified
+// against real W-nonempty transitions: this is the whole story for them --
+// H/p/L are otherwise untouched).
+//
+// Phase 2 fires when the prefix is exhausted onto blank p ones then L
+// (rs.length finally drops to 1): a real excursion, closing form derived
+// and cross-checked against an oracle replaying the true orbit (see
+// notes/parity.md, "The chunkstep successor map"). One p-lap always costs
+// p -= 2, L += 8; a "double lap" is exactly two of those composed.
+function chunkstep(F) {
+  let accum = F.top;
+  const entries = [];
+  const seq = [F.H, ...F.W];
+  for (let i = 0; i < seq.length; i++) {
+    const v = seq[i];
+    if (v === 1) accum += 2;
+    else { entries.push([v - 1, accum]); accum = 2; }
+    const next = seq[i + 1];
+    if ((accum === 2 || accum === 4) && next !== undefined && next >= 4) {
+      return {
+        case: `phase1:closed=${entries.length}`,
+        F: {
+          top: accum, H: next, W: seq.slice(i + 2), p: F.p, L: F.L,
+          stack: [...entries.slice().reverse(), ...F.stack],
+        },
+      };
+    }
+  }
+  if (F.p === 0) {
+    return { case: 'epoch:p0-UNIMPLEMENTED', F: null };
+  }
+  const preStack = [...entries.slice().reverse(), ...F.stack];
+  return phase2(preStack, F.p, F.L);
+}
+
+function mk(caseKey, partial) {
+  return { case: caseKey, F: { W: [], ...partial } };
+}
+
+// The excursion's very first contact is with preStack[0] -- the entry
+// Phase 1 just closed, gap = (last symbol it consumed) - 1, run = whatever
+// the fresh run had grown to. If that gap is already >= 6 the contact is
+// clean and preStack[1:] is untouched (oracle-confirmed with H in {8,9,12,
+// 16}, any p >= 2, any top, any deeper stack): this alone is chunkBig
+// (coq/Parity.v) generalized from H = 4c+8 to H = 9 too.
+//
+// If preStack[0]'s gap is small (3 or 4 -- H = 4 or H = 5; nothing else is
+// possible, since every other H gives gap >= 7), preStack[0] is consumed
+// as part of the SAME contact that resolves preStack[1] (or blank): the
+// two-entry pair (preStack[0], preStack[1]) determines the outcome, not
+// preStack[0] alone, and the pair's behavior depends on preStack[0].run
+// too (= F.top), not just its gap. Four such pairs are possible (H in
+// {4,5} x top in {2,4}); tables A/C are densely oracle-verified (many
+// (gap,run) shapes, sentinel-checked for passivity beyond the touched
+// entries), tables B/D rest on 2-3 confirmed points each and are flagged.
+function phase2(preStack, p, L) {
+  const [g0, r0] = preStack[0];
+  const rest = preStack.slice(1);
+  if (g0 >= 6) {
+    return mk('chunkBig', { top: 2, H: 4, p: p - 2, L: L + 8, stack: [[g0 - 5, r0], ...rest] });
+  }
+  if (g0 === 3 && r0 === 2) return tableA(rest, p, L);
+  if (g0 === 4 && r0 === 2) return tableC(rest, p, L);
+  if (g0 === 3 && r0 === 4) return tableB(rest, p, L);
+  if (g0 === 4 && r0 === 4) return tableD(rest, p, L);
+  // gap=3 only ever arises from H=4 itself (entries[0], run = F.top), so
+  // r0 in {2,4} is exhaustive there. gap=4 can ALSO arise from a digit-5
+  // Phase-1 closure with an accumulated (not F.top) run -- unreached by
+  // every oracle sweep this file's rules were built from. Best-effort:
+  // reuse table C's shape, scaling its lap by r0/2 (matches table C at
+  // r0=2 and table D's blank case at r0=4); flagged, not validated.
+  if (g0 === 4) return tableCGeneric(r0, rest, p, L);
+  throw new Error(`phase2: unexpected preStack[0]=(${g0},${r0})`);
+}
+
+function tableCGeneric(r0, rest, p, L) {
+  const laps = r0 / 2 + 2;
+  const pOut = p - 2 * laps, lOut = L + 8 * laps;
+  if (rest.length === 0) return mk('C:blank-EXTRAPOLATED', { top: 4, H: 4, p: pOut, L: lOut, stack: [] });
+  const [g, r] = rest[0];
+  return mk('C:shift1-EXTRAPOLATED', { top: 4, H: 4, p: pOut, L: lOut, stack: [[g - 1, r], ...rest.slice(1)] });
+}
+
+// H = 4, F.top = 2 (preStack[0] = (3,2), already spent in the contact).
+// A run of leading (2,2) entries is the chunkCascade/chunkTerm k from
+// coq/Parity.v: absorbed for free (no extra p-lap), landing on either
+// blank (chunkTerm) or a gap>=6 entry (chunkCascade), H' = 4k+8 both ways.
+// Reaching a >=6 gap WITHOUT any (2,2)'s first (k=0, straight from the
+// (3,2) contact) shifts it by -4, one less than chunkBig's -5 since the
+// (3,2) contact itself already spent one unit of gap.
+function tableA(rest, p, L) {
+  let k = 0;
+  while (k < rest.length && rest[k][0] === 2 && rest[k][1] === 2) k++;
+  const tail = rest.slice(k + 1);
+  if (k >= rest.length) {
+    return mk('A:chunkTerm', { top: 2, H: 4 * k + 8, p: p - 2, L: L + 8, stack: [] });
+  }
+  const [g, r] = rest[k];
+  if (g >= 6) {
+    return mk(k > 0 ? 'A:chunkCascade' : 'A:cleanK0', { top: 2, H: 4 * k + 8, p: p - 2, L: L + 8, stack: [[g - 4, r], ...tail] });
+  }
+  if (g === 3 && r === 3) return mk('A:g3term', { top: 4, H: 4 * k + 8, p: p - 2, L: L + 8, stack: tail });
+  if (g === 4 && r === 2) return mk('A:g4term', { top: 4, H: 4 * k + 8, p: p - 2, L: L + 8, stack: tail });
+  if (g === 3) return mk('A:g3', { top: 2, H: 4, p: p - 4, L: L + 16, stack: [[2 + 4 * k, r + 1], ...tail] });
+  if (g === 4) return mk('A:g4', { top: 2, H: 4, p: p - 4, L: L + 16, stack: [[2 + 4 * k, r + 1], ...tail] });
+  if (g === 5) return mk('A:g5', { top: 2, H: 4 * k + 8, p: p - 2, L: L + 8, stack: [[1, r], ...tail] });
+  if (g === 2 && r % 2 === 1) {
+    const shifted = tail.length ? [[tail[0][0] - 1, tail[0][1]], ...tail.slice(1)] : tail;
+    return mk('A:g2odd', { top: 2, H: 4, p: p - 4, L: L + 16, stack: [[3 + 4 * k, r], ...shifted] });
+  }
+  if (g === 2) return digitBirth2(r, tail, p, L, k);
+  if (g === 1) return smallGap1(r, tail, p, L, k);
+  throw new Error(`tableA: unhandled entry gap=${g} run=${r} k=${k}`);
+}
+
+// H = 5, F.top = 2 (preStack[0] = (4,2)). Oracle-confirmed uniform across
+// blank, gap in {3,5,7} (i.e. independent of what preStack[1] is, unlike
+// every other table): the contact always resolves to top'=4, H'=4, one
+// p-lap and a half again (p -= 6, L += 24), shifting preStack[1]'s gap by
+// -1 (run unchanged) if it exists. Deeper entries (preStack[2:]) are
+// assumed passive by analogy with every other table; not independently
+// oracle-checked with a sentinel beyond preStack[1].
+function tableC(rest, p, L) {
+  if (rest.length === 0) return mk('C:blank', { top: 4, H: 4, p: p - 6, L: L + 24, stack: [] });
+  const [g, r] = rest[0];
+  return mk('C:shift1', { top: 4, H: 4, p: p - 6, L: L + 24, stack: [[g - 1, r], ...rest.slice(1)] });
+}
+
+// H = 4, F.top = 4 (preStack[0] = (3,4)). Only spot-checked (blank, and
+// (3,3)/(3,5) as preStack[1]): blank and (3,3) both land on H'=4, digit 5
+// in W, stack emptied, one p-lap; (3,5) instead lands the digit directly
+// as H' (top'=2) with (3,6) pushed. Encoded as observed; NOT validated
+// beyond these three shapes.
+function tableB(rest, p, L) {
+  if (rest.length === 0) return mk('B:blank-UNVERIFIED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: [] });
+  const [g, r] = rest[0];
+  if (g === 3 && r === 3) return mk('B:g3r3-UNVERIFIED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: rest.slice(1) });
+  if (g === 3) return mk('B:g3-UNVERIFIED', { top: 2, H: 5, p: p - 2, L: L + 8, stack: [[3, r + 1], ...rest.slice(1)] });
+  return mk('B:UNIMPLEMENTED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: rest });
+}
+
+// H = 5, F.top = 4 (preStack[0] = (4,4)). Only spot-checked (blank and
+// (5,4) as preStack[1]): both give H'=4 with p -= 8, L += 32 (a quadruple
+// lap) EXCEPT (5,4) lands the digit born as H' directly (top'=4) with
+// (3,6) pushed instead of W. Encoded as observed; NOT validated beyond
+// these two shapes.
+function tableD(rest, p, L) {
+  if (rest.length === 0) return mk('D:blank-UNVERIFIED', { top: 2, H: 4, W: [1, 5], p: p - 8, L: L + 32, stack: [] });
+  const [g, r] = rest[0];
+  if (g === 5) return mk('D:g5-UNVERIFIED', { top: 4, H: 5, p: p - 8, L: L + 32, stack: [[3, r + 2], ...rest.slice(1)] });
+  return mk('D:UNIMPLEMENTED', { top: 2, H: 4, W: [1, 5], p: p - 8, L: L + 32, stack: rest });
+}
+
+// Even-run gap-2 entries birth digit 9. H stays 4 unless the entry
+// directly beneath is itself a (2,2)-chain, in which case that chain
+// resolves with its OWN law, H' = 4 + 4*j (j = chain length): base 4 (no
+// chain) generalizes to 4 + 4*0. Confirmed for k=0 (this entry reached
+// directly); k>0 (reached after an outer (2,2) chain) is unverified and
+// falls back to the same law with a note in the case key.
+function digitBirth2(r, rest, p, L, k) {
+  const w = [...Array((r - 4) / 2).fill(1), 9];
+  let j = 0;
+  while (j < rest.length && rest[j][0] === 2 && rest[j][1] === 2) j++;
+  const after = rest.slice(j + 1);
+  const tag = k > 0 ? `digitBirth2(k=${k})` : 'digitBirth2';
+  if (j >= rest.length) {
+    return mk(tag + ':term', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [] });
+  }
+  const [g2, r2] = rest[j];
+  if (g2 >= 6) {
+    return mk(tag + ':cascade', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [[g2 - 4, r2], ...after] });
+  }
+  return mk(tag + ':nested-UNVERIFIED', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [[g2, r2], ...after] });
+}
+
+// Gap=1 entries mirror gap=2's even/odd split (oracle-swept r=2..7 with a
+// gap>=6 sentinel beneath): run=2 is its own terminal (digit 5 born
+// directly as H', top'=4, one p-lap, everything deeper untouched -- the
+// gap=1 analogue of smallGap3term/smallGap4term). run odd>=3 births digit
+// 5 behind floor(r/2) spacer ones, a "triple lap" (p-=6, L+=16... no,
+// +24), and shifts the next entry by -4. run even>=4 births the same digit
+// word but a "quintuple lap" (p-=10, L+=40) and shifts the next entry by
+// -5. k>0 (reached after an outer (2,2) chain) is a single spot check,
+// noted as such.
+function smallGap1(r, rest, p, L, k) {
+  if (k > 0) {
+    return mk(`smallGap1(k=${k})-UNVERIFIED`, {
+      top: 2, H: 4, p: p - 4, L: L + 16, stack: [[3 + 4 * k, 6], ...rest],
+    });
+  }
+  if (r === 2) {
+    return mk('smallGap1:r2term', { top: 4, H: 5, p: p - 2, L: L + 8, stack: rest });
+  }
+  const w = [...Array(Math.floor(r / 2)).fill(1), 5];
+  const odd = r % 2 === 1;
+  const shift = odd ? 4 : 5;
+  const lapP = odd ? p - 6 : p - 10;
+  const lapL = odd ? L + 24 : L + 40;
+  if (rest.length === 0) {
+    return mk(`smallGap1:${odd ? 'odd' : 'even'}Term`, { top: 2, H: 4, W: w, p: lapP, L: lapL, stack: [] });
+  }
+  const [g2, r2] = rest[0];
+  return mk(`smallGap1:${odd ? 'odd' : 'even'}`, { top: 2, H: 4, W: w, p: lapP, L: lapL, stack: [[g2 - shift, r2], ...rest.slice(1)] });
+}
+
+function fEqual(a, b) {
+  if (!a || !b) return a === b;
+  return a.top === b.top && a.H === b.H && a.p === b.p && a.L === b.L
+    && a.W.length === b.W.length && a.W.every((v, i) => v === b.W[i])
+    && a.stack.length === b.stack.length
+    && a.stack.every(([g, r], i) => b.stack[i][0] === g && b.stack[i][1] === r);
+}
+
+// Human-readable rule text per case key, for chunkstep-cases.json. Matched
+// by prefix since digitBirth2/smallGap1 tag k and phase1 tags the close
+// count into the key itself.
+const CASE_RULES = [
+  [/^phase1:closed=/, "Phase 1 lands the next boundary mid-prefix: H then some of W get 'closed' " +
+    "(top' = 2 or 4) and the very next un-consumed symbol is itself >= 4, so it becomes H' directly. " +
+    "p, L untouched; stack gains one new (gap,run) entry per closed symbol (gap = symbol-1, run = the " +
+    "fresh run at the moment it closed), shallowest entry last-closed."],
+  [/^chunkBig$/, "H in {9} u {4c+8: c>=0}, any top, p>=2: chunkBig (coq/Parity.v), generalized from H=4c+8 " +
+    "to H=9. H'=4, p'=p-2, L'=L+8, push [H-6, top] onto stack (deeper stack untouched)."],
+  [/^A:cleanK0$/, "H=4, top=2, F.stack=[] or F.stack[0].gap>=6, reached with zero (2,2) entries absorbed: " +
+    "H'=4, p'=p-2, L'=L+8, push [F.stack[0].gap-4, F.stack[0].run] (deeper untouched)."],
+  [/^A:chunkCascade$/, "H=4, top=2: F.stack starts with k>=1 entries of (gap=2,run=2) then an entry with " +
+    "gap>=6 (generalizes chunkCascade's 4c+6). H'=4k+8, p'=p-2, L'=L+8, the k (2,2)'s pop, the terminating " +
+    "entry's gap -= 4 (run unchanged), deeper untouched."],
+  [/^A:chunkTerm$/, "H=4, top=2: F.stack is exactly k>=0 entries of (2,2) then blank (chunkTerm). " +
+    "H'=4k+8, top'=2, stack'=[], p'=p-2, L'=L+8."],
+  [/^A:g3term$/, "H=4, top=2, after k (2,2)'s the next entry is (gap=3,run=3): consumed entirely " +
+    "(no replacement). H'=4k+8, top'=4, p'=p-2, L'=L+8, rest of stack passes through unchanged one level shallower."],
+  [/^A:g4term$/, "H=4, top=2, after k (2,2)'s the next entry is (gap=4,run=2): consumed entirely, " +
+    "same law as A:g3term. H'=4k+8, top'=4, p'=p-2, L'=L+8."],
+  [/^A:g3$/, "H=4, top=2, after k (2,2)'s the next entry is (gap=3, run != 3): H'=4 (k has no effect on H " +
+    "here), p'=p-4, L'=L+16 (a double lap), entry becomes [2+4k, run+1], rest of stack unchanged."],
+  [/^A:g4$/, "H=4, top=2, after k (2,2)'s the next entry is (gap=4, run != 2): same law as A:g3, " +
+    "entry becomes [2+4k, run+1]."],
+  [/^A:g5$/, "H=4, top=2, after k (2,2)'s the next entry has gap=5 (any run): H'=4k+8, p'=p-2, L'=L+8, " +
+    "entry becomes [1, run] (deeper untouched)."],
+  [/^A:g2odd$/, "H=4, top=2, after k (2,2)'s the next entry is (gap=2, run odd>=3): H'=4, p'=p-4, L'=L+16, " +
+    "entry becomes [3+4k, run] (run unchanged); the entry AFTER that (if any) has its gap shifted by -1 " +
+    "(run unchanged), everything deeper than THAT passes through."],
+  [/^digitBirth2:term/, "gap=2, run even>=4 (digit-9 birth), nothing beyond but j trailing (2,2)'s: " +
+    "H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, stack'=[]."],
+  [/^digitBirth2:cascade/, "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then a gap>=6 entry: " +
+    "H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, that entry's gap -= 4 (run unchanged), deeper untouched."],
+  [/^digitBirth2:nested-UNVERIFIED/, "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then an " +
+    "entry with gap<6: UNRESOLVED. The 105/1094 (2M-event) mismatches here all show the born digit " +
+    "recursing into a Phase-1-like walk against that entry (sometimes landing the digit as H' directly, " +
+    "sometimes leaving it in W) rather than sitting still in W as coded. Needs its own derivation."],
+  [/^smallGap1:r2term/, "gap=1, run=2 (the gap=1 analogue of A:g3term/A:g4term): digit 5 born directly as " +
+    "H' (not via W), top'=4, p'=p-2, L'=L+8, deeper stack untouched."],
+  [/^smallGap1:odd(?!.*Term)/, "gap=1, run odd>=3, something deeper: W'=[1 x floor(run/2), 5], p'=p-6, " +
+    "L'=L+24 (triple lap), next entry's gap -= 4 (run unchanged)."],
+  [/^smallGap1:oddTerm/, "gap=1, run odd>=3, nothing deeper: W'=[1 x floor(run/2), 5], p'=p-6, L'=L+24, stack'=[]."],
+  [/^smallGap1:even(?!.*Term)/, "gap=1, run even>=4, something deeper: W'=[1 x floor(run/2), 5], p'=p-10, " +
+    "L'=L+40 (quintuple lap), next entry's gap -= 5 (run unchanged)."],
+  [/^smallGap1:evenTerm/, "gap=1, run even>=4, nothing deeper: W'=[1 x floor(run/2), 5], p'=p-10, L'=L+40, stack'=[]."],
+  [/^smallGap1\(k=/, "gap=1 reached after an outer (2,2) chain (k>0): UNVERIFIED, single spot check only (k=1)."],
+  [/^gap1-offgrammar/, "gap=1 with run outside the grammar's observed set: not implemented (never seen in 2M+ events)."],
+  [/^C:shift1$/, "H=5, top=2 (preStack[0]=(4,2)): uniform regardless of what follows (blank or ANY gap, " +
+    "oracle-checked at gap in {3,5,7}): top'=4, H'=4, p'=p-6, L'=L+24 (triple lap), next entry's gap -= 1 " +
+    "(run unchanged) if it exists."],
+  [/^C:blank$/, "H=5, top=2, F.stack=[]: top'=4, H'=4, p'=p-6, L'=L+24, stack'=[]."],
+  [/^C:.*EXTRAPOLATED/, "gap=4 reached via a digit-5 Phase-1 closure (run = an accumulated value, not F.top " +
+    "in {2,4}): EXTRAPOLATED from table C by scaling the lap with run/2+2; NOT independently oracle-checked."],
+  [/^B:/, "H=4, top=4 (preStack[0]=(3,4)): only spot-checked at 3 shapes (blank, (3,3), (3,5) as F.stack[0]); " +
+    "the UNIMPLEMENTED fallback (any other F.stack[0]) guesses the blank/(3,3) law (H'=4, digit 5 into W, " +
+    "single lap, stack unchanged) and is unverified beyond those 3 points."],
+  [/^D:/, "H=5, top=4 (preStack[0]=(4,4)): only spot-checked at 2 shapes (blank, (5,4) as F.stack[0]); " +
+    "the UNIMPLEMENTED fallback guesses the blank law (H'=4, digit 5 into W ([1,5]), quadruple lap, stack " +
+    "unchanged) and is unverified beyond those 2 points. Real data shows this often chains through several " +
+    "further (H=5,top=4)/(H=4,top=2,W=[1,5]) states before landing -- not a single clean lap."],
+  [/^epoch:p0/, "F.p = 0 (the 8/1095 epoch-phase boundary states, session-3 census): NOT IMPLEMENTED. " +
+    "This is the V6/V7 territory in notes/parity.md (mstep_absorb_nil / insulate_degen / top-4 pump), " +
+    "genuinely un-derived here."],
+];
+function describeCase(key) {
+  for (const [re, text] of CASE_RULES) if (re.test(key)) return text;
+  return '(no description written for this case key)';
+}
+function caseSideConditions(key) {
+  const cond = [];
+  if (/UNVERIFIED|UNIMPLEMENTED|EXTRAPOLATED|nested/.test(key)) {
+    cond.push('NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key.');
+  }
+  if (/^A:g3$|^A:g4$|^A:g2odd$/.test(key)) {
+    cond.push('requires F.p >= 4 going in (double lap); F.p === 2 here underflows -- an epoch-adjacent edge case, see the one A:g3 mismatch in the 2M-event log.');
+  }
+  if (/^(chunkBig|A:|C:shift1|C:blank|digitBirth2|smallGap1)/.test(key) && !/UNVERIFIED|EXTRAPOLATED/.test(key)) {
+    cond.push('requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case.');
+  }
+  return cond;
+}
+
+if (MODE === '--chunkstep') {
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  let prev = null, boundaries = 0, mismatches = 0;
+  let firstBoundary = null;
+  const cases = new Map();
+  const mismatchEx = [];
+  for (let ev = 0; ev < N; ev++) {
+    const F = parseF(s);
+    if (F) {
+      boundaries++;
+      if (!firstBoundary) firstBoundary = { ev, F };
+      if (prev) {
+        const { F: predicted, case: key } = chunkstep(prev);
+        if (!cases.has(key)) cases.set(key, { n: 0, examples: [] });
+        const c = cases.get(key);
+        c.n++;
+        if (c.examples.length < 3) c.examples.push({ before: prev, after: F });
+        if (!fEqual(predicted, F)) {
+          mismatches++;
+          c.bad = (c.bad ?? 0) + 1;
+          if (mismatchEx.length < 30) {
+            mismatchEx.push({ ev, key, before: prev, predicted, actual: F });
+          }
+        }
+      }
+      prev = F;
+    }
+    const nxt = mstepR(s);
+    if (!nxt) { console.log(`STUCK at ${ev}`); break; }
+    s = nxt;
+  }
+  console.log(`${N} events, ${boundaries} boundaries, ${boundaries - 1} hops checked, ${mismatches} mismatches`);
+  console.log(`first boundary: ev${firstBoundary.ev} ${JSON.stringify(firstBoundary.F)}`);
+  const sorted = [...cases].sort((a, b) => b[1].n - a[1].n);
+  for (const [key, c] of sorted) console.log(`  ${String(c.n).padStart(7)}x ${key}${c.bad ? `  (${c.bad} MISMATCH)` : ''}`);
+  for (const m of mismatchEx) {
+    console.log(`MISMATCH ev${m.ev} case=${m.key}`);
+    console.log(`  before:    ${JSON.stringify(m.before)}`);
+    console.log(`  predicted: ${JSON.stringify(m.predicted)}`);
+    console.log(`  actual:    ${JSON.stringify(m.actual)}`);
+  }
+  const outPath = new URL('./chunkstep-cases.json', import.meta.url);
+  const outCases = sorted.map(([key, c]) => ({
+    key,
+    count: c.n,
+    mismatches: c.bad ?? 0,
+    rule: describeCase(key),
+    sideConditions: caseSideConditions(key),
+    examples: c.examples.map(({ before, after }) => ({ before, after })),
+  }));
+  writeFileSync(outPath, JSON.stringify(outCases, null, 2));
+  console.log(`wrote ${outPath.pathname}`);
+} else if (MODE === '--roundtrace') {
   // print every mst state from one canonical base to the next, RLE-compact
   let s = { m: 'B', wall: [[1, 1]], rs: [4] };
   const isBase = st => st.m === 'C' && st.wall.length === 1 && st.wall[0][1] === 2
