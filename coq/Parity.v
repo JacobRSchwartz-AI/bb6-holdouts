@@ -2235,3 +2235,92 @@ Proof.
   rewrite exc_blocks.
   reflexivity.
 Qed.
+
+(** A bury step: a head run b+4 (at least 4) erases into wall zeros,
+    resetting the top to two. *)
+Lemma mstep_bury : forall ws b r2 rest,
+  mstep (MC ws (cons (S (S (S (S b)))) (cons r2 rest))) =
+  Some (MC (cons 1 (cons 1 ([0]^^(S (S (S b))) ++ ws))) (cons r2 rest)).
+Proof. reflexivity. Qed.
+
+Lemma wpump_lpow : forall n ws, wpump n ws = ([1]^^(2*n) ++ ws)%list.
+Proof.
+  induction n; introv.
+  - reflexivity.
+  - cbn [wpump].
+    rewrite IHn.
+    replace (2 * S n) with (S (S (2*n))) by lia.
+    reflexivity.
+Qed.
+
+Lemma lpow_app_assoc : forall m k (X : list Sym),
+  (([1]^^(m + k) ++ X)%list) = (([1]^^m ++ ([1]^^k ++ X))%list).
+Proof.
+  introv. now rewrite lpow_add, <- List.app_assoc.
+Qed.
+
+(** A full absorb lap from its entry state (wall top 2, prefix S n):
+    pump, fill, skim. Ends with wall top 3 and prefix n. *)
+Lemma lapA : forall n wt L,
+  Nat.even L = true ->
+  mrun (S n + 2) (MC (cons 1 (cons 1 (cons 0 wt))) (prep (S n) (cons L nil))) =
+  Some (MC (cons 1 (cons 1 (cons 1 wt))) (prep n (cons (S (3 + L)) nil))).
+Proof.
+  introv HL.
+  rewrite mrun_app.
+  rewrite mrun_pump.
+  rewrite wpump_lpow.
+  cbn [mrun].
+  replace (([1]^^(2 * S n) ++ cons 1 (cons 1 (cons 0 wt)))%list)
+    with (([1]^^(2 * S n + 2) ++ cons 0 wt)%list)
+    by (rewrite lpow_app_assoc; reflexivity).
+  rewrite (mstep_absorb (S n) wt L HL).
+  cbn [prep mrun].
+  rewrite mstep_skim.
+  reflexivity.
+Qed.
+
+(** A full insulate lap exiting in the gap, from its entry state (wall
+    top 3, prefix S n, gap at least 4): pump, fill. Ends at wall top 2
+    with the merged head 4 ready to bury. *)
+Lemma lapI_exit : forall n g tail L,
+  Nat.even L = true ->
+  mrun (S n + 1)
+    (MC (cons 1 (cons 1 (cons 1 ([0]^^(4+g) ++ tail)))) (prep (S n) (cons L nil))) =
+  Some (MC (cons 1 (cons 1 ([0]^^g ++ tail)))
+           (push3 (prep (S n) (cons (S (3 + L)) nil)))).
+Proof.
+  introv HL.
+  rewrite mrun_app.
+  rewrite mrun_pump.
+  rewrite wpump_lpow.
+  cbn [mrun].
+  replace (([1]^^(2 * S n) ++ cons 1 (cons 1 (cons 1 ([0]^^(4+g) ++ tail))))%list)
+    with (([1]^^(2 * n + 5) ++ [0]^^(4+g) ++ tail)%list)
+    by (replace (2 * n + 5) with (2 * S n + 3) by lia;
+        rewrite lpow_app_assoc; reflexivity).
+  rewrite (mstep_insulate_exit n g tail L HL).
+  reflexivity.
+Qed.
+
+(** The carry variant: same entry, gap exhausted into k+1 counter
+    blocks over blank; the cascade rebuilds the base. *)
+Lemma lapI_carry : forall n k L,
+  Nat.even L = true ->
+  mrun (S n + 1)
+    (MC (cons 1 (cons 1 (cons 1 (blocks (S k) nil)))) (prep (S n) (cons L nil))) =
+  Some (MC (cons 1 (cons 1 nil))
+           (push3 (iter4 (S k) (prep (S n) (cons (S (3 + L)) nil))))).
+Proof.
+  introv HL.
+  rewrite mrun_app.
+  rewrite mrun_pump.
+  rewrite wpump_lpow.
+  cbn [mrun].
+  replace (([1]^^(2 * S n) ++ cons 1 (cons 1 (cons 1 (blocks (S k) nil))))%list)
+    with (([1]^^(2 * n + 5) ++ blocks (S k) nil)%list)
+    by (replace (2 * n + 5) with (2 * S n + 3) by lia;
+        rewrite lpow_app_assoc; reflexivity).
+  rewrite (mstep_insulate_carry n k L HL).
+  reflexivity.
+Qed.
