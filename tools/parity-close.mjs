@@ -498,6 +498,60 @@ if (MODE === '--roundtrace') {
     s = mstepR(s);
     if (!s) break;
   }
+} else if (MODE === '--family') {
+  // Boundary states: MC, wall top run exactly 2, rs head >= 4.
+  // Hop = mstepR until the next boundary. Inventory hop types.
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  const isBoundary = st => st.m === 'C' && st.wall.length >= 1 && st.wall[0][0] === 1
+    && st.wall[0][1] === 2 && st.rs.length >= 1 && st.rs[0] >= 4;
+  const rsSketch = rs => {
+    // classify: H, then run-length-encoded shape with 1-blocks as P, digits D(v%4), last Q
+    const out = [];
+    for (let i = 1; i < rs.length - 1; i++) {
+      const v = rs[i];
+      if (v === 1) { if (out[out.length-1] !== 'P') out.push('P'); }
+      else out.push('D' + (v % 4 === 1 ? (v === 5 ? '5' : '9') : '?'));
+    }
+    return out.join(' ');
+  };
+  const gsSketch = wall => {
+    const out = [];
+    for (let i = 1; i < wall.length && out.length < 4; i++) {
+      const [v, n] = wall[i];
+      if (v === 0) out.push('g' + (n <= 3 ? n : (n % 4 === 3 ? 'B' : n % 4 === 0 ? 'Q' : n % 4)));
+      else out.push('r' + (n <= 4 ? n : 'X'));
+    }
+    if (wall.length > 5) out.push('..');
+    return out.join(' ');
+  };
+  const types = new Map();
+  let cur = null, hopStart = 0, ev = 0;
+  for (; ev < N; ev++) {
+    if (isBoundary(s)) {
+      if (cur) {
+        const key = cur.cls;
+        if (!types.has(key)) types.set(key, { n: 0, hops: [], ex: [] });
+        const t = types.get(key);
+        t.n++;
+        if (t.hops.length < 4) {
+          t.hops.push(ev - hopStart);
+          t.ex.push(`ev${hopStart}: H=${cur.H} p1=${cur.p1} |gs|=${cur.ngs} -> H'=${s.rs[0]} n=${ev - hopStart}`);
+        }
+      }
+      let p1 = 0; for (let i = 1; i < s.rs.length - 1 && s.rs[i] === 1; i++) p1++;
+      const hcls = s.rs[0] === 4 ? '4' : s.rs[0] === 5 ? '5' : s.rs[0] === 9 ? '9' : s.rs[0] % 4 === 0 ? 'Q8' : 'P?';
+      cur = { cls: `H${hcls}${p1 === 0 ? 'z' : ''}[${rsSketch(s.rs)}] W[${gsSketch(s.wall)}]`, H: s.rs[0], p1, ngs: s.wall.length - 1 };
+      hopStart = ev;
+    }
+    s = mstepR(s);
+    if (!s) { console.log('STUCK at', ev); break; }
+  }
+  const sorted = [...types].sort((a, b) => b[1].n - a[1].n);
+  console.log(`${types.size} hop types over ${ev} events:`);
+  for (const [k, t] of sorted.slice(0, 50)) {
+    console.log(`${String(t.n).padStart(6)}x ${k}`);
+    console.log(`         ${t.ex.join('  |  ')}`);
+  }
 } else if (MODE === '--rounds') {
   let s = { m: 'B', wall: [[1, 1]], rs: [4] };
   let printed = 0;

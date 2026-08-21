@@ -1033,3 +1033,21 @@ inventory read off the traces:
     Theorem nonhalt : ~ halts tm c0 := nonhalt_from_family F ...
   Validate every variant statement against parity-close.mjs traces
   BEFORE encoding (the standing rule).
+
+### Family inventory, first data (`--family` mode, session 3 end)
+
+Boundary candidate: MC, wall top run = 2, rs head >= 4. Findings at 2M
+events: (a) the proven chunk n-formulas verify in vivo (chunkBig at
+p=12: n = 31 = 1 + (S(S p)+2) + (S p+1) exactly); (b) hop behavior is
+determined by the rs head class {4, 5, 9, other Q} x (prefix zero?) x
+the TOP TWO stack entries only -- the deeper stack is passive context,
+matching the chunk lemmas' `rest` parameter; (c) the boundary set must
+also include the top-4 states (degen exits inside epochs land there;
+with top-2-only boundaries the hops span two chunks); (d) mid-epoch
+stack entries are (gap, run) pairs with gap in {2,3,6,7,8,11,...} and
+run in {2,3,4,...,X}, the run being the unary accumulator. Next
+session: add top-4 boundaries, re-inventory (expect ~20-30 closed
+types), define FState + per-type chunkstep in JS mirroring the intended
+Coq lemma statements, validate the full orbit as a chunkstep chain,
+then transcribe: Inductive F, closure cases, and
+Theorem nonhalt := nonhalt_from_family F.
