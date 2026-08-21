@@ -498,6 +498,54 @@ if (MODE === '--roundtrace') {
     s = mstepR(s);
     if (!s) break;
   }
+} else if (MODE === '--grammar') {
+  // Parse every boundary state into F-params; census conditions.
+  let s = { m: 'B', wall: [[1, 1]], rs: [4] };
+  const bad = [];
+  const cen = new Map();
+  const note = k => cen.set(k, (cen.get(k) ?? 0) + 1);
+  let boundaries = 0;
+  for (let ev = 0; ev < N; ev++) {
+    if (s.m === 'C' && s.wall[0][0] === 1 && (s.wall[0][1] === 2 || s.wall[0][1] === 4)
+        && s.rs.length >= 2 && s.rs[0] >= 4) {
+      boundaries++;
+      const top = s.wall[0][1];
+      // wall: alternating (0^g, 1^r) pairs after the top
+      const gs = [];
+      let ok = true;
+      for (let i = 1; i < s.wall.length; i += 2) {
+        if (s.wall[i][0] !== 0 || !s.wall[i + 1] || s.wall[i + 1][0] !== 1) { ok = false; break; }
+        gs.push([s.wall[i][1], s.wall[i + 1][1]]);
+      }
+      if (s.wall.length % 2 === 0) ok = false;   // must end with a 1-run
+      // rs: H, W in {1,5,9}*, 1^p, L
+      const rs = s.rs;
+      const H = rs[0], L = rs[rs.length - 1];
+      let p = 0, i = rs.length - 2;
+      while (i >= 1 && rs[i] === 1) { p++; i--; }
+      const W = rs.slice(1, i + 1);
+      if (!W.every(v => v === 1 || v === 5 || v === 9)) ok = false;
+      if (L % 4 !== 0 || L < 4) ok = false;
+      if (!(H === 4 || H === 5 || H === 9 || (H % 4 === 0 && H >= 8))) ok = false;
+      if (!ok) { if (bad.length < 8) bad.push(`ev${ev} ${s.m} [${wallStr(s.wall)}] rs=[${rsStr(s.rs)}]`); }
+      else {
+        note(`top=${top}`);
+        note(`H=${H <= 9 ? H : 'Q'}`);
+        note(`p%2=${p % 2}${p === 0 ? ' p0' : ''}`);
+        for (const [g, r] of gs) note(`entry g${g <= 3 ? g : g % 4 === 0 ? 'Q' : g % 4 === 3 ? 'B' : 'g' + (g % 4)} r${r <= 4 ? r : 'X'}${r > 2 ? ' rBIG' : ''}`);
+        if (W.length) {
+          const wsig = W.map(v => (v === 1 ? '1' : v)).join('');
+          note(`Wsig=${wsig.length <= 8 ? wsig : wsig.slice(0, 4) + '..' + wsig.slice(-2)}`);
+        }
+        note(`Hp: H${H <= 9 ? H : 'Q'} ${p === 0 ? 'p0' : 'p+'}${W.length ? ' W+' : ''}`);
+      }
+    }
+    s = mstepR(s);
+    if (!s) { console.log('STUCK', ev); break; }
+  }
+  console.log(`${boundaries} boundaries; ${bad.length ? 'PARSE FAILURES:' : 'all parse OK'}`);
+  for (const b of bad) console.log('  ' + b);
+  for (const [k, n] of [...cen].sort((a, b) => b[1] - a[1]).slice(0, 40)) console.log(`  ${n}x ${k}`);
 } else if (MODE === '--family') {
   // Boundary states: MC, wall top run exactly 2, rs head >= 4.
   // Hop = mstepR until the next boundary. Inventory hop types.

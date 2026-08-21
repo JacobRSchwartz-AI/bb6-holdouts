@@ -1051,3 +1051,29 @@ types), define FState + per-type chunkstep in JS mirroring the intended
 Coq lemma statements, validate the full orbit as a chunkstep chain,
 then transcribe: Inductive F, closure cases, and
 Theorem nonhalt := nonhalt_from_family F.
+
+### The F-grammar, validated (`--grammar`, session 3 end)
+
+ALL 1,095 boundary states over 2M events parse as:
+
+  wall = 1^top (top in {2,4}) over a stack of (gap, run) pairs,
+         gaps in {1,2,3} u {>=4 by mod-4 class}, runs in {2,3,4,...}
+  rs   = [H, W, 1^p, L] with H in {4,5,9} u {4k >= 8},
+         W in {1,5,9}* (the digit word), L = 0 mod 4, L >= 4
+
+Census: p even in 1087/1095 (8 odd-p states to understand -- likely
+epoch-phase boundaries); top=4 in 169 (degen exits); gap-1 stack
+entries occur (51x, r=4 runs beneath). Entry classes for the closure
+case analysis: {H4, H5, H8, H9, HQ} x {p>0, p=0} x {W empty/not} x
+{top 2/4} x stack-top classes -- estimate 25-40 composed hop lemmas,
+most compositions of the existing lap toolkit plus ~6 new mstep
+equations (digit-bury, absorb_nil, insulate_degen, top-4 pump).
+
+NEXT (the finish sequence): (1) JS chunkstep: the successor map on
+parsed F-states, validated by replaying the full orbit as a chunkstep
+chain (this resolves the odd-p and g1 questions and freezes F);
+(2) Inductive F in Coq (anchor case + boundary case), F-positivity;
+(3) the closure case analysis, one composed lemma per entry class;
+(4) Theorem nonhalt : ~ halts tm c0 := nonhalt_from_family F ... .
+Everything above F is already proven (nonhalt_from_family, 178 decls,
+all axiom-free).
