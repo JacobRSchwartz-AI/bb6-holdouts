@@ -523,15 +523,34 @@ function chunkstep(F) {
       };
     }
   }
-  if (F.p === 0) {
-    return { case: 'epoch:p0-UNIMPLEMENTED', F: null };
-  }
+  if (F.p === 0) return epoch(F);
   const preStack = [...entries.slice().reverse(), ...F.stack];
   return phase2(preStack, F.p, F.L);
 }
 
 function mk(caseKey, partial) {
   return { case: caseKey, F: { W: [], ...partial } };
+}
+
+// Shift the gap of the shallowest entry in a stack list by `delta`, leaving
+// its run and everything deeper untouched. Used by every rule whose
+// "next entry" gets nudged by a fixed amount.
+function shiftFirst(entries, delta) {
+  if (!entries.length) return entries;
+  return [[entries[0][0] - delta, entries[0][1]], ...entries.slice(1)];
+}
+
+// True for the table-A/B sub-rules that leave the excursion still "mid
+// flight": H is a generic placeholder (not a freshly-assigned digit or
+// cascade value) and the real information is the transformed stack[0].
+// digitBirth2's nestedGap1/nestedExcess also belong here -- their H=4 (or
+// 4+4j) is the SAME kind of placeholder, confirmed by oracle
+// (D:recurse:digitBirth2:nestedGap1 in the real 10M orbit stays table-D
+// shape rather than being adopted). Used by table D's rest0-in-{3,4}
+// recursion to decide adopt vs. stay.
+function isContinuation(caseKey) {
+  return /^(A:g3|A:g4|A:g2odd|B:g3|B:g4|B:g2odd)$/.test(caseKey)
+    || /:nestedGap1$|:nestedExcess-UNVERIFIED$/.test(caseKey);
 }
 
 // The excursion's very first contact is with preStack[0] -- the entry
@@ -550,6 +569,15 @@ function mk(caseKey, partial) {
 // {4,5} x top in {2,4}); tables A/C are densely oracle-verified (many
 // (gap,run) shapes, sentinel-checked for passivity beyond the touched
 // entries), tables B/D rest on 2-3 confirmed points each and are flagged.
+// Whenever F.W is non-empty going into a chunkstep call, Phase 1
+// necessarily walked past it (W's symbols are only 5/9, so preStack[0] is
+// always (4,accumulated) -- tableCGeneric -- or (8,accumulated) --
+// chunkBig): a "9"-closure (chunkBig, gap=8) is a genuine fresh reset and
+// clears W; a "5"-closure with an accumulated run (tableCGeneric, gap=4)
+// reconstructs its OWN W directly from r0 (see there) rather than
+// depending on F.W at all -- so phase2 itself never needs F.W as input.
+// tableA/B/C/D can never see g0 from anything but H directly (their r0 in
+// {2,4} is only reachable that way, which requires F.W empty).
 function phase2(preStack, p, L) {
   const [g0, r0] = preStack[0];
   const rest = preStack.slice(1);
@@ -562,20 +590,38 @@ function phase2(preStack, p, L) {
   if (g0 === 4 && r0 === 4) return tableD(rest, p, L);
   // gap=3 only ever arises from H=4 itself (entries[0], run = F.top), so
   // r0 in {2,4} is exhaustive there. gap=4 can ALSO arise from a digit-5
-  // Phase-1 closure with an accumulated (not F.top) run -- unreached by
-  // every oracle sweep this file's rules were built from. Best-effort:
-  // reuse table C's shape, scaling its lap by r0/2 (matches table C at
-  // r0=2 and table D's blank case at r0=4); flagged, not validated.
+  // Phase-1 closure with an accumulated (not F.top) run.
   if (g0 === 4) return tableCGeneric(r0, rest, p, L);
   throw new Error(`phase2: unexpected preStack[0]=(${g0},${r0})`);
 }
 
+// gap=4 reached via a digit-5 Phase-1 closure with an ACCUMULATED run (not
+// F.top in {2,4}, i.e. r0 >= 6). The entry is a free absorb, and the
+// excursion re-enters exactly the TOP-LEVEL dispatch on rest[0] (recursing
+// through phase2 itself: rest here is already in preStack form,
+// [[gap,run],...]). Whatever lap that sub-dispatch computes gets scaled by
+// exactly 4x -- every table-A/chunkBig shape reachable from
+// rest[0]=(H-1,F.top) checked (single lap -> quadruple, double lap ->
+// octuple, table C's triple lap -> x4); shape (top,H,stack) passes through
+// unchanged, only p/L scale (c1w-sweep-shift1x.mjs).
+// W is NOT simply F.W passed through: r0's own accumulated closure is
+// EXACTLY the [1 x (r0-2)/2, 5] word (reconstructed from r0 alone, not
+// threaded in) -- when F.W held MORE than that (an embedded digit-9 from
+// an earlier tableCGeneric hop), the earlier part was already consumed
+// into rest[0]/rest[1]/... by Phase 1's OWN walk and is NOT part of this
+// call's W at all; only the trailing segment that closed INTO r0 is. The
+// sub-dispatch's own W (normally empty, but not always -- chunkBig never
+// touches it, but a table-A digitBirth2/smallGap1 landing can) comes
+// FIRST, this reconstructed word SECOND (oracle-verified against every
+// real 10M-orbit instance with an embedded 9, e.g. ev2481292/ev2657934).
 function tableCGeneric(r0, rest, p, L) {
-  const laps = r0 / 2 + 2;
-  const pOut = p - 2 * laps, lOut = L + 8 * laps;
-  if (rest.length === 0) return mk('C:blank-EXTRAPOLATED', { top: 4, H: 4, p: pOut, L: lOut, stack: [] });
-  const [g, r] = rest[0];
-  return mk('C:shift1-EXTRAPOLATED', { top: 4, H: 4, p: pOut, L: lOut, stack: [[g - 1, r], ...rest.slice(1)] });
+  const sub = phase2(rest, p, L);
+  const dp = p - sub.F.p, dL = sub.F.L - L;
+  const digitW = [...Array((r0 - 2) / 2).fill(1), 5];
+  return {
+    case: 'C:shift1-EXTRAPOLATED',
+    F: { ...sub.F, W: [...sub.F.W, ...digitW], p: p - 4 * dp, L: L + 4 * dL },
+  };
 }
 
 // H = 4, F.top = 2 (preStack[0] = (3,2), already spent in the contact).
@@ -623,51 +669,225 @@ function tableC(rest, p, L) {
   return mk('C:shift1', { top: 4, H: 4, p: p - 6, L: L + 24, stack: [[g - 1, r], ...rest.slice(1)] });
 }
 
-// H = 4, F.top = 4 (preStack[0] = (3,4)). Only spot-checked (blank, and
-// (3,3)/(3,5) as preStack[1]): blank and (3,3) both land on H'=4, digit 5
-// in W, stack emptied, one p-lap; (3,5) instead lands the digit directly
-// as H' (top'=2) with (3,6) pushed. Encoded as observed; NOT validated
-// beyond these three shapes.
+// H = 4, F.top = 4 (preStack[0] = (3,4)). Dense oracle sweep
+// (c1w-sweep-BD2.mjs): a leading (2,2)-chain (j entries) is absorbed into
+// H exactly like table A's (H' = 4+4j); past that, rest[0]'s gap selects a
+// sub-rule. UNLIKE table D, the (3,4) contact's own cost is ALWAYS a
+// single base lap (p -= 2, L += 8) -- never scaled by j or by anything
+// past it -- and gap=1 is an EXACT match to table A's own smallGap1 with
+// run shifted +2 (same W word, same lap, same deeper shift, verified
+// r=2..9): reused directly rather than re-encoded.
 function tableB(rest, p, L) {
-  if (rest.length === 0) return mk('B:blank-UNVERIFIED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: [] });
-  const [g, r] = rest[0];
-  if (g === 3 && r === 3) return mk('B:g3r3-UNVERIFIED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: rest.slice(1) });
-  if (g === 3) return mk('B:g3-UNVERIFIED', { top: 2, H: 5, p: p - 2, L: L + 8, stack: [[3, r + 1], ...rest.slice(1)] });
-  return mk('B:UNIMPLEMENTED', { top: 4, H: 4, W: [5], p: p - 2, L: L + 8, stack: rest });
+  let j = 0;
+  while (j < rest.length && rest[j][0] === 2 && rest[j][1] === 2) j++;
+  const baseH = 4 + 4 * j;
+  const tail = rest.slice(j);
+  const P = p - 2, L2 = L + 8;
+  if (tail.length === 0) return mk('B:blank', { top: 2, H: baseH, W: [5], p: P, L: L2, stack: [] });
+  const [g, r] = tail[0];
+  const after = tail.slice(1);
+  if (g >= 5) return mk('B:big', { top: 2, H: baseH, W: [5], p: P, L: L2, stack: [[g - 4, r], ...after] });
+  if (g === 1) return smallGap1(r + 2, after, p, L, 0);
+  if (g === 3 && r === 3) return mk('B:g3term', { top: 4, H: baseH, W: [5], p: P, L: L2, stack: after });
+  if (g === 4 && r === 2) return mk('B:g4term', { top: 4, H: baseH, W: [5], p: P, L: L2, stack: after });
+  if (g === 2 && r % 2 === 0) return tableBEvenBirth(j, r, after, p, L);
+  if (g === 2) return mk('B:g2odd', { top: 2, H: 5, p: P, L: L2, stack: [[4 + 4 * j, r], ...shiftFirst(after, 1)] });
+  if (g === 3) return mk('B:g3', { top: 2, H: 5, p: P, L: L2, stack: [[3 + 4 * j, r + 1], ...after] });
+  return mk('B:g4', { top: 2, H: 5, p: P, L: L2, stack: [[3 + 4 * j, r + 2], ...after] });
 }
 
-// H = 5, F.top = 4 (preStack[0] = (4,4)). Only spot-checked (blank and
-// (5,4) as preStack[1]): both give H'=4 with p -= 8, L += 32 (a quadruple
-// lap) EXCEPT (5,4) lands the digit born as H' directly (top'=4) with
-// (3,6) pushed instead of W. Encoded as observed; NOT validated beyond
-// these two shapes.
+// A run of consecutive gap=2 even-run(>=4) entries after the (3,4) contact
+// all birth digit 5 together: same deepest-first construction as
+// digitBirth2's own even-chain (each level contributes floor((run-4)/2)
+// ones then a symbol), but EVERY level uses '5' -- there is no outer '9'
+// here, table B's own base birth is a genuinely separate extra '5'
+// appended last (oracle: c1w-sweep-BD2.mjs gap=2 run=2..9, r=4/6/8 all
+// land here with 0/1/2 leading ones plus the trailing base 5).
+// j = a LEADING (2,2)-run already absorbed by tableB's own chain-scan
+// before reaching this birth: mirrors digitBirth2's own fix -- it does NOT
+// add 4j to H, it instead promotes the FIRST run's symbol to '9' (as if an
+// outer digit-9-style trigger were present); a TRAILING (2,2)-run right
+// after the whole even-run chain absorbs for free into H as usual (oracle:
+// the real (2,2)(2,8)(...) instances).
+function tableBEvenBirth(j, r, after, p, L) {
+  const runs = [r];
+  let idx = 0;
+  while (idx < after.length && after[idx][0] === 2 && after[idx][1] % 2 === 0 && after[idx][1] >= 4) {
+    runs.push(after[idx][1]); idx++;
+  }
+  let j2 = 0;
+  while (idx + j2 < after.length && after[idx + j2][0] === 2 && after[idx + j2][1] === 2) j2++;
+  const beyond = after.slice(idx + j2);
+  const chainH = 4 + 4 * j2;
+  const w = [];
+  runs.forEach((rr, i) => {
+    for (let n = 0; n < (rr - 4) / 2; n++) w.push(1);
+    w.push((j > 0 && i === 0) ? 9 : 5);
+  });
+  w.push(5);
+  const P = p - 2, L2 = L + 8;
+  if (beyond.length === 0) return mk('B:evenChain:term', { top: 2, H: chainH, W: w, p: P, L: L2, stack: [] });
+  const [g, r2] = beyond[0];
+  if (g >= 5) return mk('B:evenChain:cascade', { top: 2, H: chainH, W: w, p: P, L: L2, stack: [[g - 4, r2], ...beyond.slice(1)] });
+  return mk('B:evenChain:nested-UNVERIFIED', { top: 2, H: chainH, W: w, p: P, L: L2, stack: beyond });
+}
+
+// H = 5, F.top = 4 (preStack[0] = (4,4)). Dense oracle sweep
+// (c1w-sweep-BD2.mjs): the (4,4) contact ALWAYS costs exactly one base lap
+// (p -= 8, L += 32) -- NEVER scaled, regardless of what rest holds; only
+// the SHAPE varies with rest[0]'s gap.
 function tableD(rest, p, L) {
-  if (rest.length === 0) return mk('D:blank-UNVERIFIED', { top: 2, H: 4, W: [1, 5], p: p - 8, L: L + 32, stack: [] });
+  const P = p - 8, L2 = L + 32;
+  if (rest.length === 0) return mk('D:blank', { top: 2, H: 4, W: [1, 5], p: P, L: L2, stack: [] });
   const [g, r] = rest[0];
-  if (g === 5) return mk('D:g5-UNVERIFIED', { top: 4, H: 5, p: p - 8, L: L + 32, stack: [[3, r + 2], ...rest.slice(1)] });
-  return mk('D:UNIMPLEMENTED', { top: 2, H: 4, W: [1, 5], p: p - 8, L: L + 32, stack: rest });
+  const after = rest.slice(1);
+  if (g >= 6) return mk('D:big', { top: 2, H: 4, W: [1, 5], p: P, L: L2, stack: [[g - 5, r], ...after] });
+  if (g === 5) {
+    if (r === 2) return mk('D:g5term', { top: 4, H: 4, W: [1, 5], p: P, L: L2, stack: after });
+    return mk('D:g5', { top: 4, H: 5, p: P, L: L2, stack: [[3, r + 2], ...after] });
+  }
+  if (g === 1 || g === 2) return tableDSmallGap(g, r, after, p, L);
+  // g in {3,4}: rest[0] plays the SAME role as a fresh top-level contact
+  // (table A/B/C/D's own precondition entries): recurse through the SAME
+  // top-level dispatcher (phase2) on [rest[0], ...after] -- rest is
+  // already in preStack form. If the recursive result is a genuine fresh
+  // landing (H assigned directly: chunkTerm, cascade, g3term/g4term, g5, a
+  // digitBirth2/smallGap1 landing, chunkBig, or a further D:/B: recurse),
+  // table D ADOPTS it (top/H/stack as computed) and APPENDS its own [1,5]
+  // to whatever W it produced. If the result is a STACK-TRANSFORM
+  // continuation (table A/B's g3/g4/g2odd -- still mid-excursion, H just a
+  // generic placeholder), table D STAYS (top=4, H=5), takes the
+  // sub-result's stack[0] shifted +5 in gap as its OWN new rest[0], and
+  // keeps the sub-result's deeper stack untouched. The sub-dispatch's OWN
+  // p/L delta is discarded entirely -- table D's single base lap (already
+  // applied above) is the only cost paid. Oracle-verified against every
+  // real 10M-orbit D:UNIMPLEMENTED instance (rest[0] is always exactly
+  // (3,2) there, chaining 1-3 levels deep); c1w-sweep-BD.mjs's isolated
+  // single-entry results for OTHER (gap,run) pairs are consistent with
+  // this mechanism but not independently re-verified with a sentinel.
+  const sub = phase2([[g, r], ...after], p, L);
+  if (isContinuation(sub.case)) {
+    const [cg, cr] = sub.F.stack[0];
+    return mk('D:recurse:' + sub.case, { top: 4, H: 5, p: P, L: L2, stack: [[cg + 5, cr], ...sub.F.stack.slice(1)] });
+  }
+  return mk('D:recurse:' + sub.case, { top: sub.F.top, H: sub.F.H, W: [...sub.F.W, 1, 5], p: P, L: L2, stack: sub.F.stack });
 }
 
-// Even-run gap-2 entries birth digit 9. H stays 4 unless the entry
-// directly beneath is itself a (2,2)-chain, in which case that chain
-// resolves with its OWN law, H' = 4 + 4*j (j = chain length): base 4 (no
-// chain) generalizes to 4 + 4*0. Confirmed for k=0 (this entry reached
-// directly); k>0 (reached after an outer (2,2) chain) is unverified and
-// falls back to the same law with a note in the case key.
+// gap in {1,2}: dense sweep over run=2..9 (c1w-sweep-BD2.mjs). The (4,4)
+// contact's own lap depends only on the FOLLOWING entry's gap and run
+// parity (never scaled by anything beyond it); ones-count and the shift
+// applied to whatever comes after are an exact fit across run=2..9 (and
+// gap=2,run=2 -- the would-be (2,2)-chain shape -- already fits this
+// same formula uniformly, confirmed against a literal chain of length 1).
+function tableDSmallGap(g, r, after, p, L) {
+  const even = r % 2 === 0;
+  let ones, dp, dL, shift;
+  if (g === 1) {
+    ones = even ? r / 2 + 1 : (r + 3) / 2;
+    dp = even ? -8 : -12; dL = even ? 32 : 48;
+    shift = even ? 4 : 5;
+  } else {
+    ones = Math.floor(r / 2) + 2;
+    dp = even ? -16 : -12; dL = even ? 64 : 48;
+    shift = even ? 5 : 4;
+  }
+  const w = [...Array(ones).fill(1), 5];
+  const stack = after.length ? [[after[0][0] - shift, after[0][1]], ...after.slice(1)] : [];
+  return mk(`D:gap${g}${even ? 'Even' : 'Odd'}`, { top: 2, H: 4, W: w, p: p + dp, L: L + dL, stack });
+}
+
+// Even-run gap-2 entries birth digit 9. H stays 4+4j (j = a leading
+// (2,2)-chain within rest, absorbed for free as before) UNLESS what
+// follows continues or complicates the birth (oracle-swept exhaustively:
+// c1w-sweep-db2nested*.mjs):
+//  - tail[j] gap>=5 (the >=6 threshold was actually >=5 all along: gap=5
+//    fits the exact same -4 cascade): standard cascade, digit sits in W.
+//  - tail[j] gap=2, run even>=4: the birth CONTINUES. Every consecutive
+//    such entry (this trigger plus tail[j], tail[j+1], ... while they stay
+//    gap=2/even/>=4), deepest first, contributes floor((run-4)/2) ones
+//    then a symbol -- '5' at every level except the outermost (the
+//    ORIGINAL trigger), which gets '9'. The whole run is consumed
+//    together; what follows cascades -4 if gap>=5, else unresolved.
+//  - tail[j] gap=1: the digit is CANCELLED (W stays empty) and tail[j]
+//    becomes [3, tail[j].run + r] (r = this trigger's own run) -- exact
+//    fit for r in {4,8,12}, any tail[j].run; deeper entries pass through
+//    unchanged; a DOUBLE lap (not the usual single).
+//  - tail[j] gap=2 (odd run), gap=3 (run!=3), or gap=4 (run!=2): the digit
+//    is PROMOTED to H' directly (H'=9) -- but ONLY when r===4 and j===0
+//    (no leading chain, minimal trigger run). Otherwise (r!=4, or j>0) an
+//    extra entry [3, r-2] absorbs the trigger's own excess ones and the
+//    promotion does not happen (H stays 4+4j, W=[]); the inner transform
+//    keeps its base run adjustment, gap-shifted by 4j when j>0 (single
+//    spot check for j>0, the real (2,22)(2,2)(3,2) instance).
+//  - tail[j] gap=3,run=3 or gap=4,run=2 (table-A term shapes): the digit
+//    stays in W unaffected, H'=4+4j, tail[j] consumes to blank, deeper
+//    passes through.
 function digitBirth2(r, rest, p, L, k) {
-  const w = [...Array((r - 4) / 2).fill(1), 9];
   let j = 0;
   while (j < rest.length && rest[j][0] === 2 && rest[j][1] === 2) j++;
   const after = rest.slice(j + 1);
+  const baseH = 4 + 4 * j;
   const tag = k > 0 ? `digitBirth2(k=${k})` : 'digitBirth2';
+  const w9 = () => [...Array((r - 4) / 2).fill(1), 9];
   if (j >= rest.length) {
-    return mk(tag + ':term', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [] });
+    return mk(tag + ':term', { top: 2, H: baseH, W: w9(), p: p - 2, L: L + 8, stack: [] });
   }
   const [g2, r2] = rest[j];
-  if (g2 >= 6) {
-    return mk(tag + ':cascade', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [[g2 - 4, r2], ...after] });
+  if (g2 >= 5) {
+    return mk(tag + ':cascade', { top: 2, H: baseH, W: w9(), p: p - 2, L: L + 8, stack: [[g2 - 4, r2], ...after] });
   }
-  return mk(tag + ':nested-UNVERIFIED', { top: 2, H: 4 + 4 * j, W: w, p: p - 2, L: L + 8, stack: [[g2, r2], ...after] });
+  if (g2 === 2 && r2 % 2 === 0) {
+    // A LEADING (2,2)-run before the birth (j>0) does NOT add 4j to H the
+    // way the isolated chain does elsewhere -- instead it promotes chain[1]
+    // (tail[j] itself) to ALSO use '9' (alongside the true outer). A
+    // TRAILING (2,2)-run immediately after the whole even-run chain absorbs
+    // for free into H exactly like the ordinary leading-chain scan (oracle:
+    // the real (2,22)(2,2)(2,4)(2,2) and (2,4)(2,6)(2,2) instances).
+    const chain = [r, r2];
+    let idx = j + 1;
+    while (idx < rest.length && rest[idx][0] === 2 && rest[idx][1] % 2 === 0 && rest[idx][1] >= 4) {
+      chain.push(rest[idx][1]); idx++;
+    }
+    let j2 = 0;
+    while (idx + j2 < rest.length && rest[idx + j2][0] === 2 && rest[idx + j2][1] === 2) j2++;
+    const beyond = rest.slice(idx + j2);
+    const chainH = 4 + 4 * j2;
+    const w = [];
+    for (let i = chain.length - 1; i >= 0; i--) {
+      for (let n = 0; n < (chain[i] - 4) / 2; n++) w.push(1);
+      w.push((i === 0 || (j > 0 && i === 1)) ? 9 : 5);
+    }
+    if (beyond.length === 0) {
+      return mk(tag + ':evenChain:term', { top: 2, H: chainH, W: w, p: p - 2, L: L + 8, stack: [] });
+    }
+    const [g3, r3] = beyond[0];
+    if (g3 >= 5) {
+      return mk(tag + ':evenChain:cascade', { top: 2, H: chainH, W: w, p: p - 2, L: L + 8, stack: [[g3 - 4, r3], ...beyond.slice(1)] });
+    }
+    return mk(tag + ':evenChain:nested-UNVERIFIED', { top: 2, H: chainH, W: w, p: p - 2, L: L + 8, stack: beyond });
+  }
+  if (g2 === 1) {
+    return mk(tag + ':nestedGap1', { top: 2, H: baseH, W: [], p: p - 4, L: L + 16, stack: [[3, r2 + r], ...after] });
+  }
+  if ((g2 === 3 && r2 === 3) || (g2 === 4 && r2 === 2)) {
+    return mk(tag + ':nestedTerm', { top: 4, H: baseH, W: w9(), p: p - 2, L: L + 8, stack: after });
+  }
+  let entry, shiftAfter = 0;
+  if (g2 === 2) { entry = [4, r2]; shiftAfter = 1; }
+  else if (g2 === 3) { entry = [3, r2 + 1]; }
+  else { entry = [3, r2 + 2]; }
+  if (r === 4 && j === 0) {
+    return mk(tag + ':nestedPromoted', { top: 2, H: 9, W: [], p: p - 2, L: L + 8, stack: [entry, ...shiftFirst(after, shiftAfter)] });
+  }
+  // r != 4 or j > 0: an extra entry [3, r-2] absorbs the trigger's own
+  // excess; the inner transform keeps ITS OWN run adjustment (entry[1]),
+  // gap-shifted by 4j when j>0 (verified against every real j>0 instance:
+  // (2,22)(2,2)(3,2)/(2,3)/(3,2)(7|3,2) all land here).
+  const innerEntry = j > 0 ? [entry[0] + 4 * j, entry[1]] : entry;
+  return mk(tag + ':nestedExcess-UNVERIFIED', {
+    top: 2, H: 4, W: [], p: p - 4, L: L + 16,
+    stack: [[3, r - 2], innerEntry, ...shiftFirst(after, shiftAfter)],
+  });
 }
 
 // Gap=1 entries mirror gap=2's even/odd split (oracle-swept r=2..7 with a
@@ -677,9 +897,16 @@ function digitBirth2(r, rest, p, L, k) {
 // 5 behind floor(r/2) spacer ones, a "triple lap" (p-=6, L+=16... no,
 // +24), and shifts the next entry by -4. run even>=4 births the same digit
 // word but a "quintuple lap" (p-=10, L+=40) and shifts the next entry by
-// -5. k>0 (reached after an outer (2,2) chain) is a single spot check,
-// noted as such.
+// -5. k>0 (reached after an outer (2,2) chain), run=2: the r2term case
+// generalizes cleanly -- the born digit shifts by +4k (H'=5+4k, matching
+// the smallGap3term/g4term/A:g5 "4k+8"-family pattern one rung down),
+// single lap, deeper stack untouched (confirmed against the real
+// ev717 instance AND every real orbit hop that recurses through it via
+// tableCGeneric at scale, e.g. ev2039246). run!=2 with k>0 is unverified.
 function smallGap1(r, rest, p, L, k) {
+  if (k > 0 && r === 2) {
+    return mk(`smallGap1:r2term(k=${k})`, { top: 4, H: 5 + 4 * k, p: p - 2, L: L + 8, stack: rest });
+  }
   if (k > 0) {
     return mk(`smallGap1(k=${k})-UNVERIFIED`, {
       top: 2, H: 4, p: p - 4, L: L + 16, stack: [[3 + 4 * k, 6], ...rest],
@@ -698,6 +925,47 @@ function smallGap1(r, rest, p, L, k) {
   }
   const [g2, r2] = rest[0];
   return mk(`smallGap1:${odd ? 'odd' : 'even'}`, { top: 2, H: 4, W: w, p: lapP, L: lapL, stack: [[g2 - shift, r2], ...rest.slice(1)] });
+}
+
+// F.p === 0: the 8/1095 epoch-phase boundary states (grammar census). The
+// single-step MACHINERY is proven in Coq (mstep_absorb_nil, mstep_skim,
+// mstep_absorb_rs0, the unwind -- coq/ParityHops.v); this is the F-level
+// successor law, reverse-engineered by oracle replay of synthetic p0
+// states (c1w-sweep-epoch*.mjs) and cross-checked against the 7 real p0
+// instances in the 10M orbit. p' is always F.L/2 plus a small,
+// rule-dependent offset; L' is always a small constant (also
+// rule-dependent) -- never the usual lap arithmetic.
+// Covers 6 of the 7 real instances. The 7th (ev1959320: a 5-entry stack
+// whose first three entries collapse through a digit-9 birth before a
+// plain cascade) is NOT resolved -- see the report's "epoch: what's left"
+// section and epoch:p0-deepChain-UNIMPLEMENTED.
+function epoch(F) {
+  const { H, top, L, stack } = F;
+  const half = L / 2;
+  if (stack.length === 0) {
+    if (H === 4) return mk('epoch:p0-blank', { top: 2, H: 4, p: half, L: 16, stack: [] });
+    if (H === 5) return mk('epoch:p0-blankH5', { top: 2, H: 8, p: half, L: 8, stack: [] });
+    return mk('epoch:p0-blankBig', { top: 2, H: 4, p: half, L: 8, stack: [[H - 7, top]] });
+  }
+  const [g, r] = stack[0];
+  const rest = stack.slice(1);
+  if (g >= 6) {
+    if (H === 5) return mk('epoch:p0-bigH5', { top: 2, H: 4, W: [5], p: half, L: 8, stack: [[g - 4, r], ...rest] });
+    return mk('epoch:p0-big', { top: 2, H: 4, p: half, L: 16, stack: [[g - 5, r], ...rest] });
+  }
+  if (g === 2 && r === 2 && H === 4) {
+    return mk('epoch:p0-chain', { top: 2, H: 4, p: half, L: 24, stack: rest });
+  }
+  if (g === 2 && r === 2 && H === 5) {
+    return mk('epoch:p0-chainH5-UNVERIFIED', { top: 2, H: 12, p: half, L: 8, stack: rest });
+  }
+  if (g === 2 && r % 2 === 1) {
+    return mk('epoch:p0-g2odd', { top: 2, H: 4, p: half + 2, L: 20, stack: shiftFirst(rest, 4) });
+  }
+  if ((g === 3 && r !== 3) || (g === 4 && r !== 2)) {
+    return mk('epoch:p0-continuation', { top: 2, H: 4, p: half - 2, L: 16, stack: [[2, r + 1], ...rest] });
+  }
+  return { case: 'epoch:p0-deepChain-UNIMPLEMENTED', F: null };
 }
 
 function fEqual(a, b) {
@@ -742,10 +1010,25 @@ const CASE_RULES = [
     "H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, stack'=[]."],
   [/^digitBirth2:cascade/, "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then a gap>=6 entry: " +
     "H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, that entry's gap -= 4 (run unchanged), deeper untouched."],
-  [/^digitBirth2:nested-UNVERIFIED/, "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then an " +
-    "entry with gap<6: UNRESOLVED. The 105/1094 (2M-event) mismatches here all show the born digit " +
-    "recursing into a Phase-1-like walk against that entry (sometimes landing the digit as H' directly, " +
-    "sometimes leaving it in W) rather than sitting still in W as coded. Needs its own derivation."],
+  [/^digitBirth2\S*:evenChain:(term|cascade)/, "gap=2, run even>=4, tail[j] is ALSO gap=2/even/>=4: the " +
+    "birth continues -- every consecutive such entry (deepest first) contributes floor((run-4)/2) ones " +
+    "then a symbol ('5' at every level except the outermost/original trigger, which gets '9'); consumed " +
+    "together, H'=4+4j, what follows the whole run cascades -4 if gap>=5 (:cascade) or stack'=[] (:term)."],
+  [/^digitBirth2\S*:evenChain:nested-UNVERIFIED/, "as evenChain above, but what follows the whole even-run " +
+    "chain has gap<5: UNRESOLVED (not hit in the 10M orbit)."],
+  [/^digitBirth2\S*:nestedGap1/, "gap=2, run even>=4, tail[j] has gap=1: the digit-9 is CANCELLED (W " +
+    "stays empty) and tail[j] becomes [3, tail[j].run + r] (r = the trigger's own run); deeper entries " +
+    "pass through unchanged; a DOUBLE lap (p-=4, L+=16), not the usual single."],
+  [/^digitBirth2\S*:nestedTerm/, "gap=2, run even>=4, tail[j] is a table-A term shape (gap=3,run=3 or " +
+    "gap=4,run=2): the digit-9 sits in W unaffected, H'=4+4j, tail[j] consumes to blank, deeper passes through."],
+  [/^digitBirth2\S*:nestedPromoted/, "gap=2, run EXACTLY 4, no leading (2,2)-chain (j=0), tail[j] is gap=2 " +
+    "(odd run) / gap=3 (run!=3) / gap=4 (run!=2): the digit-9 is PROMOTED to H' directly (H'=9, top'=2, " +
+    "W'=[]); tail[j] becomes [4,run] (gap2-odd, next entry gap-=1) / [3,run+1] (gap3) / [3,run+2] (gap4)."],
+  [/^digitBirth2\S*:nestedExcess-UNVERIFIED/, "as nestedPromoted's trigger shapes, but run != 4 or j>0 " +
+    "(the trigger has 'excess' beyond the minimal case): the promotion does NOT happen -- an extra entry " +
+    "[3, run-2] absorbs the excess, H stays 4+4j, W=[]; a DOUBLE lap. Oracle-verified for run!=4,j=0 " +
+    "(c1w-sweep-db2nested3.mjs); the j>0 gap-shift (+4j, dropping the run adjustment) is a single spot " +
+    "check against one real instance (ev1959320's (2,22)(2,2)(3,2))."],
   [/^smallGap1:r2term/, "gap=1, run=2 (the gap=1 analogue of A:g3term/A:g4term): digit 5 born directly as " +
     "H' (not via W), top'=4, p'=p-2, L'=L+8, deeper stack untouched."],
   [/^smallGap1:odd(?!.*Term)/, "gap=1, run odd>=3, something deeper: W'=[1 x floor(run/2), 5], p'=p-6, " +
@@ -760,18 +1043,49 @@ const CASE_RULES = [
     "oracle-checked at gap in {3,5,7}): top'=4, H'=4, p'=p-6, L'=L+24 (triple lap), next entry's gap -= 1 " +
     "(run unchanged) if it exists."],
   [/^C:blank$/, "H=5, top=2, F.stack=[]: top'=4, H'=4, p'=p-6, L'=L+24, stack'=[]."],
-  [/^C:.*EXTRAPOLATED/, "gap=4 reached via a digit-5 Phase-1 closure (run = an accumulated value, not F.top " +
-    "in {2,4}): EXTRAPOLATED from table C by scaling the lap with run/2+2; NOT independently oracle-checked."],
-  [/^B:/, "H=4, top=4 (preStack[0]=(3,4)): only spot-checked at 3 shapes (blank, (3,3), (3,5) as F.stack[0]); " +
-    "the UNIMPLEMENTED fallback (any other F.stack[0]) guesses the blank/(3,3) law (H'=4, digit 5 into W, " +
-    "single lap, stack unchanged) and is unverified beyond those 3 points."],
-  [/^D:/, "H=5, top=4 (preStack[0]=(4,4)): only spot-checked at 2 shapes (blank, (5,4) as F.stack[0]); " +
-    "the UNIMPLEMENTED fallback guesses the blank law (H'=4, digit 5 into W ([1,5]), quadruple lap, stack " +
-    "unchanged) and is unverified beyond those 2 points. Real data shows this often chains through several " +
-    "further (H=5,top=4)/(H=4,top=2,W=[1,5]) states before landing -- not a single clean lap."],
-  [/^epoch:p0/, "F.p = 0 (the 8/1095 epoch-phase boundary states, session-3 census): NOT IMPLEMENTED. " +
-    "This is the V6/V7 territory in notes/parity.md (mstep_absorb_nil / insulate_degen / top-4 pump), " +
-    "genuinely un-derived here."],
+  [/^C:shift1-EXTRAPOLATED$/, "gap=4 reached via a digit-5 Phase-1 closure with an ACCUMULATED run (not " +
+    "F.top in {2,4}): the entry is a free absorb (its exact run value never resurfaces -- oracle-swept at " +
+    "r0 in {6,8,...,30}), and the excursion re-enters exactly the top-level dispatch (phase2) on rest[0]; " +
+    "whatever lap that sub-dispatch computes gets scaled by exactly 4x, shape (top,H,W,stack) passes " +
+    "through unchanged. c1w-sweep-shift1x.mjs; matches every real 10M-orbit instance."],
+  [/^B:blank$|^B:big$|^B:g[34]term$/, "H=4, top=4 (preStack[0]=(3,4)): a leading (2,2)-chain (j entries) " +
+    "is absorbed into H (H'=4+4j) exactly like table A's; the contact's own cost is ALWAYS a single base " +
+    "lap (p-=2, L+=8), never scaled. blank/gap>=5/term-shapes land digit 5 in W (or leave it there " +
+    "unaffected for gap>=5, shifted -4), H'=4+4j, top'=2."],
+  [/^B:g[234]/, "H=4, top=4, tail[j] has gap in {2 (odd), 3 (run!=3), 4 (run!=2)}: the digit 5 is promoted " +
+    "to H' directly (H'=5, top'=2); tail[j] becomes [4,run] (gap2, next entry gap-=1) / [3+4j,run+1] " +
+    "(gap3) / [3+4j,run+2] (gap4)."],
+  [/^B:evenChain:(term|cascade)/, "H=4, top=4, tail[j] is gap=2/even/>=4: the birth continues (same " +
+    "deepest-first construction as digitBirth2's own even-chain), but EVERY level uses '5' -- table B's " +
+    "base birth is a separate extra '5' appended last; H'=4+4j, what follows cascades -4 if gap>=5."],
+  [/^B:evenChain:nested-UNVERIFIED/, "as B's evenChain above, but what follows has gap<5: UNRESOLVED " +
+    "(not hit in the 10M orbit)."],
+  [/^D:blank$|^D:big$|^D:g5/, "H=5, top=4 (preStack[0]=(4,4)): the contact ALWAYS costs exactly one base " +
+    "lap (p-=8, L+=32), never scaled by anything past it. blank/gap>=6 births [1,5] in W (gap>=6 shifts " +
+    "-5); gap=5,run=2 consumes to blank; gap=5,run>=3 lands the digit as H'=5 directly, entry [3,run+2]."],
+  [/^D:gap[12]/, "H=5, top=4, tail[0] has gap in {1,2}: dense sweep over run=2..9 -- ones-count and the " +
+    "lap (which depends on run's parity, not magnitude) are an exact fit; the entry beyond shifts by 4 or " +
+    "5 depending on gap/parity (c1w-sweep-BD2.mjs)."],
+  [/^D:recurse:/, "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level " +
+    "contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned " +
+    "directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a " +
+    "stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the " +
+    "sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's " +
+    "single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always " +
+    "(3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle " +
+    "sweep but aren't independently re-verified with a sentinel."],
+  [/^epoch:p0-blank$|^epoch:p0-blankH5$|^epoch:p0-blankBig$|^epoch:p0-big$|^epoch:p0-bigH5$|^epoch:p0-chain$|^epoch:p0-g2odd$|^epoch:p0-continuation$/,
+    "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset " +
+    "(0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform " +
+    "in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 " +
+    "for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic " +
+    "p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly."],
+  [/^epoch:p0-chainH5-UNVERIFIED/, "F.p=0, F.stack[0]=(2,2), H=5: single oracle spot check only (no real " +
+    "orbit instance)."],
+  [/^epoch:p0-deepChain-UNIMPLEMENTED/, "F.p=0, F.stack[0] doesn't match any of the characterized shapes " +
+    "(blank / gap>=6 / (2,2) / gap=2-odd / gap-3-or-4-continuation): NOT IMPLEMENTED. The one real 10M " +
+    "instance (ev1959320) has a 5-entry stack whose first three entries collapse through what looks like " +
+    "a digit-9 birth before a plain cascade takes over the last two -- not reduced to a closed form here."],
 ];
 function describeCase(key) {
   for (const [re, text] of CASE_RULES) if (re.test(key)) return text;
@@ -779,17 +1093,29 @@ function describeCase(key) {
 }
 function caseSideConditions(key) {
   const cond = [];
-  if (/UNVERIFIED|UNIMPLEMENTED|EXTRAPOLATED|nested/.test(key)) {
+  if (/UNVERIFIED|UNIMPLEMENTED/.test(key)) {
     cond.push('NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key.');
   }
   if (/^A:g3$|^A:g4$|^A:g2odd$/.test(key)) {
-    cond.push('requires F.p >= 4 going in (double lap); F.p === 2 here underflows -- an epoch-adjacent edge case, see the one A:g3 mismatch in the 2M-event log.');
+    cond.push('requires F.p >= 4 going in (double lap); F.p === 2 here underflows and is NOT resolved -- an epoch-adjacent edge case (2 real instances across 10M events), see the report.');
+  }
+  if (/^D:recurse:/.test(key)) {
+    cond.push("inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries.");
   }
   if (/^(chunkBig|A:|C:shift1|C:blank|digitBirth2|smallGap1)/.test(key) && !/UNVERIFIED|EXTRAPOLATED/.test(key)) {
-    cond.push('requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case.');
+    cond.push('requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case.');
   }
   return cond;
 }
+
+// Exported for throwaway oracle/analysis drivers (outside this repo) that
+// need to replay chunkstep/mstepR on synthetic F-states; no effect on the
+// CLI modes below.
+export {
+  mstepR, parseF, chunkstep, phase2, tableA, tableB, tableC, tableD,
+  tableCGeneric, tableBEvenBirth, tableDSmallGap, digitBirth2, smallGap1,
+  epoch, isContinuation, shiftFirst, fEqual, wallStr, rsStr,
+};
 
 if (MODE === '--chunkstep') {
   let s = { m: 'B', wall: [[1, 1]], rs: [4] };

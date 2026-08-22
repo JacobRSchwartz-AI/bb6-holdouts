@@ -5,8 +5,8 @@
     "mismatches": 1,
     "rule": "H=4, top=2, after k (2,2)'s the next entry is (gap=3, run != 3): H'=4 (k has no effect on H here), p'=p-4, L'=L+16 (a double lap), entry becomes [2+4k, run+1], rest of stack unchanged.",
     "sideConditions": [
-      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows -- an epoch-adjacent edge case, see the one A:g3 mismatch in the 2M-event log.",
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows and is NOT resolved -- an epoch-adjacent edge case (2 real instances across 10M events), see the report.",
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -109,7 +109,7 @@
     "mismatches": 0,
     "rule": "H in {9} u {4c+8: c>=0}, any top, p>=2: chunkBig (coq/Parity.v), generalized from H=4c+8 to H=9. H'=4, p'=p-2, L'=L+8, push [H-6, top] onto stack (deeper stack untouched).",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -189,8 +189,8 @@
     "mismatches": 1,
     "rule": "H=4, top=2, after k (2,2)'s the next entry is (gap=2, run odd>=3): H'=4, p'=p-4, L'=L+16, entry becomes [3+4k, run] (run unchanged); the entry AFTER that (if any) has its gap shifted by -1 (run unchanged), everything deeper than THAT passes through.",
     "sideConditions": [
-      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows -- an epoch-adjacent edge case, see the one A:g3 mismatch in the 2M-event log.",
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows and is NOT resolved -- an epoch-adjacent edge case (2 real instances across 10M events), see the report.",
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -288,159 +288,6 @@
     ]
   },
   {
-    "key": "digitBirth2:nested-UNVERIFIED",
-    "count": 105,
-    "mismatches": 105,
-    "rule": "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then an entry with gap<6: UNRESOLVED. The 105/1094 (2M-event) mismatches here all show the born digit recursing into a Phase-1-like walk against that entry (sometimes landing the digit as H' directly, sometimes leaving it in W) rather than sitting still in W as coded. Needs its own derivation.",
-    "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
-    ],
-    "examples": [
-      {
-        "before": {
-          "top": 2,
-          "stack": [
-            [
-              2,
-              4
-            ],
-            [
-              2,
-              6
-            ],
-            [
-              3,
-              2
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 826,
-          "L": 48
-        },
-        "after": {
-          "top": 4,
-          "stack": [
-            [
-              3,
-              3
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 5,
-          "W": [
-            9
-          ],
-          "p": 824,
-          "L": 56
-        }
-      },
-      {
-        "before": {
-          "top": 2,
-          "stack": [
-            [
-              2,
-              4
-            ],
-            [
-              3,
-              4
-            ],
-            [
-              3,
-              3
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 810,
-          "L": 112
-        },
-        "after": {
-          "top": 2,
-          "stack": [
-            [
-              3,
-              5
-            ],
-            [
-              3,
-              3
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 9,
-          "W": [],
-          "p": 808,
-          "L": 120
-        }
-      },
-      {
-        "before": {
-          "top": 2,
-          "stack": [
-            [
-              2,
-              4
-            ],
-            [
-              2,
-              5
-            ],
-            [
-              3,
-              3
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 794,
-          "L": 176
-        },
-        "after": {
-          "top": 2,
-          "stack": [
-            [
-              4,
-              5
-            ],
-            [
-              2,
-              3
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 9,
-          "W": [],
-          "p": 792,
-          "L": 184
-        }
-      }
-    ]
-  },
-  {
     "key": "phase1:closed=1",
     "count": 75,
     "mismatches": 0,
@@ -532,7 +379,7 @@
     "mismatches": 0,
     "rule": "H=4, top=2, after k (2,2)'s the next entry is (gap=3,run=3): consumed entirely (no replacement). H'=4k+8, top'=4, p'=p-2, L'=L+8, rest of stack passes through unchanged one level shallower.",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -630,7 +477,7 @@
     "mismatches": 0,
     "rule": "gap=2, run even>=4 (digit-9 birth), j trailing (2,2)'s then a gap>=6 entry: H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, that entry's gap -= 4 (run unchanged), deeper untouched.",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -747,7 +594,7 @@
     "mismatches": 0,
     "rule": "H=5, top=2 (preStack[0]=(4,2)): uniform regardless of what follows (blank or ANY gap, oracle-checked at gap in {3,5,7}): top'=4, H'=4, p'=p-6, L'=L+24 (triple lap), next entry's gap -= 1 (run unchanged) if it exists.",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -877,13 +724,444 @@
     ]
   },
   {
-    "key": "B:UNIMPLEMENTED",
-    "count": 52,
-    "mismatches": 52,
-    "rule": "H=4, top=4 (preStack[0]=(3,4)): only spot-checked at 3 shapes (blank, (3,3), (3,5) as F.stack[0]); the UNIMPLEMENTED fallback (any other F.stack[0]) guesses the blank/(3,3) law (H'=4, digit 5 into W, single lap, stack unchanged) and is unverified beyond those 3 points.",
+    "key": "digitBirth2:nestedPromoted",
+    "count": 39,
+    "mismatches": 0,
+    "rule": "gap=2, run EXACTLY 4, no leading (2,2)-chain (j=0), tail[j] is gap=2 (odd run) / gap=3 (run!=3) / gap=4 (run!=2): the digit-9 is PROMOTED to H' directly (H'=9, top'=2, W'=[]); tail[j] becomes [4,run] (gap2-odd, next entry gap-=1) / [3,run+1] (gap3) / [3,run+2] (gap4).",
+    "sideConditions": [
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 810,
+          "L": 112
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              5
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 9,
+          "W": [],
+          "p": 808,
+          "L": 120
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 794,
+          "L": 176
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              4,
+              5
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 9,
+          "W": [],
+          "p": 792,
+          "L": 184
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 778,
+          "L": 240
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              6
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 9,
+          "W": [],
+          "p": 776,
+          "L": 248
+        }
+      }
+    ]
+  },
+  {
+    "key": "B:big",
+    "count": 26,
+    "mismatches": 0,
+    "rule": "H=4, top=4 (preStack[0]=(3,4)): a leading (2,2)-chain (j entries) is absorbed into H (H'=4+4j) exactly like table A's; the contact's own cost is ALWAYS a single base lap (p-=2, L+=8), never scaled. blank/gap>=5/term-shapes land digit 5 in W (or leave it there unaffected for gap>=5, shifted -4), H'=4+4j, top'=2.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              6,
+              8
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 402,
+          "L": 64
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              8
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            5
+          ],
+          "p": 400,
+          "L": 72
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 386,
+          "L": 128
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            5
+          ],
+          "p": 384,
+          "L": 136
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              6,
+              7
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 370,
+          "L": 192
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            5
+          ],
+          "p": 368,
+          "L": 200
+        }
+      }
+    ]
+  },
+  {
+    "key": "digitBirth2:nestedExcess-UNVERIFIED",
+    "count": 26,
+    "mismatches": 0,
+    "rule": "as nestedPromoted's trigger shapes, but run != 4 or j>0 (the trigger has 'excess' beyond the minimal case): the promotion does NOT happen -- an extra entry [3, run-2] absorbs the excess, H stays 4+4j, W=[]; a DOUBLE lap. Oracle-verified for run!=4,j=0 (c1w-sweep-db2nested3.mjs); the j>0 gap-shift (+4j, dropping the run adjustment) is a single spot check against one real instance (ev1959320's (2,22)(2,2)(3,2)).",
     "sideConditions": [
       "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
     ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1628,
+          "L": 200
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              20
+            ],
+            [
+              7,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1624,
+          "L": 216
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1596,
+          "L": 328
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              20
+            ],
+            [
+              8,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1592,
+          "L": 344
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1500,
+          "L": 712
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              20
+            ],
+            [
+              7,
+              3
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1496,
+          "L": 728
+        }
+      }
+    ]
+  },
+  {
+    "key": "B:g3",
+    "count": 13,
+    "mismatches": 0,
+    "rule": "H=4, top=4, tail[j] has gap in {2 (odd), 3 (run!=3), 4 (run!=2)}: the digit 5 is promoted to H' directly (H'=5, top'=2); tail[j] becomes [4,run] (gap2, next entry gap-=1) / [3+4j,run+1] (gap3) / [3+4j,run+2] (gap4).",
+    "sideConditions": [],
     "examples": [
       {
         "before": {
@@ -930,37 +1208,47 @@
           "top": 4,
           "stack": [
             [
-              6,
-              8
+              2,
+              2
             ],
             [
-              7,
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
               2
             ]
           ],
           "H": 4,
           "W": [],
-          "p": 402,
-          "L": 64
+          "p": 378,
+          "L": 160
         },
         "after": {
           "top": 2,
           "stack": [
             [
-              2,
-              8
+              7,
+              7
             ],
             [
-              7,
+              3,
+              2
+            ],
+            [
+              3,
               2
             ]
           ],
-          "H": 4,
-          "W": [
-            5
-          ],
-          "p": 400,
-          "L": 72
+          "H": 5,
+          "W": [],
+          "p": 376,
+          "L": 168
         }
       },
       {
@@ -972,94 +1260,214 @@
               2
             ],
             [
-              2,
-              8
+              3,
+              7
             ],
             [
-              7,
+              2,
               2
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 394,
-          "L": 96
-        },
-        "after": {
-          "top": 2,
-          "stack": [
+            ],
             [
               3,
               2
             ]
           ],
           "H": 4,
-          "W": [
-            1,
-            1,
-            9,
-            5
+          "W": [],
+          "p": 346,
+          "L": 288
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              7,
+              8
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ]
           ],
-          "p": 392,
-          "L": 104
+          "H": 5,
+          "W": [],
+          "p": 344,
+          "L": 296
         }
       }
     ]
   },
   {
-    "key": "D:UNIMPLEMENTED",
-    "count": 25,
-    "mismatches": 25,
-    "rule": "H=5, top=4 (preStack[0]=(4,4)): only spot-checked at 2 shapes (blank, (5,4) as F.stack[0]); the UNIMPLEMENTED fallback guesses the blank law (H'=4, digit 5 into W ([1,5]), quadruple lap, stack unchanged) and is unverified beyond those 2 points. Real data shows this often chains through several further (H=5,top=4)/(H=4,top=2,W=[1,5]) states before landing -- not a single clean lap.",
+    "key": "digitBirth2:nestedTerm",
+    "count": 13,
+    "mismatches": 0,
+    "rule": "gap=2, run even>=4, tail[j] is a table-A term shape (gap=3,run=3 or gap=4,run=2): the digit-9 sits in W unaffected, H'=4+4j, tail[j] consumes to blank, deeper passes through.",
     "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1564,
+          "L": 456
+        },
+        "after": {
+          "top": 4,
+          "stack": [],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1562,
+          "L": 464
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1436,
+          "L": 968
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1434,
+          "L": 976
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              6,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1308,
+          "L": 1480
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              6,
+              2
+            ]
+          ],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1306,
+          "L": 1488
+        }
+      }
+    ]
+  },
+  {
+    "key": "D:big",
+    "count": 12,
+    "mismatches": 0,
+    "rule": "H=5, top=4 (preStack[0]=(4,4)): the contact ALWAYS costs exactly one base lap (p-=8, L+=32), never scaled by anything past it. blank/gap>=6 births [1,5] in W (gap>=6 shifts -5); gap=5,run=2 consumes to blank; gap=5,run>=3 lands the digit as H'=5 directly, entry [3,run+2].",
+    "sideConditions": [],
     "examples": [
       {
         "before": {
           "top": 4,
           "stack": [
             [
-              3,
-              2
-            ],
-            [
-              3,
-              2
-            ],
-            [
-              2,
-              2
-            ]
-          ],
-          "H": 5,
-          "W": [],
-          "p": 200,
-          "L": 32
-        },
-        "after": {
-          "top": 4,
-          "stack": [
-            [
-              7,
-              3
-            ],
-            [
-              2,
-              2
-            ]
-          ],
-          "H": 5,
-          "W": [],
-          "p": 192,
-          "L": 64
-        }
-      },
-      {
-        "before": {
-          "top": 4,
-          "stack": [
-            [
               7,
               3
             ],
@@ -1096,27 +1504,6 @@
       },
       {
         "before": {
-          "top": 4,
-          "stack": [
-            [
-              3,
-              2
-            ],
-            [
-              2,
-              3
-            ],
-            [
-              2,
-              2
-            ]
-          ],
-          "H": 5,
-          "W": [],
-          "p": 184,
-          "L": 96
-        },
-        "after": {
           "top": 4,
           "stack": [
             [
@@ -1132,6 +1519,212 @@
           "W": [],
           "p": 176,
           "L": 128
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              3
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            5
+          ],
+          "p": 168,
+          "L": 160
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              4
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 160,
+          "L": 192
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            5
+          ],
+          "p": 152,
+          "L": 224
+        }
+      }
+    ]
+  },
+  {
+    "key": "digitBirth2:evenChain:nested-UNVERIFIED",
+    "count": 11,
+    "mismatches": 11,
+    "rule": "as evenChain above, but what follows the whole even-run chain has gap<5: UNRESOLVED (not hit in the 10M orbit).",
+    "sideConditions": [
+      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 826,
+          "L": 48
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 5,
+          "W": [
+            9
+          ],
+          "p": 824,
+          "L": 56
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 762,
+          "L": 304
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              4,
+              3
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "H": 5,
+          "W": [
+            9
+          ],
+          "p": 760,
+          "L": 312
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 698,
+          "L": 560
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              1,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            5,
+            9
+          ],
+          "p": 696,
+          "L": 568
         }
       }
     ]
@@ -1253,34 +1846,41 @@
     ]
   },
   {
-    "key": "epoch:p0-UNIMPLEMENTED",
-    "count": 7,
-    "mismatches": 7,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states, session-3 census): NOT IMPLEMENTED. This is the V6/V7 territory in notes/parity.md (mstep_absorb_nil / insulate_degen / top-4 pump), genuinely un-derived here.",
+    "key": "digitBirth2:evenChain:cascade",
+    "count": 8,
+    "mismatches": 0,
+    "rule": "gap=2, run even>=4, tail[j] is ALSO gap=2/even/>=4: the birth continues -- every consecutive such entry (deepest first) contributes floor((run-4)/2) ones then a symbol ('5' at every level except the outermost/original trigger, which gets '9'); consumed together, H'=4+4j, what follows the whole run cascades -4 if gap>=5 (:cascade) or stack'=[] (:term).",
     "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
         "before": {
           "top": 2,
-          "stack": [],
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              6,
+              2
+            ]
+          ],
           "H": 4,
           "W": [],
-          "p": 0,
-          "L": 8
+          "p": 1276,
+          "L": 1608
         },
         "after": {
-          "top": 2,
-          "stack": [],
-          "H": 4,
-          "W": [],
-          "p": 4,
-          "L": 16
-        }
-      },
-      {
-        "before": {
           "top": 2,
           "stack": [
             [
@@ -1289,17 +1889,21 @@
             ]
           ],
           "H": 4,
-          "W": [],
-          "p": 0,
-          "L": 32
-        },
-        "after": {
-          "top": 2,
-          "stack": [],
-          "H": 4,
-          "W": [],
-          "p": 16,
-          "L": 24
+          "W": [
+            9,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1274,
+          "L": 1616
         }
       },
       {
@@ -1307,27 +1911,503 @@
           "top": 2,
           "stack": [
             [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
               10,
               2
             ]
           ],
           "H": 4,
           "W": [],
-          "p": 0,
-          "L": 88
+          "p": 1020,
+          "L": 2632
         },
         "after": {
           "top": 2,
           "stack": [
             [
-              5,
+              6,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            9,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1018,
+          "L": 2640
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              6,
               2
             ]
           ],
           "H": 4,
           "W": [],
-          "p": 44,
-          "L": 16
+          "p": 892,
+          "L": 3144
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 8,
+          "W": [
+            9,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 890,
+          "L": 3152
+        }
+      }
+    ]
+  },
+  {
+    "key": "D:recurse:A:g3",
+    "count": 6,
+    "mismatches": 0,
+    "rule": "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always (3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle sweep but aren't independently re-verified with a sentinel.",
+    "sideConditions": [
+      "inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 200,
+          "L": 32
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              3
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 192,
+          "L": 64
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              6
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 136,
+          "L": 288
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              7
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 128,
+          "L": 320
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              7
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 104,
+          "L": 416
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              8
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 96,
+          "L": 448
+        }
+      }
+    ]
+  },
+  {
+    "key": "B:g2odd",
+    "count": 6,
+    "mismatches": 0,
+    "rule": "H=4, top=4, tail[j] has gap in {2 (odd), 3 (run!=3), 4 (run!=2)}: the digit 5 is promoted to H' directly (H'=5, top'=2); tail[j] becomes [4,run] (gap2, next entry gap-=1) / [3+4j,run+1] (gap3) / [3+4j,run+2] (gap4).",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 362,
+          "L": 224
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              8,
+              7
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 360,
+          "L": 232
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              7,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 298,
+          "L": 480
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              8,
+              7
+            ],
+            [
+              6,
+              3
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 296,
+          "L": 488
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 234,
+          "L": 736
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              8,
+              7
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 232,
+          "L": 744
+        }
+      }
+    ]
+  },
+  {
+    "key": "digitBirth2:evenChain:term",
+    "count": 6,
+    "mismatches": 0,
+    "rule": "gap=2, run even>=4, tail[j] is ALSO gap=2/even/>=4: the birth continues -- every consecutive such entry (deepest first) contributes floor((run-4)/2) ones then a symbol ('5' at every level except the outermost/original trigger, which gets '9'); consumed together, H'=4+4j, what follows the whole run cascades -4 if gap>=5 (:cascade) or stack'=[] (:term).",
+    "sideConditions": [
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              10
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 378,
+          "L": 1840
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            1,
+            5,
+            1,
+            5,
+            9
+          ],
+          "p": 376,
+          "L": 1848
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              10
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 122,
+          "L": 2864
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            1,
+            5,
+            1,
+            5,
+            9
+          ],
+          "p": 120,
+          "L": 2872
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1532,
+          "L": 584
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [
+            9,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9
+          ],
+          "p": 1530,
+          "L": 592
         }
       }
     ]
@@ -1338,7 +2418,7 @@
     "mismatches": 0,
     "rule": "gap=2, run even>=4 (digit-9 birth), nothing beyond but j trailing (2,2)'s: H'=4+4j, W'=[1 x (run-4)/2, 9], p'=p-2, L'=L+8, stack'=[].",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1430,7 +2510,7 @@
     "mismatches": 0,
     "rule": "H=4, top=2: F.stack is exactly k>=0 entries of (2,2) then blank (chunkTerm). H'=4k+8, top'=2, stack'=[], p'=p-2, L'=L+8.",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1495,12 +2575,770 @@
     ]
   },
   {
+    "key": "B:evenChain:cascade",
+    "count": 4,
+    "mismatches": 0,
+    "rule": "H=4, top=4, tail[j] is gap=2/even/>=4: the birth continues (same deepest-first construction as digitBirth2's own even-chain), but EVERY level uses '5' -- table B's base birth is a separate extra '5' appended last; H'=4+4j, what follows cascades -4 if gap>=5.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 394,
+          "L": 96
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            9,
+            5
+          ],
+          "p": 392,
+          "L": 104
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              6,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 266,
+          "L": 608
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            9,
+            5
+          ],
+          "p": 264,
+          "L": 616
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              7,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 138,
+          "L": 1120
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            9,
+            5
+          ],
+          "p": 136,
+          "L": 1128
+        }
+      }
+    ]
+  },
+  {
+    "key": "D:recurse:A:g2odd",
+    "count": 3,
+    "mismatches": 0,
+    "rule": "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always (3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle sweep but aren't independently re-verified with a sentinel.",
+    "sideConditions": [
+      "inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 184,
+          "L": 96
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              8,
+              3
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 176,
+          "L": 128
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              7
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 120,
+          "L": 352
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              8,
+              7
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 112,
+          "L": 384
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 56,
+          "L": 608
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              8,
+              7
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 48,
+          "L": 640
+        }
+      }
+    ]
+  },
+  {
+    "key": "B:evenChain:nested-UNVERIFIED",
+    "count": 3,
+    "mismatches": 3,
+    "rule": "as B's evenChain above, but what follows has gap<5: UNRESOLVED (not hit in the 10M orbit).",
+    "sideConditions": [
+      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 330,
+          "L": 352
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              8,
+              6
+            ],
+            [
+              7,
+              3
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 328,
+          "L": 360
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 202,
+          "L": 864
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              8,
+              6
+            ],
+            [
+              8,
+              3
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 200,
+          "L": 872
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 74,
+          "L": 1376
+        },
+        "after": {
+          "top": 4,
+          "stack": [],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            9,
+            5
+          ],
+          "p": 72,
+          "L": 1384
+        }
+      }
+    ]
+  },
+  {
+    "key": "D:recurse:digitBirth2:term",
+    "count": 2,
+    "mismatches": 0,
+    "rule": "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always (3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle sweep but aren't independently re-verified with a sentinel.",
+    "sideConditions": [
+      "inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 88,
+          "L": 480
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            9,
+            1,
+            5
+          ],
+          "p": 80,
+          "L": 512
+        }
+      },
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 24,
+          "L": 736
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 8,
+          "W": [
+            1,
+            1,
+            9,
+            1,
+            5
+          ],
+          "p": 16,
+          "L": 768
+        }
+      }
+    ]
+  },
+  {
+    "key": "epoch:p0-continuation",
+    "count": 2,
+    "mismatches": 1,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 0,
+          "L": 1672
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 834,
+          "L": 16
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              21
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 6712
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              5,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            5
+          ],
+          "p": 3336,
+          "L": 96
+        }
+      }
+    ]
+  },
+  {
+    "key": "digitBirth2:nestedGap1",
+    "count": 2,
+    "mismatches": 0,
+    "rule": "gap=2, run even>=4, tail[j] has gap=1: the digit-9 is CANCELLED (W stays empty) and tail[j] becomes [3, tail[j].run + r] (r = the trigger's own run); deeper entries pass through unchanged; a DOUBLE lap (p-=4, L+=16), not the usual single.",
+    "sideConditions": [
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1668,
+          "L": 40
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              10
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1664,
+          "L": 56
+        }
+      },
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              12
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1652,
+          "L": 104
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              21
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1648,
+          "L": 120
+        }
+      }
+    ]
+  },
+  {
+    "key": "epoch:p0-blank",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 8
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [],
+          "p": 4,
+          "L": 16
+        }
+      }
+    ]
+  },
+  {
+    "key": "epoch:p0-chain",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 32
+        },
+        "after": {
+          "top": 2,
+          "stack": [],
+          "H": 4,
+          "W": [],
+          "p": 16,
+          "L": 24
+        }
+      }
+    ]
+  },
+  {
     "key": "A:cleanK0",
     "count": 1,
     "mismatches": 0,
     "rule": "H=4, top=2, F.stack=[] or F.stack[0].gap>=6, reached with zero (2,2) entries absorbed: H'=4, p'=p-2, L'=L+8, push [F.stack[0].gap-4, F.stack[0].run] (deeper untouched).",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1534,12 +3372,49 @@
     ]
   },
   {
+    "key": "epoch:p0-big",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              10,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 88
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              5,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 44,
+          "L": 16
+        }
+      }
+    ]
+  },
+  {
     "key": "A:g5",
     "count": 1,
     "mismatches": 0,
     "rule": "H=4, top=2, after k (2,2)'s the next entry has gap=5 (any run): H'=4k+8, p'=p-2, L'=L+8, entry becomes [1, run] (deeper untouched).",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1573,12 +3448,12 @@
     ]
   },
   {
-    "key": "smallGap1(k=1)-UNVERIFIED",
+    "key": "smallGap1:r2term(k=1)",
     "count": 1,
-    "mismatches": 1,
-    "rule": "gap=1 reached after an outer (2,2) chain (k>0): UNVERIFIED, single spot check only (k=1).",
+    "mismatches": 0,
+    "rule": "gap=1, run=2 (the gap=1 analogue of A:g3term/A:g4term): digit 5 born directly as H' (not via W), top'=4, p'=p-2, L'=L+8, deeper stack untouched.",
     "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1611,12 +3486,53 @@
     ]
   },
   {
+    "key": "epoch:p0-g2odd",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              5
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 192
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 98,
+          "L": 20
+        }
+      }
+    ]
+  },
+  {
     "key": "smallGap1:odd",
     "count": 1,
     "mismatches": 0,
     "rule": "gap=1, run odd>=3, something deeper: W'=[1 x floor(run/2), 5], p'=p-6, L'=L+24 (triple lap), next entry's gap -= 4 (run unchanged).",
     "sideConditions": [
-      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate, unimplemented epoch case."
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -1665,13 +3581,155 @@
     ]
   },
   {
+    "key": "D:recurse:A:g3term",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always (3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle sweep but aren't independently re-verified with a sentinel.",
+    "sideConditions": [
+      "inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 168,
+          "L": 160
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 8,
+          "W": [
+            1,
+            5
+          ],
+          "p": 160,
+          "L": 192
+        }
+      }
+    ]
+  },
+  {
+    "key": "D:recurse:digitBirth2:nestedGap1",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "H=5, top=4, rest[0] has gap in {3,4}: rest[0] plays the SAME role as a fresh top-level contact -- recurse through phase2 on [rest[0],...after]. A genuine fresh landing (H assigned directly) is ADOPTED (top/H/stack as computed) with table D's own [1,5] appended to W; a stack-transform continuation (g3/g4/g2odd) leaves table D staying (top=4,H=5), taking the sub-result's stack[0] shifted +5 in gap. Sub-dispatch's own p/L delta is discarded -- only table D's single base lap is paid. Verified against every real 10M D:UNIMPLEMENTED instance (rest[0] always (3,2) there, chaining 1-3 levels); other (gap,run) pairs match the isolated single-entry oracle sweep but aren't independently re-verified with a sentinel.",
+    "sideConditions": [
+      "inherits whatever side conditions the recursed-into case (the suffix after 'D:recurse:') carries."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 152,
+          "L": 224
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              8,
+              6
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 144,
+          "L": 256
+        }
+      }
+    ]
+  },
+  {
+    "key": "epoch:p0-bigH5",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 4,
+          "stack": [
+            [
+              7,
+              7
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 0,
+          "L": 832
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              7
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            5
+          ],
+          "p": 416,
+          "L": 8
+        }
+      }
+    ]
+  },
+  {
     "key": "C:shift1-EXTRAPOLATED",
     "count": 1,
-    "mismatches": 1,
-    "rule": "gap=4 reached via a digit-5 Phase-1 closure (run = an accumulated value, not F.top in {2,4}): EXTRAPOLATED from table C by scaling the lap with run/2+2; NOT independently oracle-checked.",
-    "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
-    ],
+    "mismatches": 0,
+    "rule": "gap=4 reached via a digit-5 Phase-1 closure with an ACCUMULATED run (not F.top in {2,4}): the entry is a free absorb (its exact run value never resurfaces -- oracle-swept at r0 in {6,8,...,30}), and the excursion re-enters exactly the top-level dispatch (phase2) on rest[0]; whatever lap that sub-dispatch computes gets scaled by exactly 4x, shape (top,H,W,stack) passes through unchanged. c1w-sweep-shift1x.mjs; matches every real 10M-orbit instance.",
+    "sideConditions": [],
     "examples": [
       {
         "before": {
