@@ -1,11 +1,11 @@
 [
   {
     "key": "A:g3",
-    "count": 272,
-    "mismatches": 1,
+    "count": 271,
+    "mismatches": 0,
     "rule": "H=4, top=2, after k (2,2)'s the next entry is (gap=3, run != 3): H'=4 (k has no effect on H here), p'=p-4, L'=L+16 (a double lap), entry becomes [2+4k, run+1], rest of stack unchanged.",
     "sideConditions": [
-      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows and is NOT resolved -- an epoch-adjacent edge case (2 real instances across 10M events), see the report.",
+      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows into the -p2underflow case key instead (resolved, see that key).",
       "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
@@ -185,11 +185,11 @@
   },
   {
     "key": "A:g2odd",
-    "count": 166,
-    "mismatches": 1,
+    "count": 165,
+    "mismatches": 0,
     "rule": "H=4, top=2, after k (2,2)'s the next entry is (gap=2, run odd>=3): H'=4, p'=p-4, L'=L+16, entry becomes [3+4k, run] (run unchanged); the entry AFTER that (if any) has its gap shifted by -1 (run unchanged), everything deeper than THAT passes through.",
     "sideConditions": [
-      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows and is NOT resolved -- an epoch-adjacent edge case (2 real instances across 10M events), see the report.",
+      "requires F.p >= 4 going in (double lap); F.p === 2 here underflows into the -p2underflow case key instead (resolved, see that key).",
       "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
@@ -1583,12 +1583,13 @@
     ]
   },
   {
-    "key": "digitBirth2:evenChain:nested-UNVERIFIED",
-    "count": 11,
-    "mismatches": 11,
-    "rule": "as evenChain above, but what follows the whole even-run chain has gap<5: UNRESOLVED (not hit in the 10M orbit).",
+    "key": "digitBirth2:evenChain:nested",
+    "count": 10,
+    "mismatches": 0,
+    "rule": "as evenChain above, but what follows the whole even-run chain (the FIRST entry past it, 'beyond') has gap<5. Resolved for the ONE chain shape every real 10M-orbit instance has: chain=[4,6] (trigger run 4, one extension to run 6). Dispatched on beyond=(g,r): g=1 promotes H' to 9 (W' empty), entry becomes [4,r+6]; g=2,r=2 is a free absorb (H'=8, W'=[1,5,9], stack consumed to whatever is deeper); g=2 odd r lands H'=5,W'=[9],top'=4, entry becomes [4,r] (run unchanged), and the NEXT entry (if any) shifts gap -1; g=3,r=3 or g=4,r=2 (table-A term shapes) consume to blank (H'=4,W'=[1,5,9],top'=4); g=3 otherwise lands H'=5,W'=[9],top'=4, entry becomes [3,r+1]; g=4 otherwise the same with entry [3,r+2]. Deeper-than-beyond entries always pass through untouched (confirmed with a sentinel). Oracle-derived (c1-sweep-db2even-46.mjs), matches all 10 real 2-level 10M-orbit instances exactly; chain shapes other than [4,6] fall through to ':evenChain:nested-UNVERIFIED' (never hit in 10M events).",
     "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+      "verified only for the exact chain shape named in the rule text (the one every real 10M-orbit instance has); other chain shapes fall through to the -UNVERIFIED key.",
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
     ],
     "examples": [
       {
@@ -2830,12 +2831,12 @@
     ]
   },
   {
-    "key": "B:evenChain:nested-UNVERIFIED",
+    "key": "B:evenChain:nested",
     "count": 3,
-    "mismatches": 3,
-    "rule": "as B's evenChain above, but what follows has gap<5: UNRESOLVED (not hit in the 10M orbit).",
+    "mismatches": 0,
+    "rule": "as B's evenChain above, but what follows the chain (a SINGLE-level chain, run r >= 8, no extension) has gap<5, with exactly one leading AND one trailing (2,2) (j = j2 = 1) -- the ONE shape every real 10M-orbit instance (3x) has. The chain's own outer entry becomes [4+4j, r-2] (mirrors digitBirth2's r2>=8 'extra entry' regime one level up, but table B's promoted digit is always '5', never '9') and sits ahead of beyond's own transform: g=1 -> [4,run+2]; g=2 odd run -> [8,run] (run unchanged), and the entry after beyond (if any) shifts gap -1; g=3 -> [7,run+1]; g=4 -> [7,run+2]. g=3,run=3 or g=4,run=2 (term shapes) instead fold BOTH the chain's outer entry and beyond into W (H'=4+4j, W'=[1 x (r-4)/2, 9, 5], stack consumed to whatever is deeper). Oracle-derived (c1-sweep-tableB-even.mjs); a chain run < 8, an extended (multi-level) chain, or j/j2 != 1 falls through to ':evenChain:nested-UNVERIFIED' (never hit in 10M events).",
     "sideConditions": [
-      "NOT fully oracle-verified -- see rule text and any MISMATCH log lines for this key."
+      "verified only for the exact chain shape named in the rule text (the one every real 10M-orbit instance has); other chain shapes fall through to the -UNVERIFIED key."
     ],
     "examples": [
       {
@@ -3050,131 +3051,6 @@
     ]
   },
   {
-    "key": "epoch:p0-continuation",
-    "count": 2,
-    "mismatches": 1,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
-    "sideConditions": [],
-    "examples": [
-      {
-        "before": {
-          "top": 2,
-          "stack": [
-            [
-              3,
-              2
-            ],
-            [
-              3,
-              6
-            ],
-            [
-              3,
-              2
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 5,
-          "W": [],
-          "p": 0,
-          "L": 1672
-        },
-        "after": {
-          "top": 2,
-          "stack": [
-            [
-              2,
-              3
-            ],
-            [
-              3,
-              6
-            ],
-            [
-              3,
-              2
-            ],
-            [
-              2,
-              4
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 834,
-          "L": 16
-        }
-      },
-      {
-        "before": {
-          "top": 2,
-          "stack": [
-            [
-              3,
-              21
-            ],
-            [
-              2,
-              2
-            ],
-            [
-              2,
-              4
-            ],
-            [
-              10,
-              2
-            ],
-            [
-              2,
-              2
-            ]
-          ],
-          "H": 4,
-          "W": [],
-          "p": 0,
-          "L": 6712
-        },
-        "after": {
-          "top": 2,
-          "stack": [
-            [
-              5,
-              2
-            ],
-            [
-              2,
-              2
-            ]
-          ],
-          "H": 4,
-          "W": [
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            5
-          ],
-          "p": 3336,
-          "L": 96
-        }
-      }
-    ]
-  },
-  {
     "key": "digitBirth2:nestedGap1",
     "count": 2,
     "mismatches": 0,
@@ -3277,7 +3153,7 @@
     "key": "epoch:p0-blank",
     "count": 1,
     "mismatches": 0,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
     "sideConditions": [],
     "examples": [
       {
@@ -3304,7 +3180,7 @@
     "key": "epoch:p0-chain",
     "count": 1,
     "mismatches": 0,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
     "sideConditions": [],
     "examples": [
       {
@@ -3375,7 +3251,7 @@
     "key": "epoch:p0-big",
     "count": 1,
     "mismatches": 0,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
     "sideConditions": [],
     "examples": [
       {
@@ -3489,7 +3365,7 @@
     "key": "epoch:p0-g2odd",
     "count": 1,
     "mismatches": 0,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
     "sideConditions": [],
     "examples": [
       {
@@ -3522,6 +3398,61 @@
           "W": [],
           "p": 98,
           "L": 20
+        }
+      }
+    ]
+  },
+  {
+    "key": "A:g3-p2underflow",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "the g3/g4/g2odd double lap (p -= 4) with F.p EXACTLY 2 going in: the second half of the lap runs out of p mid-excursion and falls through to an epoch-like landing. H'=4, W'=[], top'=2, p'=L/2+4, L'=8 (a fixed constant, NOT the usual lap arithmetic) REGARDLESS of the entry or k. The entry itself: A:g3/A:g4 collapse gap to 1 with run shifted +1/+2 (same shift as their own non-underflow rule); A:g2odd leaves the entry fully untouched (gap=2, run unchanged) but still shifts the NEXT entry's gap -1, mirroring its own non-underflow rule. Oracle-verified (c1-sweep-p2.mjs) at k=0 against both real 10M-orbit instances (ev7212 A:g3, ev471436 A:g2odd, the only two double-lap underflows in 10M events); k>0 is untested (k does not affect the non-underflow p/L either, so assumed immaterial here, but not oracle-checked).",
+    "sideConditions": [
+      "k > 0 (a leading (2,2)-chain before the double-lap entry) is untested; verified only at k = 0, matching both real 10M-orbit instances."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              7,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 2,
+          "L": 404
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              1,
+              3
+            ],
+            [
+              7,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 206,
+          "L": 8
         }
       }
     ]
@@ -3681,7 +3612,7 @@
     "key": "epoch:p0-bigH5",
     "count": 1,
     "mismatches": 0,
-    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly.",
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
     "sideConditions": [],
     "examples": [
       {
@@ -3725,10 +3656,263 @@
     ]
   },
   {
+    "key": "epoch:p0-continuation",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p = 0 (the 8/1095 epoch-phase boundary states): p'=F.L/2 plus a small rule-dependent offset (0 for blank/big/chain, +2 for a consumed gap=2-odd entry, -2 for a gap-3/4 'continuation' transform in place); L' is a small rule-dependent constant (16 base for H=4, 8 for H=5-triggered births, +8 for a consumed (2,2), +4 for a consumed gap=2-odd). Reverse-engineered by oracle replay of synthetic p0 states (c1w-sweep-epoch*.mjs); covers 6 of the 7 real 10M-orbit instances exactly. NOTE: 'epoch:p0-continuation' (the gap-3/4 transform) is proven ONLY for H=5 here -- oracle-confirmed that deeper stack entries are always inert for H=5 regardless of shape. H=4 does NOT reduce to this formula; see epoch:p0-deepChain.",
+    "sideConditions": [],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 5,
+          "W": [],
+          "p": 0,
+          "L": 1672
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 834,
+          "L": 16
+        }
+      }
+    ]
+  },
+  {
+    "key": "digitBirth2:evenChain:nested3",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "a THIRD chain level (chain=[4,6,4]) with beyond gap=1: the one real 3-level 10M-orbit instance (ev268327). H'=5, W'=[9], top'=4, entry becomes [4,r+4] (r = beyond's run); deeper passes through untouched (sentinel-checked). Oracle-derived, verified for beyond gap=1 only -- other beyond shapes at chain-length 3 were spot-checked during derivation but are NOT wired in (not needed, never hit in 10M events).",
+    "sideConditions": [
+      "verified only for the exact chain shape named in the rule text (the one every real 10M-orbit instance has); other chain shapes fall through to the -UNVERIFIED key.",
+      "requires F.p >= 2 going in (chunkBig/Parity.v precondition); F.p === 0 is the separate epoch case."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 634,
+          "L": 816
+        },
+        "after": {
+          "top": 4,
+          "stack": [
+            [
+              4,
+              8
+            ]
+          ],
+          "H": 5,
+          "W": [
+            9
+          ],
+          "p": 632,
+          "L": 824
+        }
+      }
+    ]
+  },
+  {
+    "key": "A:g2odd-p2underflow",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "the g3/g4/g2odd double lap (p -= 4) with F.p EXACTLY 2 going in: the second half of the lap runs out of p mid-excursion and falls through to an epoch-like landing. H'=4, W'=[], top'=2, p'=L/2+4, L'=8 (a fixed constant, NOT the usual lap arithmetic) REGARDLESS of the entry or k. The entry itself: A:g3/A:g4 collapse gap to 1 with run shifted +1/+2 (same shift as their own non-underflow rule); A:g2odd leaves the entry fully untouched (gap=2, run unchanged) but still shifts the NEXT entry's gap -1, mirroring its own non-underflow rule. Oracle-verified (c1-sweep-p2.mjs) at k=0 against both real 10M-orbit instances (ev7212 A:g3, ev471436 A:g2odd, the only two double-lap underflows in 10M events); k>0 is untested (k does not affect the non-underflow p/L either, so assumed immaterial here, but not oracle-checked).",
+    "sideConditions": [
+      "k > 0 (a leading (2,2)-chain before the double-lap entry) is untested; verified only at k = 0, matching both real 10M-orbit instances."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 2,
+          "L": 3344
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              7,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 1676,
+          "L": 8
+        }
+      }
+    ]
+  },
+  {
+    "key": "epoch:p0-deepChain",
+    "count": 1,
+    "mismatches": 0,
+    "rule": "F.p=0, H=4, F.stack[0]=(gap=3, ODD run != 3) -- the H=4 counterpart of epoch:p0-continuation, where (unlike H=5) deeper entries are NOT inert. Consecutive (gap=2, EVEN run) entries right after stack[0] each absorb like a table-D base lap (p -= 8, L += 32) and contribute floor(run/2)+1 ones to W; the chain ends at the first entry with gap>=6 (its own gap shifts -5, run unchanged); stack[0]'s own odd run seeds the word with floor((r-3)/2) ones before the chain's own. H'=4, top'=2, p'=F.L/2-4-8*(chain length), L'=32*(1+chain length). Oracle-verified for 1-3 absorbed entries (c1-sweep-epoch3/4.mjs); matches the one real 10M-orbit instance (ev1959320, a 2-entry chain) exactly. r even, g=4, H not in {4,5}, or a chain that never reaches a gap>=6 entry fall through to epoch:p0-deepChain-UNIMPLEMENTED (none hit in 10M events).",
+    "sideConditions": [
+      "verified only for H=4, stack[0] gap=3 odd run, a chain of 1-3 EVEN-run absorbed entries ending on a gap>=6 landing; other H=4 continuation shapes fall through to -UNIMPLEMENTED."
+    ],
+    "examples": [
+      {
+        "before": {
+          "top": 2,
+          "stack": [
+            [
+              3,
+              21
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [],
+          "p": 0,
+          "L": 6712
+        },
+        "after": {
+          "top": 2,
+          "stack": [
+            [
+              5,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "H": 4,
+          "W": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            5
+          ],
+          "p": 3336,
+          "L": 96
+        }
+      }
+    ]
+  },
+  {
     "key": "C:shift1-EXTRAPOLATED",
     "count": 1,
     "mismatches": 0,
-    "rule": "gap=4 reached via a digit-5 Phase-1 closure with an ACCUMULATED run (not F.top in {2,4}): the entry is a free absorb (its exact run value never resurfaces -- oracle-swept at r0 in {6,8,...,30}), and the excursion re-enters exactly the top-level dispatch (phase2) on rest[0]; whatever lap that sub-dispatch computes gets scaled by exactly 4x, shape (top,H,W,stack) passes through unchanged. c1w-sweep-shift1x.mjs; matches every real 10M-orbit instance.",
+    "rule": "gap=4 reached via a digit-5 Phase-1 closure with an ACCUMULATED run (not F.top in {2,4}): the entry is a free absorb (its exact run value never resurfaces -- oracle-swept at r0 in {6,8,...,30}), and the excursion re-enters exactly the top-level dispatch (phase2) on rest[0]; whatever lap that sub-dispatch computes gets scaled by exactly 4x, shape (top,H,W,stack) passes through unchanged. c1w-sweep-shift1x.mjs. Only correct when the sub-dispatch is a FRESH landing (isContinuation(sub.case) false) or is a continuation shape NOT covered by the two special cases below; both real 10M-orbit continuation instances need one of those instead.",
     "sideConditions": [],
     "examples": [
       {

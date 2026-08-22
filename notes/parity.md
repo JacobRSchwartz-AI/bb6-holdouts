@@ -1176,3 +1176,66 @@ coupling). Validated: N=2M, 1094 hops, 193 mismatches (82.4% exact);
 N=10M, 1379 hops, 478 mismatches (65.4%). First boundary from the
 anchor: ev5, {top:2, stack:[], H:4, W:[], p:0, L:8} -- itself a p=0
 state, so the anchor leg enters F through the epoch case.
+
+### Session 4 close: the chunkstep successor map is CLOSED (0/1379 mismatches)
+
+`node tools/parity-close.mjs --chunkstep N` now reaches ZERO mismatches
+at N=2,000,000 (1094 hops) and N=10,000,000 (1379 hops) -- chunkstep(F)
+-> F' is fully validated against the real orbit at both scales.
+`--grammar 200000` and `--close` remain green (0 failures / 0 bad
+successors); `--cross 500000` still agrees. tools/chunkstep-cases.json
+regenerated from the 10M run: 45 distinct case keys, every one 0
+mismatches (full list + rule text + examples in the file).
+
+Five rule families closed the last 19 mismatches (17 visible at 2M, 2
+more that only surface past event 7.5M, both inside tableCGeneric):
+
+1. digitBirth2 evenChain nested (11 instances, all chain=[4,6], one
+   3-level chain=[4,6,4]+beyond-gap-1): dispatched on the entry past
+   the chain -- g=1 promotes H'=9; g=2,r=2 is a free absorb (H'=8);
+   g=2 odd lands H'=5,top'=4,entry unchanged,next-entry shift -1;
+   g=3/g=4 (excl. term) land H'=5,top'=4,entry run+1/+2; term shapes
+   consume to blank (H'=4,top'=4); the 3-level case lands
+   H'=5,W'=[9],top'=4,entry=[4,r+4]. Deeper entries always pass
+   through untouched. (evenChain46)
+2. B:evenChain nested (3 instances, all j=j2=1, chain run=8): the
+   chain's own entry becomes [4+4j, r-2] (table B's promoted digit is
+   always '5', mirroring digitBirth2's r>=8 regime one level up),
+   ahead of beyond's own transform (same shape as above, digit '5' not
+   '9'); term shapes fold both entries into W. (tableBEvenNested)
+3. A:g3/A:g4/A:g2odd at F.p===2 (double-lap underflow): an epoch-like
+   landing, L'=8 fixed, p'=L/2+4, regardless of entry or k. A:g3/A:g4
+   collapse the entry's gap to 1 (run+1/+2, same shift as the
+   non-underflow rule); A:g2odd leaves the entry untouched but still
+   shifts the next entry -1. Exactly the 2 instances session 3's side
+   condition flagged (ev7212, ev471436). (p2Underflow)
+4. tableCGeneric with a continuation sub-dispatch (only visible past
+   7M events): the naive 4x-scaled adopt is wrong when the
+   sub-dispatch is mid-excursion. sub=A:g3 at F.p exactly 8 underflows
+   the scaled cost (p'=L/2+16, L'=8, epoch-like);
+   sub=digitBirth2:nestedGap1 with gap1-partner run=2 AND j>=1 lands
+   at EXACTLY table D's own base lap (p-=8, L+=32, top'=4, H'=5). j=0
+   is a DIFFERENT shape where the old formula is already correct
+   (confirmed against ev2275572, which needs the OLD formula).
+5. epoch:p0-continuation at H=4: the session-3 formula is proven only
+   for H=5 (deeper stack inert there). H=4 does real chain absorption:
+   consecutive (gap=2, even run) entries each cost a table-D-style
+   base lap (p-=8, L+=32) and contribute floor(run/2)+1 ones to W,
+   terminating at the first gap>=6 entry (shift -5); the odd seed run
+   contributes floor((r-3)/2) ones. Matches ev1959320 exactly;
+   verified at chain lengths 1 and 3 by synthetic sweep.
+
+No new F side conditions: the grammar is unchanged -- every mismatch
+was a wrong SUCCESSOR on an already-valid F shape. Each new sub-rule
+is gated tightly on the exact shape it was derived for; anything
+outside those gates falls through to the pre-existing fallback, so
+nothing is silently wrong beyond what is already flagged
+-UNVERIFIED/-UNIMPLEMENTED (none of which fire in 10M events).
+
+chunkstep(F) is now a fully closed, validated function over 45 case
+keys. NEXT: each key is a candidate composed hop lemma for Coq; the
+five families above are the newest, everything else was already
+exercised by the ParityCases work. Coq status at this point: A-table
+COMPLETE (ParityCasesA.v, 23 lemmas incl. g2odd + mb_pump_skim),
+phase1 done, mechanism layer done (ParityHops2.v), digitBirth2 +
+C:shift1 compositions in flight.
